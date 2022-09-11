@@ -1,0 +1,355 @@
+\documentclass[a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[swedish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{ae}
+\usepackage{graphicx}
+\usepackage{biblatex}
+\addbibresource{sources.bib}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{pgfgantt}
+
+
+\usepackage{fancyvrb}
+\fvset{tabsize=4}
+\fvset{fontsize=\small}
+
+\title{Projektplan}
+
+\author{DAT290 Group 14}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\hrule
+\ \\[0.2cm]
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+		\textbf{Gruppmedlemmar:} \\
+		Sebastian Danckwardt \\
+		Isac Holm \\
+		Zaid Haj Ibrahim \\
+		Alamin Alreda \\
+		Edvin Svahn
+\end{minipage}
+\end{center}
+\clearpage
+
+\tableofcontents
+\newpage
+
+\section{Syfte}
+Bara under 2021 har 72 884 fall av inbrottsstöld anmälts\cite{BRa}. Cirka 20\% svarar att de inte har ett hemlarm för att det helt enkelt är för dyrt\cite{MoFor}, genom att skapa ett system med ett billigt md407-kort kan man sänka kostnaderna för denna produkt och bekämpa brott i alla områden i Sverige. Projektet syftar till att skapa ett lättanvändligt och billigt larmsystem för att skydda mot stöld. Detta då endast 29\% av Sveriges befolkning idag använder ett larmsystem\cite{SSF}.  
+
+% Varje månad säljs 2500 inbrottslarm för hem och företag. Enligt polisen är larm till radhus ett av de bästa sätten att skydda sig mot inbrott, för att tjuvar väljer hus utan larm. 
+
+%tekniska målen
+%varför projektet ska genomföras ?
+%statistics:
+%Homes without a security system are 300% more likely to be broken into and burglarized. (Alarms.org)
+
+%83% of would-be burglars check for the presence of an alarm system before attempting a break-in. (FBI)
+
+%Police solve only 13% of reported burglary cases. (Pew Research Center)
+
+
+\section{Mål}
+Målet med projektet är att konstruera ett larm/lås-system med två olika larmenheter: den ena ska kunna upptäcka i fall en dörr står öppen och den andra ska detektera rörelse och vibrationer. En central styrenhet ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de fristående larmenheterna. Detta ska möjliggöra centraliserad kontroll och kalibrering av flera periferienheter i ett större larmsystem. Ytterligare en periferienhet ska simulera ett defekt larm i syfte för testning.
+\\\\
+När den centrala styrenheten startar ska en förfrågan skickas till de anslutna periferienheterna därpå de svarar med dess typ och konfiguration för att sedan tilldelas ett unikt ID. De olika larmenheterna ska inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid medans rörelsesensorn måste upptäcka rörelse på ett visst avstånd. Det ska även vara möjligt att låsa/låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en keypad.
+
+%vad ska konstrueras
+\section{Bakgrund}
+Ett larmsystem är utformat för att upptäcka inbrott i en byggnad eller ett område. Säkerhetslarm används i privata fastigheter samt industriella och militära anläggningar för att skydda mot inbrott och stöld av egendom. Vissa larmsystem är enkelbyggda och har bara en uppgift att göra medans andra larmsystem är mer komplicerade och ansvarar för flera uppgifter samtidigt, till exempel brand och inbrott. Oavsett hur ett larmsystem är byggt är det rådande att larmsystemet har en centralenhet. Centralenhetens huvudsakliga uppgift är att varna systemets användare och ta olika åtgärder vid olika fall.
+\\\\
+I det här projektet ska ett larmsystem konstrueras som använder tre 32-bitars ARM-processorer (md407). Systemet kommer att bestå av en centralenhet och två periferienheter, där varje enhet använder sig av ett md407-kort. Första enheten kommer att ansvara för dörrarnas larm medan den andra enheten kommer att ansvara för rörelse och vibrationslarm. Centralenheten kommer att hantera all kommunikation med användaren och samordning mellan periferienheterna.
+
+
+\subsection{Referenser}
+%\renewcommand*{\refname}{}
+\vspace{-1cm}
+
+\printbibliography[title=\n]
+
+\subsection{Tekniska förutsättningar}
+
+Syftet med detta projekt är att simulera en larmsystemsfunktionalitet, därför kommer mycket fokus att ligga på mjukvaran. Mjukvaran kommer att skrivas med C-språket och all testning av koden kommer att utföras med ETERM8. De huvudsakliga punkterna som behöver nyutvecklas för mjukavaran är: kommunikation mellan periferienheter och centralenhet, kommunikation mellan centralenheten och användaren samt dataläsning av sensorerna. \\
+\\
+När det gäller hårdvaran ska sensorerna kalibreras och larminställningar konfigureras. Hårdvaran och instrumenten som ska användas för att konstruera det övergripande larmsystemet är följande: \\
+\\
+3x md407 kort \\
+1x Avståndsmätare (ultraljud), HC-SR04 \\
+1x Vibrationssensor, "Flying-Fish" SW-18010P \\
+1x Keypad \\
+1x 7-segmentsdisplay \\
+2x 4-polig RJ-11 kabel (används för CAN-bussen) \\
+1x RJ-11 förgrening \\
+2x Tiopolig flatkabel \\
+3x USB-kabel \\
+1x Kopplingsplatta \\
+Kopplingskablar\\
+Diodlampor\\
+\\\\
+\newpage
+\section{Systemöversikt}
+
+\begin{figure}[h]
+\includegraphics[scale=0.26]{systemöversikt.jpg}
+\caption {Blockschema av larmsystemet}
+\label{fig:drawing}
+\end{figure}
+
+Systemet är uppbyggt av en centralenhet och två periferienheter, varje enhet består av ett md407-kort och är kopplad till olika instrument beroende på dess funktion och vad den kommer att ansvara för (figure 1). \\
+\\
+Periferienhet 1 ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare. Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. \\
+\\
+Periferienhet 2 ska vara kopplad till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). Avståndmätaren kommer att skicka en signal om avståndet har ändrats. På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer. \\
+\\
+Centralenheten ska vara kopplad till periferienheterna, en keypad och en dator. Kommunikationen mellan periferienheterna och centralenheten kommer att ske över en CAN-buss (Controller Area Network). På datorn kommer alla instrument kalibreras och det ska gå att se vilka larm som har aktiverats. Keypaden kommer att användas för att mata in koden för att slå på/av larmet.
+\newpage
+
+
+\section{Resursplan}
+\begin{itemize}
+ \item Sebastian Dankckwardt (Gruppledare, Kodstandardansvarig, teknisk dokumentansvarig)
+ \\swesebbe3336@gmail.com
+ \item Isac Holm (Resursansvarig)
+ \\holmisen88@gmail.com
+ \item Edvin Svahn (Administrativ dokumentansvarig)
+ \\edvinsvahn01@gmail.com
+ \item Zaid Haj Ibrahim (Planeringsansvarig)
+ \\zaid3019@hotmail.com
+ \item Alamin Alreda (Testansvarig)
+ \\amin.reda@hotmail.com
+\end{itemize}
+
+
+Kommunikation utanför mötestid kommer i första hand att ske via Discord men alla medlemmar kan även nås via telefon eller e-post. All hårdvara ska vara tillgänglig vid behov i sal ED4217 inlåst i ett kassaskåp där alla gruppmedlemmar är medvetna om koden. Mjukvaran som finns tillgänglig är GitHub, CodeLite, ETERM8 och STM-biblioteket. Lokalerna som kan disponeras är alla lokaler som kan bokas på Chalmers. \\
+
+
+I det fallet att en gruppmedlem har för avsikt att jobba på distans kan medlemmen fortfarande vara medverkande på möten genom Discords röstchatt. Medlemmen kan även bidra till skriftliga dokument på distans i ett delat LaTeX-dokument via overleaf. För att jobba på programmering kan medlemmen pusha sin skrivna kod från CodeLite till det gemensamma GitHub-repot.
+
+
+\section{Milstolpar}
+\begin{center}
+     \begin{tabular}{|c|c|c|}
+      \hline
+      Vecka & Beskrivning & Datum \\
+      \hline
+      2 & Projektplan Inlämnad & 2022-09-09 \\
+      \rowcolor{lightgray}
+      %\hline
+      3 & Läsa från periferienheter & 2022-09-14 \\
+      %\hline
+      3 & Huvudenhet kommunicerar med periferienheter & 2022-09-16 \\
+      \rowcolor{lightgray}
+      %\hline
+      4 & Lokallarm och centrallarm för periferienheter & 2022-09-23 \\
+      %\hline
+      5 & Testmiljö klar & 2022-09-27 \\
+      \rowcolor{lightgray}
+      %\hline
+      5 & Rapportutkast 1 klar & 2022-09-28 \\
+      %\hline
+      6 & Oppositionsrapport Inlämnad & 2022-10-06 \\
+      \rowcolor{lightgray}
+      %\hline
+      6 & Grund till periferienheter klar & 2022-10-07 \\ 
+      7 & Självlärning klar & 2022-10-14 \\
+      \rowcolor{lightgray}
+      %\hline
+      7 & Dynamisk larmning klar & 2022-10-14 \\
+      %\hline
+      8 & Låsa/Låsa upp dörr klar & 2022-10-17 \\
+      \rowcolor{lightgray}
+      8 & Rapportutkast 2 Inlämnad & 2022-10-19 \\
+      9 & Slutrapport Inlämnad & 2022-10-28 \\
+      \hline
+     \end{tabular}
+ \end{center}
+\
+\
+
+\section{Aktiviteter} % Work breakdown
+
+\begin{description}
+ \item[Projektplanering] Nedan följer en översiktlig tabell över hur timmarna i projektet kommer att fördelas. Projektet kommer att kräva cirka 1200 timmar för att genomföras. Observera att den inlagda tiden kan variera beroende på status på gruppsdynamik och arbetshastighet.
+
+\begin{tabular}{ | p{5.4cm}| p{2cm} |p{4cm}|  }
+\hline
+  \rowcolor{lightgray}
+  \centering Moment & Tidsåtgång & \multicolumn{1}{|c|}{Ansvar} \\
+ \hline
+ Projektmöten                         & 150  &Planeringsansvarig\\
+    \rowcolor{lightgray}
+ Projektplanering                    & 60   &Samtliga medlemmar\\
+ Projektledning                       & 50   &Gruppledare\\
+    \rowcolor{lightgray}
+ Programmering av dörrlarm            & 100  &Samtliga medlemmar\\
+ Programmering av Huvudenhet          & 100  &Samtliga medlemmar\\
+    \rowcolor{lightgray}
+ Programmering av periferienheter     & 200  &Samtliga medlemmar\\
+ Programmering av Extrauppgifter     & 100  &Samtliga medlemmar\\
+    \rowcolor{lightgray}
+ Kod och Hårdvara testas              & 100  &Testansvarig\\   
+ Projektsrapport 1:a utkast           & 120  &Samtliga medlemmar\\
+    \rowcolor{lightgray}
+ Projektsrapport 2:a utkast           & 80   &Samtliga medlemmar\\
+ Dokumentgranskning                   & 20   &Dokumentsansvarig\\ 
+     \rowcolor{lightgray}
+ Kodstruktur                          & 50   &Kodansvarig\\
+ Demonstration                        & 20   &Samtliga medlemmar \\
+ \rowcolor{lightgray}
+ Oppositionskommentar                 & 30   &Samtliga medlemmar\\
+ \hline
+\end{tabular}
+ En planering utav arbetet som skall definiera uppgifter samt milstolpar i projektet.
+
+
+\begin{itemize}
+ \item Projektmöten med handledare hålls varje vecka och ska pågå i två timmar. Under detta möte ska grupputveckling och eventuella problem gruppen har stött på diskuteras. Möten är ett tillfälle för att delta i viktiga frågor som rör gruppdynamik och projektet. Där kan även nya idéer och metoder förekomma som kan utnyttjas under projektets gång. Utöver det mötet ska gruppmedlemmarna regelbundet hålla egna möten för att utföra projektet. Möten kan genomföras dagligen eller planeras enligt gruppens behov.
+
+ \item Projektplanering är det moment där alla i gruppen ägnar sig åt att planera hur man ska jobba under veckan som kommer.
+ 
+ \item Projektledning styrs av gruppledaren, denne ska övervaka frågor som rör gruppdynamiken samt se till att projektet fortskrider enligt plan.
+ 
+ \item Dokumentgranskning utförs av teknisk dokumentansvarig. Samtliga medlemmar ska skriva sina delar i projektrapporten, men ansvaret ligger på administrativ dokumentansvarig att kontrollera stil, språk och struktur.
+ 
+ \item Kodstruktur sköts av kodansvarig. Denne har ansvar för rättning av kod, renskrivning och kontroll över kodkollision. Kodansvarig ska även hjälpa medlemmarna med att koda i fall någon stöter på problem. Kodansvarig kontrollerar att Koddokumentation är koncis.
+ 
+ \item Programmering innehavar den största delen av tidsåtgången. Varje medlem ansvarar för att koda sin del av uppgifterna. Samtliga medlemmarna ska kontrollera så att ny kod inte kommer att kollidera.
+
+ \item Oppositionskommentar görs av samtliga medlemmar i slutet av läsperioden. Detta görs individuellt.
+\end{itemize}
+\end{description}
+
+\section{Tidsplan}
+\begin{table}[h]
+\begin{tabular}{ | p{5.5cm}| p{2cm} | }
+    \hline
+        \rowcolor{lightgray}
+    \centering Delmoment & \multicolumn{1}{|c|}{Vecka}\\
+\hline
+Gruppmöte (rolltilldelning)          & 3   \\
+Gruppmöte (med mentor)      Onsdagar 31,7,14,21,28,5,12,19      & 2-9 \\
+Projektplanering dokumentation      30/8 -- 10/9     & 2   \\
+Projektplanering inlämning          11/9            & 3   \\
+Programmering (Initiering)           12/9  - 14/9   & 4   \\
+
+Programmering (Lokallarm)           14/9 - 23/9   & 4   \\
+Programmering (Centralenhet/larm)   19/9 - 23/9   & 5   \\
+
+Programmering (Periferienhet 1 /dörr)      14/9 -- 07/10 & 6   \\
+Programmering (Periferienhet 2 / vib och mätare)      20/9 -- 14/10 & 6   \\
+
+%Programmering av central enhet         17/9 -- 23/9
+
+Hårdvarutest                        14/9 -- 17/10                 & 4   \\
+Projektrapport utkast 1,2,final     28/9, 19/10, 28/10            & 6   \\
+
+Programmering (Extrauppgifter)      15/9 - 17/10   & 4-7 \\
+
+Kod test och Implementering          15/9   17/10   & 8   \\
+
+Oppositionskommentarer              6/10 &  \\
+demonstration                        tentavecka* (tiden bestäms senare) &  \\
+\hline
+
+
+\end{tabular}
+\caption{\label{Tidsplan}Den preliminära planen är att lägga i genomsnitt 22 timmar per vecka på projektet. Detta 
+inkluderar föreläsningar, möten som handlar om projektarbete och övningslektioner.
+Tiden kan variera beroende på status på projektets gång, om en medlem anser att det finns behov för att lägga mer tid på en viss del, då måste denne intyga resten av medlemmarna om tid/plats som passar majoriteten.}
+\end{table}
+\newpage
+\hspace{-5cm}\begin{ganttchart}[
+    hgrid,
+    vgrid,
+    x unit=0.2cm,
+    bar/.append style={fill=black!80},
+    group/.append style={draw=black, fill=black!50},
+    bar incomplete/.append style={fill=white},
+    milestone/.append style={fill=red, rounded corners=2pt},
+    time slot format=isodate,
+    ]{2022-08-29}{2022-10-30}
+\gantttitle{Tidsplan}{63}\\
+\gantttitlecalendar{month=shortname, week=1 } \\
+\ganttmilestone{Projektrolltildelning}{2022-08-31}\\
+\ganttbar{Gruppmöte}{2022-08-31}{2022-08-31}
+\ganttbar{}{2022-09-7}{2022-09-7}
+\ganttbar{}{2022-09-14}{2022-09-14}
+\ganttbar{}{2022-09-21}{2022-09-21}
+\ganttbar{}{2022-09-28}{2022-09-28}
+\ganttbar{}{2022-10-5}{2022-10-5}
+\ganttbar{}{2022-10-12}{2022-10-12}\\
+\ganttbar{Projektplanering dokumentation}{2022-08-30}{2022-09-10}\\
+\ganttmilestone{Projektplanering inlämning}{2022-09-11}\\
+\ganttbar{Programmering (Initiering)}{2022-09-12}{2022-09-14}\\
+\ganttbar{Programmering (lokal larm)}{2022-09-14}{2022-09-23}\\
+\ganttbar{Programmering (Central Enhet/larm)}{2022-09-19}{2022-09-23}\\
+\ganttbar{Programmering (Periferienhet 1/dörr)}{2022-09-14}{2022-10-07}\\
+\ganttbar{Programmering (Periferienhet 2)}{2022-09-20}{2022-10-14}\\
+\ganttbar{Hårdvara test}{2022-09-14}{2022-10-17}\\
+\ganttmilestone{Projektrapport utkast 1}{2022-09-28}\\
+\ganttmilestone{Projektrapport utkast 2}{2022-10-19}\\
+\ganttmilestone{Projektrapport final}{2022-10-28}\\
+\ganttbar[
+bar/.append style={shape=ellipse, fill=gray!50, dashed}
+]{Programmering (Extrauppgifter)}{2022-09-15}{2022-10-17}\\
+\ganttbar[
+bar/.append style={shape=ellipse, fill=gray!50, dashed}
+]{Kod test och Implementering}{2022-09-15}{2022-10-17}\\
+\ganttmilestone{Oppositionskommentarer}{2022-10-6}\\
+
+\ganttbar[
+bar/.append style={shape=ellipse, fill=gray!50, dashed}
+]{demonstration}{2022-10-24} {2022-10-28} 
+\end{ganttchart}
+
+
+
+\section{Mötesplan}
+Varje vecka hålls ett formellt möte med handledaren. Mötet med mentorn planeras preliminärt in för onsdag kl 14:00. Möteskallelse skickas ut av gruppledare 1-2 dagar före mötet. Vanliga möten är de tider som gruppen väljer att sitta tillsammans och jobba, dessa ska genomföras minst 2 gånger i veckan. Tid och plats för vanliga möten bestäms i slutet av veckan innan. Lokaler som används varierar beroende på vad som är tillgängligt men bokas alltid när mötet bestäms.
+
+
+
+\section{Kommunikationsplan}
+För att alla i gruppen ska hållas informerade så behöver medlemmarna kontinuerligt uppdatera varandra om projektets gång, deadlines, planering och generell information. För detta krävs det att det finns ett enkelt sätt att kommunicera på. Efter åtanke bestämdes Discord som primära kommunikationsplatform på grund av dess många funktioner som är användbara för projektet. Dessa inkluderar bland annat fildelning, textkanaler, röstkanaler, skärmdelning och dessutom är tjänsten gratis. \\
+
+På Discord har det skapats ett flertal textkanaler där information förmedlas till gruppmedlemmarna. Kanalerna och dess syfte är som följer:
+
+\begin{description}
+ \item[general:] en generell textkanal, den används för att kommunicera information som inte behöver behållas.
+ \item[viktig-info:] Viktig information som inte passar in på någon annan kanal som till exempel skåpkoden, e-postadresser, länkar till projektetfiler eller liknande.
+ \item[planering:] Här skrivs tider och rum för möten med handledare och gruppen.
+ \item [sen-ankomst-frånvaro:] Om någon i gruppen kommer sent, blir frånvarande eller behöver vara med på distans förmedlas detta här.
+ \item [källor:] Här skrivs källor som kan användas i projektet.
+\end{description}
+
+Förutom Discord används även Canvas och e-post för att kommunicera med handledare. På Canvas skickas kallelser veckovis via anslag. Inlämningsuppgifter skickas även in via Canvas. Frågor ska skickas via e-post till handledare.
+
+\newpage
+\section{Kvalitetsplan}
+Gruppen ser till att möten sker regelbundet. På mötena granskas arbete utfört av gruppmedlemmar, speciellt inför varje extern granskning. På mötena utses även ansvariga för olika delar av projektet samt vilka som ska arbeta på vilket dokument eller program. Ansvaret ligger sedan på den ansvariga för dokumentet/programmet att se till att de medlemmar personen har tillgång till utför ett effektivt arbete, och att arbetet är slutfört inför nästa deadline. \\
+
+För att se till att kvalitén på projektet hålls ska även tester genomföras. Dessa ska dokumenteras och utföras för att förhindra att delar som inte fungerar läggs till på platser som senare kan skapa problem. Testerna ska utföras med hjälp av en testmall, denna ska fyllas ut när ett test genomförs så att det med säkerhet görs noggrant och utförligt. Dessa tester ska göras kontinuerligt under utvecklingsperioden.
+\begin{description}
+\item[Komponent:] 
+Dokumentera exakt vilken komponent som ska testas.
+
+\item[Testsyfte:] Vad är syftet med testet?
+
+\item[Förväntade resultat:] Vad är det förväntade resultatet?
+
+\item[Utförande:] Hur ska testet utföras? Om det är kod som ska testas i en IDE, vilka tester är skrivna? Om det är hårdvara som ska testas, vilka extra verktyg behövs och vad ska de användas till?
+
+\item[Resultat:] Beskriv resultatet utan att ge någon värdering.
+
+\item[Analys:] Stämde resultat överens med det förväntade resultatet? Om ja, täckte testet allt som behövdes testas? Behövs det fler tester? Om inte, vad skiljer sig? Behöver det fixas?
+\end{description}
+Förutom detta ska även koden granskas av kodstandardansvarig så att den håller sig till konventioner och standarder.
+
+\end{document}
