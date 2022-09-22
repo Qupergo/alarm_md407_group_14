@@ -38,8 +38,8 @@ volatile long time_us;
 volatile int send_time, receive_time;
 
 void sensor_receive(void){
-    receive_time = time_us;
-    int range = (((receive_time - send_time) * 340) / 2) / 10000; //convert to cm
+    receive_time = time_us - 42;
+    int range = (((receive_time - send_time) * 340) / 2) / 1000; //convert to cm
     char snum[10];
     itoa(range, snum, 10);
     print(snum); print(":cm \n");
@@ -49,11 +49,12 @@ void sensor_receive(void){
 
 void systick_handler(void){
     time_us++;
-    if(time_us % 70000 == 0){ //Initiate cycle every 70 ms
+    if(time_us % 7000 == 0){ //Initiate cycle every 70 ms
         send_time = time_us;
+        receive_time = send_time;
         GPIO_WriteBit(GPIOD, GPIO_Pin_0, 1); //send trigger
     }
-    if(time_us == send_time + 10) { //
+    if(time_us == send_time + 1) { //
         GPIO_WriteBit(GPIOD, GPIO_Pin_0, 0); //stop trigger after 10 us
     }
 }
@@ -84,7 +85,7 @@ void init_exti(void){
 }
 
 void init_systick(void){
-    SysTick_Config(168 - 1); //set systick to interrupt every us
+    SysTick_Config(1680 - 1); //set systick to interrupt every us
     NVIC_SetPriority(SysTick_IRQn, 0);
     *((int *) 0x2001C03C) = systick_handler;
 }
