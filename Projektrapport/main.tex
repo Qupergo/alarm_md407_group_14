@@ -1,9 +1,11 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{authblk}
+\usepackage{biblatex}
+\addbibresource{sources.bib}
 
 \title{ProjektRapport 14}
-\author{Sebastian Danckwardt \and Isac Holm \and Zaid \and Alamin \and Edvin Svahn}
+\author{Sebastian Danckwardt \and Isac Holm \and Zaid Haj Ibrahim \and Alamin Alreda \and Edvin Svahn}
 \date{September 2022}
 
 \begin{document}
@@ -13,8 +15,22 @@
 \section{Introduction}
 \subsection{Syfte}
 Varför?
+\\
+Bara under 2021 har 72 884 fall av inbrottsstöld anmälts\cite{BRa}. 
+Cirka 20\% svarar att de inte har ett hemlarm för att det helt enkelt är för dyrt\cite{MoFor}.
+Genom att skapa ett system med ett billigt md407-kort kan man sänka kostnaderna för denna produkt och bekämpa brott i alla områden i Sverige. 
+Projektet syftar till att skapa ett lättanvändligt och billigt larmsystem för att skydda mot stöld. 
+Detta då endast 29\% av Sveriges befolkning idag använder ett larmsystem\cite{SSF}.
 \subsection{Mål}
 Vad?
+\\
+Målet med projektet är att konstruera ett larm/lås-system med två olika larmenheter: 
+den ena ska kunna upptäcka i fall en dörr står öppen och den andra ska detektera rörelse och vibrationer. 
+En central styrenhet ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de fristående larmenheterna. 
+Detta ska möjliggöra centraliserad kontroll och kalibrering av flera periferienheter i ett större larmsystem. 
+Ytterligare en periferienhet ska simulera ett defekt larm i syfte för testning.
+\\\\
+När den centrala styrenheten startar ska en förfrågan skickas till de anslutna periferienheterna därpå de svarar med dess typ och konfiguration för att sedan tilldelas ett unikt ID. De olika larmenheterna ska inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid medans rörelsesensorn måste upptäcka rörelse på ett visst avstånd. Det ska även vara möjligt att låsa/låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en keypad.
 \subsection{Arbetsmetod}
 Hur har vi gått tillväga i det tekniska utvecklingsarbetet
 \section{Teknisk beskrivning}
@@ -30,6 +46,8 @@ komplett system. Detta avsnitt redovisar även resultatet av det slutliga fysisk
 körs i skarpt läge. Ni ska främst redovisa resultat i form av funktionalitet, men ta också upp prestanda 
 aspekter om dessa är viktiga.  
 \section{Slutsatser}
+\newpage
 \section{Källförteckning}
+\printbibliography[title=\n]
 
 \end{document}
