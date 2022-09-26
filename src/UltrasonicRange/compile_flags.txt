@@ -1,0 +1,3 @@
+-IC:\Users\aminr\Desktop\dataprojekt\UltrasonicRange
+-IC:\Users\aminr\Desktop\dataprojekt\STM32F4_lib\STM32F4_lib\CMSIS\Include
+-IC:\Users\aminr\Desktop\dataprojekt\STM32F4_lib\STM32F4_lib\STM32F4xx_StdPeriph_Driver\inc
