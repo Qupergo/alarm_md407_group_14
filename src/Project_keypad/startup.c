@@ -12,20 +12,32 @@ __asm__
 volatile(".L1: B .L1\n");				/* never return */
 }
 
+volatile static unsigned char code[4] = {0x11, 0x11, 0x11, 0x11};
+volatile unsigned char password_in[4];
+
+void store_password(){
+	for(int i = 0; i<4; i++){
+		password_in[i] = keyboard();
+	}
+}
+void check_password(){
+	unsigned  char size;
+	for(int i = 0; i<4; i++){
+		if(password_in[i] == code[i]){
+			size++;}
+		} return (size == sizeof(code));
+	}
+
 void app_init(void){	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	GPIO_InitTypeDef keypad_In;
 	GPIO_InitTypeDef keypad_Out;
-	GPIO_InitTypeDef out7seg;
 	
 	GPIO_StructInit(&keypad_In); // COLUMN 0-3 pin as input
 	GPIO_StructInit(&keypad_Out); //ROW 4-7 as output
-	GPIO_StructInit(&out7seg);
 	
 	keypad_In.GPIO_Pin = GPIO_Pin_0| GPIO_Pin_1| GPIO_Pin_2| GPIO_Pin_3;
 	keypad_Out.GPIO_Pin = GPIO_Pin_4| GPIO_Pin_5| GPIO_Pin_6| GPIO_Pin_7;
-	out7seg.GPIO_Pin	=   GPIO_Pin_8| GPIO_Pin_9| GPIO_Pin_10| GPIO_Pin_11|
-				GPIO_Pin_12| GPIO_Pin_13| GPIO_Pin_14| GPIO_Pin_15;
 	
 	keypad_In.GPIO_PuPd = GPIO_PuPd_DOWN; //PULLDOWN 
 	
@@ -34,12 +46,11 @@ void app_init(void){
 	
 	keypad_In.GPIO_Mode = GPIO_Mode_IN;
 	keypad_Out.GPIO_Mode = GPIO_Mode_OUT;
-	out7seg.GPIO_Mode	= GPIO_Mode_OUT;
 
 	GPIO_Init(GPIOE, &keypad_In);
 	GPIO_Init(GPIOE, &keypad_Out);
-	GPIO_Init(GPIOE, &out7seg);
 }
+
 void keyboardActivate(unsigned int row){
 	//Aktivera angiven rad hos tangentbordet eller deaktivera samtliga
 	switch(row){
@@ -79,18 +90,6 @@ void keyboard(void){
 	return 0xFF;
 }
 
-
-void out7seg(unsigned char c){
-	//Segment-array över hur siffrorna skall synas på skärmen
-    unsigned short result[] = {0x3F00, 0x0600, 0x5B00, 0x4F00,
-							0x6600, 0x6D00, 0x7D00, 0x0700, 0x7F00, 
-							0x6F00, 0x7700, 0x7C00, 0x5800, 0x5E00, 0x8000, 0x7600};
-	if(c > 0xFF00){
-         GPIO_Write(GPIOE, 0x00);
-    }else{
-        GPIO_Write(GPIOE, result[c]);
-    }	 
-}
 void main(void){
 	app_init();
 	while(1){
