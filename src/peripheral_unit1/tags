@@ -1,0 +1,9 @@
+ID	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	int ID;$/;"	member	line:13	struct:__anon1	access:public
+Switch	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	uint16_t Switch;$/;"	member	line:15	struct:__anon1	access:public
+Open	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	uint16_t Open;$/;"	member	line:16	struct:__anon1	access:public
+Local_alarm	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	uint16_t Local_alarm;$/;"	member	line:17	struct:__anon1	access:public
+Lock	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	uint16_t Lock;$/;"	member	line:18	struct:__anon1	access:public
+Status_Central_alarm	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	char Status_Central_alarm;$/;"	member	line:19	struct:__anon1	access:public
+Status_Lokal_alarm	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	char Status_Lokal_alarm;$/;"	member	line:20	struct:__anon1	access:public
+Time_threshold	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^	int Time_threshold;$/;"	member	line:21	struct:__anon1	access:public
+Door	C:\Users\aminr\Desktop\dataprojekt\door\door.h	/^typedef struct { 	int ID; 	 	uint16_t Switch; 	uint16_t Open; 	uint16_t Local_alarm; 	uint16_t Lock; 	char Status_Central_alarm; 	char Status_Lokal_alarm; 	int Time_threshold; 	int Timer 	 	 	 }Door; $/;"	typedef	line:26	typeref:struct:__anon1

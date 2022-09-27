@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="UltrasonicRange" Version="11000" InternalType="User templates">
+<CodeLite_Project Name="peripheral_unit1" Version="11000" InternalType="User templates">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0005Debug000000000000]]>
@@ -20,10 +20,14 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="../chat_app/usart.c"/>
     <File Name="../STM32F4_lib/STM32F4_lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c"/>
+    <File Name="../STM32F4_lib/STM32F4_lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_syscfg.c"/>
+    <File Name="../STM32F4_lib/STM32F4_lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_exti.c"/>
+    <File Name="../STM32F4_lib/STM32F4_lib/STM32F4xx_StdPeriph_Driver/src/misc.c"/>
+    <File Name="../../chat_app/usart.c"/>
     <File Name="../STM32F4_lib/STM32F4_lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c"/>
     <File Name="../STM32F4_lib/STM32F4_lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c"/>
+    <File Name="door.h"/>
     <File Name="startup.c"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
