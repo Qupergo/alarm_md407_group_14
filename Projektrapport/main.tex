@@ -58,9 +58,8 @@ Hur ser det konstruerade systemet ut på en övergripande nivå?
 \label{fig:drawing}
 
 
-Systemet består i stort av tre delar - en centralenhet och två periferienheter. Utöver dessa enheterna innehåller systemet övriga delenheter som bidrar till funktionalitet av systemet i sin helhet. Ett mf407-kort används som 
+Systemet består i stort av tre delar - en centralenhet och två periferienheter. Utöver dessa enheterna innehåller systemet övriga delenheter som bidrar till funktionalitet av systemet i sin helhet. Ett md407-kort används som en ARM-processor för att koppla ihop olika instrument beroende på deras funktion och uppgifter (figure 1). Kommunikation mellan samtliga md-kort sker via CAN-buss, medan kommuniaktion mellan centralenheten och pc sker över USART. \\
 
-varje enhet består av ett md407-kort och är kopplad till olika instrument beroende på dess funktion och vad den kommer att ansvara för (figure 1). \\
 
 Periferienhet 1 ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare. Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. \\
 
