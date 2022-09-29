@@ -1,0 +1,15 @@
+ID	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	int ID;$/;"	member	line:14	struct:__anon1	access:public
+GPIOUnit	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	GPIO_TypeDef* GPIOUnit;$/;"	member	line:15	struct:__anon1	access:public
+Vibration_Pin	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	uint16_t Vibration_Pin;$/;"	member	line:16	struct:__anon1	access:public
+VibrationSensor	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^typedef struct { 	int ID; 	GPIO_TypeDef* GPIOUnit; 	uint16_t Vibration_Pin; 	 }VibrationSensor; $/;"	typedef	line:18	typeref:struct:__anon1
+ID	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	int ID;$/;"	member	line:21	struct:__anon2	access:public
+GPIOUnit	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	GPIO_TypeDef* GPIOUnit;$/;"	member	line:22	struct:__anon2	access:public
+Trig_Pin	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	uint16_t Trig_Pin;$/;"	member	line:23	struct:__anon2	access:public
+Echo_Pin	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	uint16_t Echo_Pin;$/;"	member	line:24	struct:__anon2	access:public
+Distance	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	int Distance;$/;"	member	line:25	struct:__anon2	access:public
+Threshold	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^	int Threshold;$/;"	member	line:26	struct:__anon2	access:public
+UltraSonicSensor	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^typedef struct { 	int ID; 	GPIO_TypeDef* GPIOUnit; 	uint16_t Trig_Pin; 	uint16_t Echo_Pin; 	int Distance; 	int Threshold; }UltraSonicSensor; $/;"	typedef	line:27	typeref:struct:__anon2
+echo_start	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^unsigned int echo_start, echo_end, echo_time;$/;"	variable	line:29
+echo_end	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^unsigned int echo_start, echo_end, echo_time;$/;"	variable	line:29
+echo_time	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^unsigned int echo_start, echo_end, echo_time;$/;"	variable	line:29
+a	C:\Users\aminr\Desktop\dataprojekt\periphperipheral_unit2\peripheral_unit2.h	/^char a[30];/;"	variable	line:30
