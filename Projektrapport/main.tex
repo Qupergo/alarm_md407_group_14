@@ -97,17 +97,17 @@ Periferienhet 2 ska vara kopplad till en avståndsmätare (HC-SR04) och en vibra
 \subsection{Delsystem}
 Hur ser det delar som ingår i systemet ut?
 \subsubsection{Centalenhet}
-Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN buss (Controller Area Network), denna komunikation kommer att omfatta ACK-, larm-, och konfiguration meddelanden. Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska hen skriva in rätt lösenord. Därefter ska användaren kunna, för varje dörr, slå på eller av larmet, ändra tröskelvärdet,låsa eller låsa upp dörren. Utöver det ska använddaren kunna också ändra tröskelvärdet för avståndsmätaren.
+Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN buss, denna komunikation kommer att omfatta ACK-, larm-, och konfiguration meddelanden. Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska hen skriva in rätt lösenord. Därefter ska användaren kunna, för varje dörr, slå på eller av centrla larmet, ändra tröskelvärdet,låsa eller låsa upp dörren. Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren.
 
 
 
 \subsubsection{Dörrenhet}
 
-Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grönlapma, en rödlampa och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när ska larmet gå av. När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lampan lyser. Efter två tröskelvärden kommer dörrenheten att skicka till centralenheten för att påställa störenheten. Om dörren är stängd ska den gröna lampan lysa medan det lokala och centrla larmet ska vara avstängda. 
+Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grönlapma, en rödlampa och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet ska gå av. När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lampan lyser. Efter två tröskelvärden kommer dörrenheten att skicka till centralenheten för att påställa störenheten. Om dörren är stängd ska den gröna lampan lysa medan det lokala och centrla larmet ska vara avstängda. 
 
 \subsubsection{Sensorenhet}
 
-Sensorenheten kommer att vara kopplad till två sensorer; avståndsmätare och vibrationsensor (HC-SR04 respektive SW-18010P).Avståndsmätaren kommer läsa av avståndet till ett objekt genom att skicka ultraljudssignaler och vänta på att få tillbaka ett eko. Mättningen av avståndet kommer att ske genom att räkna skillanden i mikrosekunder mellan ultraljudssignaler och deras eko, därefter divideras tiden med 58 för att få avståndet i cm. Avståndet kommer att mättas kontinuerligt i intervaller av 60 millisekunder, om avståndet överstiger eller blir mindre än tröskelvärdet kommer det centrala larmet att gå av.\\
+Sensorenheten kommer att vara kopplad till två sensorer; avståndsmätare och vibrationsensor (HC-SR04 respektive SW-18010P).Avståndsmätaren kommer att läsa av avståndet till ett objekt genom att skicka ultraljudssignaler och vänta på att få tillbaka ett eko. Mättningen av avståndet kommer att ske genom att räkna skillanden i mikrosekunder mellan ultraljudssignaler och deras eko, därefter divideras tiden med 58 för att få avståndet i centimeter. Avståndet kommer att mättas kontinuerligt i intervaller av 60 millisekunder, om avståndet överstiger eller blir mindre än tröskelvärdet kommer det centrala larmet att gå av.\\
 \\
 Å andra handen kommer också vibrationsensor att känna av vibrationer, ifall den känner av någon vibration kommer den att den skicka till centralenheten för att slå på störenhetn.
 
