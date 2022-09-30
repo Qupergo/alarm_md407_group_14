@@ -88,7 +88,10 @@ Därefter ger Systemöversikten en övergripande förståelse för hur systemet 
 
 
 \subsection{Teknisk bakgrund}
-Vad är utgångspunkten för konstruktionsarbetet?
+%Vad är utgångspunkten för konstruktionsarbetet?
+MD407-mikrokontroller är den centrala komponenten i konstruktionsarbetet. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte, på datorn finns det pinnar för ström, jord och GPIO som kan kopplas till externa periferienher. Vibrationssensor (SW-18010P), avståndsmätare (HC-SR04) samt strömbrytare kan anslutas till mikrokontrollern via en av GPIO-portarna.\\
+
+Varje MD407-mikrokontroller har 5 GPIO-portar med 16 pinnar var, pinnarna kan individuellt konfigureras som utgångar eller ingångar. Eftersom larmsystemet består av flera mikrokontrollers måste kommunikation ske mellan dem vilket i detta system utförs via en CAN buss.
 
 \subsection{Systemöversikt}
 Hur ser det konstruerade systemet ut på en övergripande nivå?
