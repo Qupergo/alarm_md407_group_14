@@ -5,6 +5,14 @@
 \usepackage{biblatex}
 \addbibresource{sources.bib}
 \usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{pgfgantt}
+
+
+\usepackage{fancyvrb}
 
 \title{ProjektRapport 14}
 \author{Alamin Alreda \and Sebastian Danckwardt \and Isac Holm \and Zaid Haj Ibrahim   \and Edvin Svahn}
@@ -13,7 +21,9 @@
 \begin{document}
 
 \maketitle
-
+\newpage
+\tableofcontents
+\newpage
 \section*{Ordlista}
 Lista över beteckningar som används i denna rapport.
 \begin{description}
@@ -89,9 +99,16 @@ Därefter ger Systemöversikten en övergripande förståelse för hur systemet 
 
 \subsection{Teknisk bakgrund}
 %Vad är utgångspunkten för konstruktionsarbetet?
-MD407-mikrokontroller är den centrala komponenten i konstruktionsarbetet. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte, på datorn finns det pinnar för ström, jord och GPIO som kan kopplas till externa periferienher. Vibrationssensor (SW-18010P), avståndsmätare (HC-SR04) samt strömbrytare kan anslutas till mikrokontrollern via en av GPIO-portarna.\\
+MD407-mikrokontroller är den centrala komponenten i konstruktionsarbetet. 
+Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte, på datorn finns det pinnar för ström, jord och GPIO som kan kopplas till externa periferienher.
+Vibrationssensor (SW-18010P), avståndsmätare (HC-SR04) samt strömbrytare kan anslutas till mikrokontrollern via en av GPIO-portarna.\\
 
-Varje MD407-mikrokontroller har 5 GPIO-portar med 16 pinnar var, pinnarna kan individuellt konfigureras som utgångar eller ingångar. Eftersom larmsystemet består av flera mikrokontrollers måste kommunikation ske mellan dem vilket i detta system utförs via en CAN buss.
+man kan köpa en vibrationssensor för ca 7 kr och en avståndsmätare för ca 50 kr. Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. Kunde tyvärr inte hitta pris på md407 men ligger förmodligen i överkant på 150 kr per kort.
+
+med tre kort och lägsta möjlga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden vilket betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.
+
+Varje MD407-mikrokontroller har 5 GPIO-portar med 16 pinnar var, pinnarna kan individuellt konfigureras som utgångar eller ingångar.
+Eftersom larmsystemet består av flera mikrokontrollers måste kommunikation ske mellan dem vilket i detta system utförs via en CAN buss.
 
 \subsection{Systemöversikt}
 Hur ser det konstruerade systemet ut på en övergripande nivå?
