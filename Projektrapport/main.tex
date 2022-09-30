@@ -2,7 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[swedish]{babel}
 \usepackage{authblk}
-\usepackage{biblatex}
+\usepackage[sorting=none]{biblatex}
 \addbibresource{sources.bib}
 \usepackage{graphicx}
 \usepackage[T1]{fontenc}
@@ -14,9 +14,9 @@
 
 \usepackage{fancyvrb}
 
-\title{ProjektRapport 14}
+\title{Hemlarm på en budget}
 \author{Alamin Alreda \and Sebastian Danckwardt \and Isac Holm \and Zaid Haj Ibrahim   \and Edvin Svahn}
-\date{September 2022}
+\date{September/Oktober 2022}
 
 \begin{document}
 
@@ -30,7 +30,6 @@ Lista över beteckningar som används i denna rapport.
     \item[USART] Universal Synchronous/Asynchronous Reciever/Transmitter är kopplingen mellan kortet och terminalen
     \item[CAN] Controller Area Network är ett protokoll som tillåter korten att kommunicera med varandra utan hjälp av en dator. Detta görs med två bussar som sitter på korten
     \item[Buss] En buss är en kommunikationsport som kan användas för att utbyta information
-    \item[MD-kort]
     \item[GPIO] General Purpose Input Output är en anslutning på korten dit man kan koppla olika logiska enheter som antingen tar emot eller skickar data.
     
 \end{description}
@@ -49,12 +48,12 @@ Detta då endast 29\% av Sveriges befolkning idag använder ett larmsystem\cite{
 \subsection{Mål}
 \\
 Målet med projektet är att konstruera ett larm/lås-system med två olika larmenheter: 
-den ena ska kunna upptäcka i fall en dörr står öppen och den andra ska detektera rörelse och vibrationer. 
-En central styrenhet ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de fristående larmenheterna. 
-Detta ska möjliggöra centraliserad kontroll och kalibrering av flera periferienheter i ett större larmsystem. 
-Ytterligare en periferienhet ska simulera ett defekt larm i syfte för testning.
+den ena skall kunna upptäcka i fall en dörr står öppen och den andra skall detektera rörelse och vibrationer. 
+En central styrenhet skall utgöra den del av larmsystemet som har i uppgift att kommunicera med de fristående larmenheterna. 
+Detta skall möjliggöra centraliserad kontroll och kalibrering av flera periferienheter i ett större larmsystem. 
+Ytterligare en periferienhet skall simulera ett defekt larm i syfte för testning.
 \\\\
-När den centrala styrenheten startar ska en förfrågan skickas till de anslutna periferienheterna därpå de svarar med dess typ och konfiguration för att sedan tilldelas ett unikt ID. De olika larmenheterna ska inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid medans avaståndsmätare måste upptäcka ifall något passerar framför den på ett visst avstånd. Det ska även vara möjligt att låsa/låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en keypad.
+När den centrala styrenheten startar skall en förfrågan skickas till de anslutna periferienheterna därpå de svarar med dess typ och konfiguration för att sedan tilldelas ett unikt ID. De olika larmenheterna skall inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid medans avaståndsmätare måste upptäcka ifall något passerar framför den på ett visst avstånd. Det skall även vara möjligt att låsa/låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en keypad.
 
 
 \subsection{Arbetsmetod}
@@ -106,7 +105,7 @@ Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50
 Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
 Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.\\
 
-Med tre kort och lägsta möjlga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
+Med tre kort och lägsta möjliga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
 Det betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.\\
 
 Varje MD407-mikrokontroller har 5 GPIO-portar med 16 pinnar var, pinnarna kan individuellt konfigureras som utgångar eller ingångar.
@@ -127,11 +126,11 @@ Utöver dessa enheterna innehåller systemet övriga delenheter som bidrar till 
 Ett md407-kort används som en ARM-processor för att koppla ihop olika instrument beroende på deras funktion och uppgifter (figure 1).
 Kommunikation mellan samtliga md-kort sker via CAN-buss, medan kommunikation mellan centralenheten och pc sker över USART. \\
 
-Periferienhet 1 ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare. 
+Periferienhet 1 skall vara ansluten till en kopplingsplatta, på plattan skall det finnas lampor och en dörr-strömbrytare. 
 Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. 
 Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. \\
 
-Periferienhet 2 ska vara kopplad till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). 
+Periferienhet 2 skall vara kopplad till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). 
 Avståndmätaren kommer att skicka en signal om avståndet har ändrats. 
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer. \\
 
@@ -144,18 +143,18 @@ På samma sätt kommer vibrationssensorn skicka en signal om den har känt av n�
 Här beskrivs de olika delsystemen.
 \subsubsection{Centralenhet}
 Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN-buss, denna kommunikation kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. 
-Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska hen skriva in rätt lösenord. 
-Därefter ska användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
-Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren.
+Dessutom skall centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren skall få tillgång till systemet skall hen skriva in rätt lösenord. 
+Därefter skall användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
+Utöver det skall användaren också kunna ändra tröskelvärdet för avståndsmätaren.
 
 
 
 \subsubsection{Dörrenhet}
 
-Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grön lapma, en röd lampa och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
+Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grön lapma, en röd lampa och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet skall gå av. 
 När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lampan lyser. 
 Efter två tröskelvärden kommer dörrenheten att skicka till centralenheten för att påställa störenheten. 
-Om dörren är stängd ska den gröna lampan lysa medan det lokala och centrala larmet ska vara avstängda. 
+Om dörren är stängd skall den gröna lampan lysa medan det lokala och centrala larmet skall vara avstängda. 
 
 \subsubsection{Sensorenhet}
 
@@ -169,9 +168,9 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
 
 
 \section{Resultat}
-Detta avsnitt redovisar resultatet av genomförd verifiering av systemet
-\subsection{Mätning av avstånd}
+Detta avsnitt redovisar resultatet av genomförd verifiering av systemet och dess olika delar
 
+\subsection{Mätning av avstånd}
 Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet är det som räknas. Testet genfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. Resultatet visade att att avstånddsmätaren kunde räkna precisa värden i centimeter. Ett ytterligare test genomfördes för att kontrollera att sensorenheten kommer att skicka ett larm när avståndet har understiget eller blivit större än tröskelvärdet. Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avtåndet avviker från tröskelvärdet. 
 
 \subsection{Mätning av vibrationer}
@@ -179,15 +178,19 @@ Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration h
 
 
 \subsection{Dörrlarm}
-Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalet när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. Under testningen av enheten har den uppfyllt de målen som krävdes.
+Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. Under testningen av enheten har den uppfyllt de målen som krävdes.
 
 
 \section{Slutsatser}
-SKriv något som binder tillbaka syfte och mål, typ hur vi kan se hur det skulle kunna funka att göra sitt egna larm istället för att spendera dyra pengar på ett larm från företag.
+Med resultaten kan man konstatera att det går att skapa ett eget larm om man har möjlighet att införskaffa komponenterna.\\
 
-fördelar: du bestämmer vilka features som du vill ha på larmet
+Tyvärr så kan mycket problem uppstå ifall man väljer att skapa systemet själv.
+För det första så måste man räkna med att få spendera mer tid för att programmera de olika delsystemen samt för att koppla ihop allting, för att inte tala om att bygga ett protokoll från grunden.
+I fallet med kortet MD407 kan det bli begränsande vilka utvecklingsmiljöer som fungerar att använda felfritt då det inte finns så mycket dokumentation på just det kortet jämfört med kanske lite vanligare kort såsom en Arduino eller ett Raspberry Pi.\\
 
-nackdelar: kan strula med utvecklingsmiljö och du måste lägga mycket tid för att få det att fungera ifall man gör det själv
+Fördelarna väger fortfarande tungt då det både är billigare att köpa in de diverse komponenterna och koppla själv än att köpa en prenumeration där installation ingår, 
+samt ger en större valmöjlighet när det kommer till egenskaper. 
+Man kan till exempel använda sig motor som man kopplar en avståndsmätare på för att kunna få den att snurra runt sin axel och på så sätt kunna få en "kamera" som kan se runt sig och få en bild av omgivningen i form av avstånd.
 
 \newpage
 \section{Källförteckning}
