@@ -40,7 +40,6 @@ Lista över beteckningar som används i denna rapport.
 Det här kapitlet svarar på frågor som varför projektet genomförs,
 vad som förväntas uppnås av projektet samt hur gruppen arbetar för att uppnå ett resultat.
 \subsection{Syfte}
-Varför?
 \\
 Bara under 2021 har 72 884 fall av inbrottsstöld anmälts\cite{BRa}. 
 Cirka 20\% svarar att de inte har ett hemlarm för att det helt enkelt är för dyrt\cite{MoFor}.
@@ -48,7 +47,6 @@ Genom att skapa ett system med ett billigt md407-kort kan man sänka kostnaderna
 Projektet syftar till att skapa ett lättanvändligt och billigt larmsystem för att skydda mot stöld. 
 Detta då endast 29\% av Sveriges befolkning idag använder ett larmsystem\cite{SSF}.
 \subsection{Mål}
-Vad?
 \\
 Målet med projektet är att konstruera ett larm/lås-system med två olika larmenheter: 
 den ena ska kunna upptäcka i fall en dörr står öppen och den andra ska detektera rörelse och vibrationer. 
@@ -97,34 +95,37 @@ I den tekniska bakgrunden beskrivs varför systemet är uppbyggt av de delar som
 Därefter ger Systemöversikten en övergripande förståelse för hur systemet är uppbyggt och sist men inte minst förklarar Delsystem hur delarna är uppbyggda.
 
 
-\subsection{Teknisk bakgrund}
+\subsection{Teknisk bakgrund}\\
 %Vad är utgångspunkten för konstruktionsarbetet?
+
 MD407-mikrokontroller är den centrala komponenten i konstruktionsarbetet. 
 Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte, på datorn finns det pinnar för ström, jord och GPIO som kan kopplas till externa periferienher.
 Vibrationssensor (SW-18010P), avståndsmätare (HC-SR04) samt strömbrytare kan anslutas till mikrokontrollern via en av GPIO-portarna.\\
 
-man kan köpa en vibrationssensor för ca 7 kr och en avståndsmätare för ca 50 kr. Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. Kunde tyvärr inte hitta pris på md407 men ligger förmodligen i överkant på 150 kr per kort.
+Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
+Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
+Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.\\
 
-med tre kort och lägsta möjlga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden vilket betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.
+Med tre kort och lägsta möjlga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
+Det betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.\\
 
 Varje MD407-mikrokontroller har 5 GPIO-portar med 16 pinnar var, pinnarna kan individuellt konfigureras som utgångar eller ingångar.
 Eftersom larmsystemet består av flera mikrokontrollers måste kommunikation ske mellan dem vilket i detta system utförs via en CAN buss.
 
 \subsection{Systemöversikt}
-Hur ser det konstruerade systemet ut på en övergripande nivå?
 
 %\newpage 
-
-\includegraphics[scale=0.8]{Projektrapport/diagram.png}
-\caption {Blockschema av larmsystemet}
-\label{fig:drawing}
-
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.8]{Projektrapport/diagram.png}
+    \caption {Blockschema av larmsystemet}
+    \label{fig:drawing}
+\end{figure}
 
 Systemet består i stort av tre delar - en centralenhet och två periferienheter. 
 Utöver dessa enheterna innehåller systemet övriga delenheter som bidrar till funktionalitet av systemet i sin helhet. 
 Ett md407-kort används som en ARM-processor för att koppla ihop olika instrument beroende på deras funktion och uppgifter (figure 1).
 Kommunikation mellan samtliga md-kort sker via CAN-buss, medan kommunikation mellan centralenheten och pc sker över USART. \\
-
 
 Periferienhet 1 ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare. 
 Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. 
@@ -134,11 +135,13 @@ Periferienhet 2 ska vara kopplad till en avståndsmätare (HC-SR04) och en vibra
 Avståndmätaren kommer att skicka en signal om avståndet har ändrats. 
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer. \\
 
-
-\includegraphics[scale=0.5]{Projektrapport/protokoll.png}
-
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
+\end{figure}
 \subsection{Delsystem}
-Hur ser det delar som ingår i systemet ut?
+%gör beskrivning
+Här beskrivs de olika delsystemen.
 \subsubsection{Centralenhet}
 Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN-buss, denna kommunikation kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. 
 Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska hen skriva in rätt lösenord. 
@@ -166,10 +169,7 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
 
 
 \section{Resultat}
-Detta avsnitt redovisar resultatet av genomförd verifiering av systemet; dels för delarna, dels för komplett system. 
-Detta avsnitt redovisar även resultatet av det slutliga fysiska testet när hela systemet körs i skarpt läge. 
-Ni ska främst redovisa resultat i form av funktionalitet, men ta också upp prestanda aspekter om dessa är viktiga.
-
+Detta avsnitt redovisar resultatet av genomförd verifiering av systemet
 \subsection{Mätning av avstånd}
 
 Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet är det som räknas. Testet genfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. Resultatet visade att att avstånddsmätaren kunde räkna precisa värden i centimeter. Ett ytterligare test genomfördes för att kontrollera att sensorenheten kommer att skicka ett larm när avståndet har understiget eller blivit större än tröskelvärdet. Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avtåndet avviker från tröskelvärdet. 
