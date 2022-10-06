@@ -82,7 +82,7 @@ Hur ser det konstruerade systemet ut på en övergripande nivå?
 \includegraphics[scale=0.6]{Projektrapport/diagram.png}
 \caption {Blockschema av larmsystemet}
 \label{fig:drawing}
-
+\\
 
 Systemet består i stort av tre delar - en centralenhet och två periferienheter. Utöver dessa enheterna innehåller systemet övriga delenheter som bidrar till funktionalitet av systemet i sin helhet. Ett md407-kort används som en ARM-processor för att koppla ihop olika instrument beroende på deras funktion och uppgifter (figure 1). Kommunikation mellan samtliga md-kort sker via CAN-buss, medan kommuniaktion mellan centralenheten och pc sker över USART. \\
 
@@ -90,6 +90,7 @@ Systemet består i stort av tre delar - en centralenhet och två periferienheter
 Periferienhet 1 ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare. Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. \\
 
 Periferienhet 2 ska vara kopplad till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). Avståndmätaren kommer att skicka en signal om avståndet har ändrats. På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer. \\
+
 
 
 \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
