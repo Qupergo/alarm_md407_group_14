@@ -1,15 +1,13 @@
-#include <stdbool.h>
-
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
-
+#include "stm32f4xx_can.h"
 #include "can.h"
-#include "usart.h"
 
+unsigned short self_id;
+unsigned char waiting_for_alive_response = 0;
 
-
-// configures selected CAN interface for incoming messages
+// Configures selected CAN interface for incoming messages
 void can_init(CAN_TypeDef * CANx){
     // enable clocks
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE); 
@@ -73,57 +71,153 @@ void can_init(CAN_TypeDef * CANx){
     can_filter_init.CAN_FilterActivation = ENABLE;
     CAN_FilterInit(&can_filter_init);
 }
+// Gets a pending message from a specified can peripheral.
+// The message is then decoded and acks are sent as required.
+// Returns true if a message was read, false otherwise.
+int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, rx_can_msg* rx_msg) {
+    if (CAN_MessagePending(CANx, CAN_FIFO0) < 1) { return 0; }
+    CanRxMsg* can_msg;
+    CAN_Receive(CANx, CAN_FIFO0, can_msg);
+    // Decode the sender_id, reciever_id and the type of message from the StdId field
+    unsigned char message_type = can_msg->StdId & 0b01111000000;
+    unsigned char sender_id = can_msg->StdId & 0b00000111000;
+    unsigned char reciever_id = can_msg->StdId & 0b00000000111;
+    // Get the last two chars in the data which correspond to the sequence number
+    unsigned short sequence_n = can_msg->Data[6] << 8;
+    sequence_n |= can_msg->Data[7];
 
-void can_send_message(CAN_TypeDef * CANx, CanTxMsg* outgoing){
-    // transmit the message
-    char mailbox = CAN_Transmit(CANx, outgoing);
+    // Invalid message type was sent
+    if (message_type > NUM_MESSAGE_TYPES) { return 0; }
 
-    // check if the transmission buffer is full
-    if (mailbox == CAN_TxStatus_NoMailBox) {
-        print("CAN TxBuf full!");
+    rx_msg->message_type = message_type;
+    rx_msg->sender_id = sender_id;
+    int content_length = sizeof(rx_msg->content);
+    for (int i = 0; i < content_length; i++) {
+        rx_msg->content[i] = can_msg->Data[i];
+    }
+
+    if (reciever_id != self_id) { return 0; }
+
+    else if (message_type == ACK_TYPE_ID) {
+        for (int i = 0; i < MAX_RT_FRAMES; i++) {
+            if (_rt_info->rt_frames[i].sequence_n == sequence_n) {
+                _rt_info->rt_frames[i].is_used = 0;
+            }
+        }
+    }
+    // Send an ack if the message is not a lifesign
+    // Lifesigns should not be acked
+    else if (!(message_type == LIFESIGN_TYPE_ID)) {
+        tx_can_msg ack;
+
+        ack.message_type = ACK_TYPE_ID;
+        ack.priority = 1;
+        ack.reciever_id = sender_id;
+
+        if (_rt_info->recieve_sequence_num[sender_id] + 1 == sequence_n) {
+            // The message has the correct sequence number, update seq number and 
+            // send back an ack
+            _rt_info->recieve_sequence_num[sender_id] = sequence_n;
+            can_send_message(_rt_info, _ls_info, CANx, ack);
+            return 1;
+        }
+        else if (_rt_info->recieve_sequence_num + 1 > sequence_n) {
+            // The message is a duplicate, ack might have been lost, send a new ack
+            can_send_message(_rt_info, _ls_info, CANx, ack);
+        }
+        return 0;        
     }
 }
+// Send a message over CAN and save the message in the retransmission buffer
+void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
+    unsigned short sequence_n = _rt_info->transmit_sequence_num[tx_msg.reciever_id];
+    int length = sizeof(tx_msg.content) + sizeof(sequence_n);
 
-bool can_receive_message(CAN_TypeDef * CANx, CanRxMsg* message){
-    // check if there are pending messages in the queue
-    if(CAN_MessagePending(CANx, CAN_FIFO0) < 1){
-        return false;
-    }
-    // retrieve the message and copy it to message struct argument
-    CAN_Receive(CANx, CAN_FIFO0, message);
-    return true;
-}
-
-
-void can_send_data(CAN_TypeDef * CANx, char *data, char length){
+    // The StdId field contains the following information in its 11 bits of storage
+    // Bit 10: Priority
+    // Bit 9-6: Type of message
+    // Bit 5-3: Sender ID
+    // Bit 2-0: Reciever ID
     CanTxMsg outgoing = {
-        .StdId = 0,
-        .DLC = length, // specify the length
+        .StdId = (tx_msg.priority << 10) + (tx_msg.message_type << 6) + (self_id << 3) + tx_msg.reciever_id,
+        .DLC = length,
         .RTR = CAN_RTR_Data,
         .IDE = CAN_Id_Extended
     };
 
-    // fill the data field
-    for(int i = 0; i < length; i++){
-        outgoing.Data[i] = data[i];
-    }
-
-    // send the message over the selected CAN peripheral
-    can_send_message(CANx, &outgoing);
-}
-
-void can_print_data(CanRxMsg* msg){
-    // get the id and the length of the message
-    uint32_t id = msg->StdId;
-    char length = msg->DLC;
-
-    // print the message data
-    char msg_data[9];
-    for(int i = 0; i < length; i++){
-        msg_data[i] = msg->Data[i];
+    // The first 6 bytes of data should be the content
+    int content_length = sizeof(tx_msg.content);
+    for (int i = 0; i < content_length; i++) {
+        outgoing.Data[i] = tx_msg.content[i];
     }
     
-    // terminate the string
-    msg_data[length] = '\0';
-    print(msg_data);
+    // The next 2 should be the sequence number
+    // Which should be the latest sequence number saved in the context
+    outgoing.Data[content_length] = sequence_n & 0xff;
+    outgoing.Data[content_length + 1] = (sequence_n >> 8) & 0xff;
+
+    // send the message over the selected CAN peripheral
+    char mailbox = CAN_Transmit(CANx, &outgoing);
+
+    // check if the transmission buffer was full
+    if (mailbox == CAN_TxStatus_NoMailBox) {
+        print("CAN TxBuf full!");
+    }
+
+    _rt_info->transmit_sequence_num[tx_msg.reciever_id]++;
+
+    // Save the transmitted message in the retransmission buffer
+    // If the buffer is full then the message is not saved
+    for (int i = 0; i < MAX_RT_FRAMES; i++) {
+        if (!_rt_info->rt_frames[i].is_used) {
+            _rt_info->rt_frames[i].is_used = 1;
+            _rt_info->rt_frames[i].CANx = CANx;
+            _rt_info->rt_frames[i].msg = outgoing;
+            _rt_info->rt_frames[i].send_timestamp = timer_ms;
+            _rt_info->rt_frames[i].sequence_n = sequence_n;
+        }
+    }
+}
+
+// Checks if timeouts have been reached for retransmissions and lifesigns and take action accordingly.
+// Should run in the main loop of each startup.c script.
+void can_update(rt_info* _rt_info, ls_info* _ls_info) {
+    // Check if ack timeout has been reached for any of the messages sent
+    for (int i = 0; i < MAX_RT_FRAMES; i++) {
+        if (_rt_info->rt_frames[i].is_used) {
+            if (_rt_info->rt_frames[i].send_timestamp <= (timer_ms - ACK_TIMEOUT_MS)) {
+                // Ack has not been recieved
+                // Retransmit the message
+                char mailbox = CAN_Transmit(_rt_info->rt_frames[i].CANx, &_rt_info->rt_frames[i].msg);
+                // check if the transmission buffer was full
+                if (mailbox == CAN_TxStatus_NoMailBox) {
+                    print("CAN TxBuf full!");
+                }
+            }
+        }
+    }
+
+    // If the current unit is not the central unit, send out lifesigns according to the LIEFSIGN_FREQUENCY_MS
+    if (!IS_CENTRAL_UNIT) {
+        if (_ls_info->latest_self_lifesign_timestamp <= (timer_ms - LIFESIGN_FREQUENCY_MS)) {
+            _ls_info->latest_self_lifesign_timestamp = timer_ms;
+            tx_can_msg lifesign;
+            lifesign.priority = 1;
+            lifesign.message_type = LIFESIGN_TYPE_ID;
+            lifesign.reciever_id = 0;
+            can_send_message(_rt_info, _ls_info, CAN1, lifesign);
+        }
+    }
+    else {
+        // Check if any of the units have not sent a lifesign after double the time they were given
+        for(int i = 0; i < MAX_UNITS; i++) {
+            if (_ls_info->is_connected[i]) {
+                if (_ls_info->recieved_lifesigns[i] <= (timer_ms - LIFESIGN_FREQUENCY_MS * 2)) {
+                    // A connected device is no longer sending a lifesign
+                    // It might have been disconnected, to prevent unauthorized access
+                    // Start the alarm
+                }
+            }
+        }
+    }
 }
