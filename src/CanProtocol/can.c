@@ -77,6 +77,7 @@ void can_init(CAN_TypeDef * CANx){
 int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, rx_can_msg* rx_msg) {
     if (CAN_MessagePending(CANx, CAN_FIFO0) < 1) { return 0; }
     CanRxMsg* can_msg;
+    
     CAN_Receive(CANx, CAN_FIFO0, can_msg);
     // Decode the sender_id, reciever_id and the type of message from the StdId field
     unsigned char message_type = can_msg->StdId & 0b01111000000;

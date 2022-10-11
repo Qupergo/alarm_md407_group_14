@@ -51,7 +51,7 @@ void main(void)
 
     while (1) {
         can_update(&_rt_info, &_ls_info);
-        if (can_receive_message(&_rt_info, &_ls_info, &rx_msg)) {
+        if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
                 // For central unit
                 case NEW_ALIVE_TYPE_ID:
