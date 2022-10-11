@@ -76,16 +76,16 @@ void can_init(CAN_TypeDef * CANx){
 // Returns true if a message was read, false otherwise.
 int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, rx_can_msg* rx_msg) {
     if (CAN_MessagePending(CANx, CAN_FIFO0) < 1) { return 0; }
-    CanRxMsg* can_msg;
-    
-    CAN_Receive(CANx, CAN_FIFO0, can_msg);
+    CanRxMsg can_msg;
+
+    CAN_Receive(CANx, CAN_FIFO0, &can_msg);
     // Decode the sender_id, reciever_id and the type of message from the StdId field
-    unsigned char message_type = can_msg->StdId & 0b01111000000;
-    unsigned char sender_id = can_msg->StdId & 0b00000111000;
-    unsigned char reciever_id = can_msg->StdId & 0b00000000111;
+    unsigned char message_type = can_msg.StdId & 0b01111000000;
+    unsigned char sender_id = can_msg.StdId & 0b00000111000;
+    unsigned char reciever_id = can_msg.StdId & 0b00000000111;
     // Get the last two chars in the data which correspond to the sequence number
-    unsigned short sequence_n = can_msg->Data[6] << 8;
-    sequence_n |= can_msg->Data[7];
+    unsigned short sequence_n = can_msg.Data[6] << 8;
+    sequence_n |= can_msg.Data[7];
 
     // Invalid message type was sent
     if (message_type > NUM_MESSAGE_TYPES) { return 0; }
@@ -94,7 +94,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     rx_msg->sender_id = sender_id;
     int content_length = sizeof(rx_msg->content);
     for (int i = 0; i < content_length; i++) {
-        rx_msg->content[i] = can_msg->Data[i];
+        rx_msg->content[i] = can_msg.Data[i];
     }
 
     if (reciever_id != self_id) { return 0; }
@@ -122,7 +122,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
             can_send_message(_rt_info, _ls_info, CANx, ack);
             return 1;
         }
-        else if (_rt_info->recieve_sequence_num + 1 > sequence_n) {
+        else if ((_rt_info->recieve_sequence_num[sender_id] + 1) > sequence_n) {
             // The message is a duplicate, ack might have been lost, send a new ack
             can_send_message(_rt_info, _ls_info, CANx, ack);
         }
@@ -167,15 +167,19 @@ void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, t
 
     _rt_info->transmit_sequence_num[tx_msg.reciever_id]++;
 
-    // Save the transmitted message in the retransmission buffer
-    // If the buffer is full then the message is not saved
-    for (int i = 0; i < MAX_RT_FRAMES; i++) {
-        if (!_rt_info->rt_frames[i].is_used) {
-            _rt_info->rt_frames[i].is_used = 1;
-            _rt_info->rt_frames[i].CANx = CANx;
-            _rt_info->rt_frames[i].msg = outgoing;
-            _rt_info->rt_frames[i].send_timestamp = timer_ms;
-            _rt_info->rt_frames[i].sequence_n = sequence_n;
+    // Don't ack lifesigns as they are sent repeteadly, also don't ack other acks because it creates a infinite loop.   
+    if (tx_msg.message_type != ACK_TYPE_ID && tx_msg.message_type != LIFESIGN_TYPE_ID) {
+
+        // Save the transmitted message in the retransmission buffer
+        // If the buffer is full then the message is not saved
+        for (int i = 0; i < MAX_RT_FRAMES; i++) {
+            if (!_rt_info->rt_frames[i].is_used) {
+                _rt_info->rt_frames[i].is_used = 1;
+                _rt_info->rt_frames[i].CANx = CANx;
+                _rt_info->rt_frames[i].msg = outgoing;
+                _rt_info->rt_frames[i].send_timestamp = timer_ms;
+                _rt_info->rt_frames[i].sequence_n = sequence_n;
+            }
         }
     }
 }

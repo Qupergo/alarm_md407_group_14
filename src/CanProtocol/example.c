@@ -15,6 +15,7 @@ unsigned char self_id;
 void main(void)
 {
     // For all units
+    can_init(CAN1);
     rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;
