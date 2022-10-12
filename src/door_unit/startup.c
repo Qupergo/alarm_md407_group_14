@@ -9,7 +9,11 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 
 #include "door.h"
 #include "timer.h"
+#include "can.h"
 
+unsigned char SELF_TYPE = DOOR_UNIT_TYPE_ID;
+unsigned char num_sub_units = NUMBER_DOORS;
+unsigned char self_id;
 
 u_door doors[NUMBER_DOORS];
 
@@ -96,10 +100,49 @@ void door_update( void ) {
 void main(void) {
 	init_GPIO();
 	init_doors();
-	timer_init();
+    timer_init();
+    can_init(CAN1);
+    rx_can_msg rx_msg;
+    rt_info _rt_info;
+    ls_info _ls_info;
+
+    for (int i = 0; i < MAX_UNITS; i++) {
+        _rt_info.transmit_sequence_num[i] = 1;
+        _rt_info.recieve_sequence_num[i] = 0;
+        _ls_info.is_connected[i] = 0;
+        _ls_info.latest_self_lifesign_timestamp = 0;
+        _ls_info.recieved_lifesigns[i] = 0;
+    }
+    for (int i = 0; i < MAX_RT_FRAMES; i++) {
+        _rt_info.rt_frames[i].is_used = 0;
+    }
+
+	// Send initial alive message to central unit
+    tx_can_msg initial_alive;
+    initial_alive.priority = 1;
+    initial_alive.message_type = NEW_ALIVE_TYPE_ID;
+    initial_alive.content[0] = SELF_TYPE;
+    initial_alive.content[1] = num_sub_units;
+    initial_alive.reciever_id = 0;
+    can_send_message(&_rt_info, &_ls_info, CAN1, initial_alive);
+    unsigned char waiting_for_alive_response = 1;
 
 	while (1) {
 		door_update();
+		can_update()
+		if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
+            switch (rx_msg.message_type) {
+                case NEW_ALIVE_RESPONSE_TYPE_ID:
+                    if (waiting_for_alive_response) {
+                        if (rx_msg.content[0] == SELF_TYPE) {
+                            waiting_for_alive_response = 0;
+                            self_id = rx_msg.content[1];
+                            _rt_info.recieve_sequence_num[rx_msg.sender_id] = 0;
+                            _rt_info.transmit_sequence_num[rx_msg.sender_id] = 1;
+                        }
+                    }
+			}
+		}
 	}
 }
 
