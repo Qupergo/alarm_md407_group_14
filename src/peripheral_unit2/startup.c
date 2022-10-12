@@ -14,13 +14,13 @@ void startup(void) {
     __asm__ volatile(".L1: B .L1\n"); /* never return */
 }
 
-VibrationSensor vibrationSensor = {
+u_vibration_sensor vibrationSensor = {
     0,
     GPIOD,
     GPIO_Pin_4
 };
 
-UltraSonicSensor ultraSonicSensor = {
+u_ultrasonic_sensor ultraSonicSensor = {
     1,
     GPIOD,
     GPIO_Pin_0,
@@ -33,14 +33,14 @@ void Init_GPIO(void) {
     // Configration of GPIO pins and ports 
     GPIO_InitTypeDef GPIOInit;
     GPIO_StructInit(&GPIOInit);
-    GPIOInit.GPIO_Pin = ultraSonicSensor.Trig_Pin;
+    GPIOInit.GPIO_Pin = ultraSonicSensor.trig_pin;
     GPIOInit.GPIO_PuPd = GPIO_PuPd_DOWN;
     GPIOInit.GPIO_OType = GPIO_OType_PP;
     GPIOInit.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_Init(ultraSonicSensor.GPIOUnit, &GPIOInit);
+    GPIO_Init(ultraSonicSensor.GPIO_unit, &GPIOInit);
 
     GPIO_StructInit(&GPIOInit);
-    GPIOInit.GPIO_Pin = ultraSonicSensor.Echo_Pin | vibrationSensor.Vibration_Pin;
+    GPIOInit.GPIO_Pin = ultraSonicSensor.echo_pin | vibrationSensor.vibration_pin;
     GPIOInit.GPIO_PuPd = GPIO_PuPd_DOWN;
     GPIOInit.GPIO_OType = GPIO_OType_PP;
     GPIOInit.GPIO_Mode = GPIO_Mode_IN;
@@ -61,7 +61,7 @@ void TIM_Configration(void) {
 }
 
 void vibration_irq_handler(void) {
-    if (!GPIO_ReadInputDataBit(vibrationSensor.GPIOUnit, vibrationSensor.Vibration_Pin)) {
+    if (!GPIO_ReadInputDataBit(vibrationSensor.GPIO_unit, vibrationSensor.vibration_pin)) {
         print("vib");
     }
 
@@ -70,9 +70,9 @@ void vibration_irq_handler(void) {
 
 void UltraSonic_irq_handler(void) {
     print("\n");
-    print(itoa(ultraSonicSensor.Distance, a, 10));
+    print(itoa(ultraSonicSensor.distance, a, 10));
 
-    if (ultraSonicSensor.Distance < ultraSonicSensor.Threshold) {
+    if (ultraSonicSensor.distance < ultraSonicSensor.threshold) {
         //print("alarm");
         //print("\n");
     }
@@ -133,11 +133,11 @@ void check_distance(void) {
 
     // wait for echo 
 
-    while (!(GPIO_ReadInputDataBit(ultraSonicSensor.GPIOUnit, ultraSonicSensor.Echo_Pin))) {
+    while (!(GPIO_ReadInputDataBit(ultraSonicSensor.GPIO_unit, ultraSonicSensor.echo_pin))) {
         echo_start = TIM_GetCounter(TIM2);
     }
 
-    while (GPIO_ReadInputDataBit(ultraSonicSensor.GPIOUnit, ultraSonicSensor.Echo_Pin)) {
+    while (GPIO_ReadInputDataBit(ultraSonicSensor.GPIO_unit, ultraSonicSensor.echo_pin)) {
         echo_end = TIM_GetCounter(TIM2);
 
     }
@@ -148,7 +148,7 @@ void check_distance(void) {
     } else {
         echo_time = (echo_end - echo_start) / 84;
     }
-    ultraSonicSensor.Distance = echo_time / 58;
+    ultraSonicSensor.distance = echo_time / 58;
 }
 
 void main(void) {
@@ -158,7 +158,7 @@ void main(void) {
     Init_GPIO();
     TIM_Configration();
     EXTIInit();
-    GPIO_ResetBits(ultraSonicSensor.GPIOUnit, ultraSonicSensor.Trig_Pin); //Reset trig pin
+    GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin); //Reset trig pin
 
     while (1) {
 

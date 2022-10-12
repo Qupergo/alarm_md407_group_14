@@ -9,17 +9,17 @@ void timer_default_irq( void ){
     TIM_ClearITPendingBit(TIM2, TIM2_IRQn);
 }
 
-void timer_init( int ms ){
+void timer_init( void ){
     //default timer irq
     *((int *) 0x2001C0B0) = timer_default_irq;
-    
+
     //Prescaler 42000 - 1 = 0.5 ms
     //Counter mode up
     //ms between every interrupt
     TIM_TimeBaseInitTypeDef TIM_initStructure = {
         42000 - 1,
         TIM_CounterMode_Up,
-        2 * ms,
+        0xffffffff,
         TIM_CKD_DIV1
     };
     TIM_TimeBaseInit(TIM2, &TIM_initStructure);

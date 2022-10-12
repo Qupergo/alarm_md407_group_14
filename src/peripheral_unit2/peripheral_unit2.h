@@ -1,5 +1,3 @@
-
-
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
@@ -11,20 +9,19 @@
 
 
 typedef struct {
-	int ID;
-	GPIO_TypeDef* GPIOUnit;
-	uint16_t Vibration_Pin;
-	
-}VibrationSensor;
+	int id;
+	GPIO_TypeDef* GPIO_unit;
+	uint16_t vibration_pin;
+} u_vibration_sensor;
 
 typedef struct {
-	int ID;
-	GPIO_TypeDef* GPIOUnit;
-	uint16_t Trig_Pin;
-	uint16_t Echo_Pin;
-	int Distance;
-	int Threshold;
-}UltraSonicSensor;
+	int id;
+	GPIO_TypeDef* GPIO_unit;
+	uint16_t trig_pin;
+	uint16_t echo_pin;
+	int distance;
+	int threshold;
+} u_ultrasonic_sensor;
 
 unsigned int echo_start, echo_end, echo_time;
 char a[30];
