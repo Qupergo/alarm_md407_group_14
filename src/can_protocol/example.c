@@ -7,6 +7,7 @@ The code in this file should be used in other place. This file should not be run
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_can.h"
 #include "can.h"
+#include "timer.h"
 
 unsigned char SELF_TYPE = CENTRAL_UNIT_TYPE_ID;
 unsigned char num_sub_units = 2;
@@ -15,6 +16,7 @@ unsigned char self_id;
 void main(void)
 {
     // For all units
+    timer_init();
     can_init(CAN1);
     rx_can_msg rx_msg;
     rt_info _rt_info;
