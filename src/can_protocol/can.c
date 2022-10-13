@@ -73,16 +73,18 @@ void can_init(CAN_TypeDef * CANx){
 }
 // Gets a pending message from a specified can peripheral.
 // The message is then decoded and acks are sent as required.
-// Returns true if a message was read, false otherwise.
+// Returns 1 if a message was read, 0 otherwise.
 int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, rx_can_msg* rx_msg) {
     if (CAN_MessagePending(CANx, CAN_FIFO0) < 1) { return 0; }
     CanRxMsg can_msg;
 
     CAN_Receive(CANx, CAN_FIFO0, &can_msg);
+
     // Decode the sender_id, reciever_id and the type of message from the StdId field
     unsigned char message_type = can_msg.StdId & 0b01111000000;
     unsigned char sender_id = can_msg.StdId & 0b00000111000;
     unsigned char reciever_id = can_msg.StdId & 0b00000000111;
+
     // Get the last two chars in the data which correspond to the sequence number
     unsigned short sequence_n = can_msg.Data[6] << 8;
     sequence_n |= can_msg.Data[7];
@@ -90,6 +92,32 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // Invalid message type was sent
     if (message_type > NUM_MESSAGE_TYPES) { return 0; }
 
+    // If a unit recieved a message that is supposed to be from itself
+    // Then a replay attack may be happening, start the alarm
+    if (sender_id == reciever_id) {
+        // Trigger alarm
+    }
+
+    // If the central unit recieves a message from a unit
+    // That has not sent its first alive message
+    // Then it could be a hostile unit, just ignore the message
+    if (IS_CENTRAL_UNIT) {
+        if (!u_info[sender_id].is_used) {
+            return 0
+        }
+    }
+
+    // If a non central unit recieves a message from anything other than the central unit, just throw it away
+    // They cant confirm if a unit is hostile or not because they dont have unit info
+    // So they should only accept messages from the central unit
+    // If a unit tries to impersonate the central unit, an alarm will be started
+    if (!IS_CENTRAL_UNIT) {
+        if (sender_id != 0) {
+            return 0
+        }
+    }
+
+    // Save all data into our own recieve message struct
     rx_msg->message_type = message_type;
     rx_msg->sender_id = sender_id;
     int content_length = sizeof(rx_msg->content);
@@ -97,8 +125,12 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
         rx_msg->content[i] = can_msg.Data[i];
     }
 
+    // Message is not meant for this unit
     if (reciever_id != self_id) { return 0; }
 
+    // If we recieve an ack for a message
+    // Then we know that the retransmit frame will no longer be needed
+    // Set is used for that frame to 0
     else if (message_type == ACK_TYPE_ID) {
         for (int i = 0; i < MAX_RT_FRAMES; i++) {
             if (_rt_info->rt_frames[i].sequence_n == sequence_n) {
@@ -106,8 +138,8 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
             }
         }
     }
-    // Send an ack if the message is not a lifesign
-    // Lifesigns should not be acked
+
+    // Lifesigns and acks should not be acked
     else if (!(message_type == LIFESIGN_TYPE_ID)) {
         tx_can_msg ack;
 
