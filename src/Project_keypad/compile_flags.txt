@@ -1,4 +1,0 @@
--IC:\Users\46722\Documents\Project\Project_keypad
--IC:\Users\46722\Documents\project\STM32F4_lib\CMSIS\include
--IC:\Users\46722\Documents\project\STM32F4_lib\STM32F4xx_StdPeriph_Driver\inc
--IC:\Users\46722\Documents\prjcect\STM32F4_lib\STM32F4xx_StdPeriph_Driver\src
