@@ -6,11 +6,11 @@
 #define PASSWORD_LENGTH 4
 #define CHARACTER_BUFFER_LENGTH 8
 
-volatile static unsigned char current_password[PASSWORD_LENGTH] = {0x11, 0x11, 0x11, 0x11};
-volatile unsigned char latest_characters_entered[CHARACTER_BUFFER_LENGTH];
+//volatile static unsigned char current_password[PASSWORD_LENGTH] = {0x11, 0x11, 0x11, 0x11};
+//volatile unsigned char latest_characters_entered[CHARACTER_BUFFER_LENGTH];
 
 
-typedef struct latest_characters_entered{
+typedef struct characters_entered{
 	unsigned char current_password[PASSWORD_LENGTH];
 	unsigned char entered_characters_buffer[CHARACTER_BUFFER_LENGTH];
 	unsigned char entered_characters_timer[CHARACTER_BUFFER_LENGTH];

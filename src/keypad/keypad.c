@@ -40,6 +40,15 @@ void keypad_init(void){
 	
 }
 
+void buffer_init(void){
+	lce_buffer _lce_buffer = {
+		.current_password = {' '},
+		.entered_characters_buffer = {' '},
+		.entered_characters_timer = {' '},
+	};
+}
+
+
 void keyboardActivate(unsigned int row){
 	//Aktivera angiven rad hos tangentbordet eller deaktivera samtliga
 	switch(row){
@@ -74,59 +83,68 @@ char keyboard(void){
 	return 0xFF;
 }
 
-void store_password()
+void store_password(void)
 {
-	lce_buffer _lce_buffer;
 	for(int i = 0; i < PASSWORD_LENGTH; i++){
-		_lce_buffer.current_password[i] = keyboard();
+		unsigned char new_char = keyboard();
+		_lce_buffer.current_password[i] = new_char;
 		store_timer_to_buffer(i);
 	}
 }
 
 
 void store_timer_to_buffer(unsigned int index){
-	lce_buffer _lce_buffer;
 	_lce_buffer.entered_characters_timer[index] ==  timer_ms;
 }
 
-
 void check_password(){
-	lce_buffer _lce_buffer;
+
 	unsigned char size;
 	unsigned char min = get_indexof(_lce_buffer.entered_characters_timer, min_value(_lce_buffer.entered_characters_timer));
 	for(int i = min; i < PASSWORD_LENGTH; i++){
-		if(latest_characters_entered[i] == current_password[size]) {
+		if(_lce_buffer.entered_characters_buffer[i] == current_password[size]) {
 			size++;
 		}
 	} 
 	return (size == sizeof(current_password));
 }
 
- 
+
 void add_char_to_buffer( unsigned char new_char ) {
-	int char_added = 0;
-	lce_buffer _lce_buffer;
+	unsigned int char_added = 0;
+
 	for (int i = 0; i < sizeof(_lce_buffer.entered_characters_buffer); i++) {
 		if (_lce_buffer.entered_characters_buffer[i] == '\0') {
 			_lce_buffer.entered_characters_buffer[i] = new_char;
 			store_timer_to_buffer(i);
 			char_added = 1;
-		}else{
+		}else
+			{
 			unsigned index = get_indexof(max_value(_lce_buffer.entered_characters_timer),_lce_buffer.entered_characters_timer);
 			_lce_buffer.entered_characters_buffer[index] = new_char;
 			char_added = 1;
-			}
+		}
 	}
 }
 
-void store_input(){
-	
+unsigned int check_door_id(u_door* doors){
+	unsigned char index_door_id = (min_value(_lce_buffer.entered_characters_timer));
+	unsigned char door_id = _lce_buffer.entered_characters_buffer[index_door_id];
+	switch (door_id){
+		case '1': return 1;break;
+		case '2': return 2;break;
+		case '3': return 3;break;
+		case '4': return 4;break;
+	}
 }
+
+
 // save when a msg is entered by using timer in an array
 // if array is full, no place to add char, swap the oldest element with the newest one and update timer for this new element
 //
 
 void main(void){
+	buffer_init();
 	timer_init();
 	keypad_init();
 	while(1){
