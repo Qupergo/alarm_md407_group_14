@@ -13,10 +13,12 @@
 
 \begin{center}
         \title{\textbf{Larmsystem med MD407}\\ 
+         \hspace{10cm}
+         \hrule
         \hspace{10cm}
         \small Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407 mikrodator}
     
-        \author{Alamin Alreda, Sebastian Danckwardt, Isac Holm, Zaid Haj Ibrahim, Edvin Svahn}
+        \author{Alamin Alreda, Edvin Svahn, Isac Holm, Sebastian Danckwardt, Zaid Haj Ibrahim}
 
         \date{Oktober 2022}
 
@@ -64,10 +66,10 @@ Ytterligare en periferienhet skall simulera ett simulerat defekt larm som dess s
 När den centrala styrenheten startar skall en förfråga skickas till de anslutna periferienheterna. Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. Dörrenheten skall inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid. Avaståndsmätare ska upptäcka ifall något passerar framför den på ett visst avstånd medans vibrationssensor ska detektera rörelse. Det skall även vara möjligt att låsa in eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en fyrasiffrig tangentsbord.
 
 
-\subsection{Arbetsmetod}
+\subsection{Arbetsmetod LÄGG TILL MER }
 I arbetsmetod beskrivs hur .
 
-\subsubsection{Planering}
+
 
 \subsubsection{Process}
 När gruppen började skriva kod för projektet delades den upp i två undergrupper som var och en arbetade självständigt med separata delar av projektet. 
@@ -83,21 +85,26 @@ Detta hjälpte oss att hålla projektet på rätt spår och se till att vi gjord
 
 \newpage
 \section{Teknisk beskrivning}
-I det här kapitlet redogörs projektets tekniska bedrifter. 
-I den tekniska bakgrunden beskrivs varför systemet är uppbyggt av de delar som det är.
-Därefter ger Systemöversikten en övergripande förståelse för hur systemet är uppbyggt och sist men inte minst förklarar Delsystem hur delarna är uppbyggda.
+I det här kapitlet redogörs en teknisk beskrivning av systemet. 
+I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte.
+Därefter ger Systemöversikten en övergripande förståelse för hur systemet är uppbyggt.Delsystem förklarar hur samtliga delarna är uppbyggda.
 
-
-\subsection{Teknisk bakgrund}\\
+\subsection{Teknisk bakgrund INTE KLAR }\\
 %Vad är utgångspunkten för konstruktionsarbetet?
+I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effiktiva och innovativa, exmpelvis ett larmsystem. 
 
-MD407-mikrokontroller är den centrala komponenten i konstruktionsarbetet. 
-Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte, på datorn finns det pinnar för ström, jord och GPIO som kan kopplas till externa periferienher.
+\subsubsection{Centralenhet}
+Systemet bygger på en MD407-mikrokontroller, vilket är den centrala komponenten i konstruktionsarbetet. 
+Dessutom är den en laborationsdator som har utvecklats i utbildningssyfte. (Beskrivning på MD KORT)
+
+\subsubsection{Sensorer}
 Vibrationssensor (SW-18010P), avståndsmätare (HC-SR04) samt strömbrytare kan anslutas till mikrokontrollern via en av GPIO-portarna.\\
-
 Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
 Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
-Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.\\
+Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.
+
+\subsubsection{Dörrenhet}
+(Kort inledande beskrvning på vad dörr enheterna har för roll och hur de är uppbyggda)
 
 Med tre kort och lägsta möjliga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
 Det betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.\\
@@ -115,32 +122,35 @@ Eftersom larmsystemet består av flera mikrokontrollers måste kommunikation ske
     \label{fig:drawing}
 \end{figure}
 
-Systemet består i stort av tre delar - en centralenhet och två periferienheter. 
-Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och sju-segment. Ett md407-kort används som en ARM-processor för att koppla ihop olika instrument beroende på deras funktion och uppgifter (figure 1).
-Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och pc sker över USART. \\
-
-Periferienhet 1 skall vara ansluten till en kopplingsplatta, på plattan skall det finnas lampor och en dörr-strömbrytare. 
+Systemet består i stort av tre delar, en centralenhet och två periferienheter, en dörrenhet och sensorenhet. 
+Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och 7-segmentdisplay. Ett MD407-kort används som en centralenhet för att koppla ihop olika komponenter beroende på deras funktion och uppgifter (figure 1).
+Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART. \\
+\\
+Dörrenhet skall vara ansluten till en kopplingsplatta, på plattan skall det finnas lampor och en dörr-strömbrytare som läser av dörrenstillsånd.
 Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. 
-Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. \\
-
-Periferienhet 2 skall vara kopplad till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). 
+Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. 
+\\
+Sensorenhet skall vara kopplades till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). 
 Avståndmätaren kommer att skicka en signal om avståndet har ändrats. 
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer. \\
 
-// CANBUSS = 1 /= 2 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
+    \caption {Visuell framställning av Kommunikationsprotokoll}
+    \label{fig:drawing}
 \end{figure}
+
+
 \subsection{Delsystem}
 %gör beskrivning
-Här beskrivs de olika delsystemen.
+Här beskrivs vad de olika delsystemen har för tekniska funktioner samt arbetsroller under utförandetr av systemet. 
+
 \subsubsection{Centralenhet}
 Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN-buss, denna kommunikation kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. 
 Dessutom skall centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren skall få tillgång till systemet skall hen skriva in rätt lösenord. 
 Därefter skall användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
 Utöver det skall användaren också kunna ändra tröskelvärdet för avståndsmätaren.
-
 
 
 \subsubsection{Dörrenhet}
@@ -159,7 +169,8 @@ Avståndet kommer att mättas kontinuerligt i intervaller av 60 millisekunder, o
 \\
 Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner av någon vibration kommer den att den skicka till centralenheten för att slå på det globala larmet.
 
-
+\subsubsection{Systemprotkoll}\\
+Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till fyra segment (figure 2). Högsta bit är tilldealde till bit-10, och lägsta bit är bit-0. Ett ställning av bit-10 innebär att detta meddlenade får högsta prioritet och därmed viktigt att utföras först i fall det skulle bygga up datakö i CAN-bussen. Noll-ställning av samma bit innebär då motsatsen, vilket är att meddalndet får lägsta prioritet och kan därmed vänta med utförning. Bit 9 till och med bit 6 är reservade till meddlandetypen som innehåller blandannat om meddelandet är ett begär att larma på eller av, eller bland annat information som föras mellan olika enheterna i regelbundet. Varje gång ett meddelande skickas, kommer bit-5 till och med bit-3 innehålla avsändaren ID, och bit2 till och med bit-0 ansvariga för mottagarens ID. 
 
 \section{Resultat}
 Detta avsnitt redovisar resultatet av genomförd verifiering av systemet och dess olika delar
