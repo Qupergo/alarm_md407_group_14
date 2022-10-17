@@ -11,7 +11,7 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 #include "timer.h"
 #include "can.h"
 
-unsigned char SELF_TYPE = DOOR_UNIT_TYPE_ID;
+unsigned char SELF_TYPE = TYPE_DOOR_UNIT;
 unsigned char num_sub_units = NUMBER_DOORS;
 unsigned char self_id;
 
@@ -120,7 +120,7 @@ void main(void) {
 	// Send initial alive message to central unit
     tx_can_msg initial_alive;
     initial_alive.priority = 1;
-    initial_alive.message_type = NEW_ALIVE_TYPE_ID;
+    initial_alive.message_type = TYPE_NEW_ALIVE;
     initial_alive.content[0] = SELF_TYPE;
     initial_alive.content[1] = num_sub_units;
     initial_alive.reciever_id = 0;
@@ -132,7 +132,7 @@ void main(void) {
 		can_update()
 		if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
-                case NEW_ALIVE_RESPONSE_TYPE_ID:
+                case MSGID_NEW_ALIVE_RESPONSE:
                     if (waiting_for_alive_response) {
                         if (rx_msg.content[0] == SELF_TYPE) {
                             waiting_for_alive_response = 0;
@@ -141,6 +141,18 @@ void main(void) {
                             _rt_info.transmit_sequence_num[rx_msg.sender_id] = 1;
                         }
                     }
+					break;
+				case MSGID_SET_DOOR_ALARM_TIME_THRESHOLD:
+					char door_id = rx_msg.content[0]; 
+					char new_threshold = rx_msg.content[1];
+					char change_local_alarm = rx_msg.content[2];
+					if (change_local_alarm) {
+						doors[door_id].local_alarm_time_threshold_s = new_threshold;
+					}
+					else {
+						doors[door_id].global_alarm_time_threshold_s = new_threshold;
+					}
+					break;
 			}
 		}
 	}

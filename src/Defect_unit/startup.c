@@ -6,7 +6,7 @@
  #include "defect_unit.h"
  #include "usart.h"
  #include "can.h"
- #include "stm32f4xx_rcc.h"
+ #include "stm32f4xx_can.h"
  #include "timer.h"
  
 __attribute__((naked)) __attribute__((section (".start_section")) )
@@ -37,10 +37,10 @@ void main(void)
 			};
 	
 			// fill the data field
-			for(int i = 0; i < length; i++){
-			outgoing.Data[i] = 0;
+			for(int i = 0; i < sizeof(outgoing.Data); i++){
+				outgoing.Data[i] = 0;
 			}
-			CAN_Transmit(CANx, outgoing);
+			CAN_Transmit(CAN1, outgoing);
 		}
 	}
 }

@@ -11,22 +11,23 @@
 // All possible message types and their corresponding ids
 // Lower number is higher priority
 enum message_id {
-    START_ALARM_TYPE_ID,
-    STOP_ALARM_TYPE_ID,
-    NEW_ALIVE_TYPE_ID,
-    NEW_ALIVE_RESPONSE_TYPE_ID,
-    LIFESIGN_TYPE_ID,
-    ACK_TYPE_ID,
-    PING_TYPE_ID,
-    PONG_TYPE_ID,
-    NUM_MESSAGE_TYPES,
+    MSGID_START_ALARM,
+    MSGID_STOP_ALARM,
+    MSGID_NEW_ALIVE,
+    MSGID_NEW_ALIVE_RESPONSE,
+    MSGID_RESET_UNIT,
+    MSGID_SET_DOOR_ALARM_TIME_THRESHOLD,
+    MSGID_SENSOR_DISTANCE_THRESHOLD,
+    MSGID_LIFESIGN,
+    MSGID_ACK,
+    MAX_MSGID = MSGID_ACK,
 };
 
 // All possible unit types and their corresponding ids
 enum unit_type_id {
-    CENTRAL_UNIT_TYPE_ID,
-    DOOR_UNIT_TYPE_ID,
-    SENSOR_UNIT_TYPE_ID,
+    TYPE_CENTRAL_UNIT,
+    TYPE_DOOR_UNIT,
+    TYPE_SENSOR_UNIT,
 };
 
 // Recieved messages through CAN

@@ -13,7 +13,7 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 #include "stm32f4xx_can.h"
 #include "can.h"
 
-unsigned char SELF_TYPE = CENTRAL_UNIT_TYPE_ID;
+unsigned char SELF_TYPE = TYPE_CENTRAL_UNIT;
 unsigned char num_sub_units = 0;
 unsigned char self_id;
 
@@ -41,7 +41,7 @@ void main(void)
     
     u_info central_unit;
     central_unit.is_used = 1;
-    central_unit.type = CENTRAL_UNIT_TYPE_ID;
+    central_unit.type = TYPE_CENTRAL_UNIT;
     central_unit.main_id = 0;
     central_unit.num_sub_units = 0;
     units[0] = central_unit;
@@ -50,12 +50,12 @@ void main(void)
         can_update(&_rt_info, &_ls_info);
         if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
-                case LIFESIGN_TYPE_ID:
+                case MSGID_LIFESIGN:
                     _ls_info.recieved_lifesigns[rx_msg.sender_id] = timer_ms;
                     _ls_info.is_connected[rx_msg.sender_id] = 1;
                     break;
 
-                case NEW_ALIVE_TYPE_ID:
+                case MSGID_NEW_ALIVE:
                     for (int i = 0; i < MAX_UNITS; i++) {
                         if (!units[i].is_used) {
                             units[i].is_used = 1;
@@ -65,20 +65,12 @@ void main(void)
                             
                             tx_can_msg alive_response;
                             alive_response.reciever_id = i;
-                            alive_response.message_type = NEW_ALIVE_RESPONSE_TYPE_ID;
+                            alive_response.message_type = MSGID_NEW_ALIVE_RESPONSE;
                             alive_response.content[0] = rx_msg.content[0];
                             alive_response.content[1] = i;
                             can_send_message(&_rt_info, &_ls_info, CAN1, alive_response);
                         }
                     }
-                    break;
-                case PING_TYPE_ID:
-                    tx_can_msg pong;
-                    pong.message_type = PONG_TYPE_ID;
-                    pong.content[0] = 2;
-                    pong.priority = 1;
-                    pong.reciever_id = rx_msg.sender_id;
-                    can_send_message(&_rt_info, &_ls_info, CAN1, pong);
                     break;
             }
         }

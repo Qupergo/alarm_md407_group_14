@@ -90,7 +90,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     sequence_n |= can_msg.Data[7];
 
     // Invalid message type was sent
-    if (message_type > NUM_MESSAGE_TYPES) { return 0; }
+    if (message_type > MAX_MSGID) { return 0; }
 
     // If a unit recieved a message that is supposed to be from itself
     // Then a replay attack may be happening, start the alarm
@@ -102,8 +102,8 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // That has not sent its first alive message
     // Then it could be a hostile unit, just ignore the message
     if (IS_CENTRAL_UNIT) {
-        if (!u_info[sender_id].is_used) {
-            return 0
+        if (!units[sender_id].is_used) {
+            return 0;
         }
     }
 
@@ -113,7 +113,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // If a unit tries to impersonate the central unit, an alarm will be started
     if (!IS_CENTRAL_UNIT) {
         if (sender_id != 0) {
-            return 0
+            return 0;
         }
     }
 
@@ -131,7 +131,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // If we recieve an ack for a message
     // Then we know that the retransmit frame will no longer be needed
     // Set is used for that frame to 0
-    else if (message_type == ACK_TYPE_ID) {
+    else if (message_type == MSGID_ACK) {
         for (int i = 0; i < MAX_RT_FRAMES; i++) {
             if (_rt_info->rt_frames[i].sequence_n == sequence_n) {
                 _rt_info->rt_frames[i].is_used = 0;
@@ -140,10 +140,10 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     }
 
     // Lifesigns and acks should not be acked
-    else if (!(message_type == LIFESIGN_TYPE_ID)) {
+    else if (!(message_type == MSGID_LIFESIGN)) {
         tx_can_msg ack;
 
-        ack.message_type = ACK_TYPE_ID;
+        ack.message_type = MSGID_ACK;
         ack.priority = 1;
         ack.reciever_id = sender_id;
 
@@ -200,7 +200,7 @@ void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, t
     _rt_info->transmit_sequence_num[tx_msg.reciever_id]++;
 
     // Don't ack lifesigns as they are sent repeteadly, also don't ack other acks because it creates a infinite loop.   
-    if (tx_msg.message_type != ACK_TYPE_ID && tx_msg.message_type != LIFESIGN_TYPE_ID) {
+    if (tx_msg.message_type != MSGID_ACK && tx_msg.message_type != MSGID_LIFESIGN) {
 
         // Save the transmitted message in the retransmission buffer
         // If the buffer is full then the message is not saved
@@ -240,7 +240,7 @@ void can_update(rt_info* _rt_info, ls_info* _ls_info) {
             _ls_info->latest_self_lifesign_timestamp = timer_ms;
             tx_can_msg lifesign;
             lifesign.priority = 1;
-            lifesign.message_type = LIFESIGN_TYPE_ID;
+            lifesign.message_type = MSGID_LIFESIGN;
             lifesign.reciever_id = 0;
             can_send_message(_rt_info, _ls_info, CAN1, lifesign);
         }

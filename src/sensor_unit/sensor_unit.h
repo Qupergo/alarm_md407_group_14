@@ -9,6 +9,8 @@
 #include "timer.h"
 #include "usart1.h"
 
+#define LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD 0.8
+#define CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD 0.5
 
 typedef struct {
 	int id;
@@ -22,10 +24,7 @@ typedef struct {
 	uint16_t trig_pin;
 	uint16_t echo_pin;
 	uint16_t alarm_led;
-	int distance;
-	int local_alarm;
-	int central_alarm
+	int initial_distance;
+	int local_alarm_distance_threshold;
+	int central_alarm_distance_threhold;
 } u_ultrasonic_sensor;
-
-unsigned int echo_start, echo_end, echo_time, echo_distance;
-char a[30];
