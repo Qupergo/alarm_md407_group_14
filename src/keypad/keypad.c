@@ -1,9 +1,8 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
-#include <stdio.h>
 #include "timer.h"
-//#include "keypad.h"
+#include "keypad.h"
 
 __attribute__((naked)) __attribute__((section (".start_section")) )
 void startup ( void ) 
@@ -14,9 +13,9 @@ __asm__ volatile(" BL main\n");					/* call main */
 __asm__ 
 volatile(".L1: B .L1\n");				/* never return */
 }
-lce_buffer _lce_buffer;
 
-void keypad_init(void){	
+
+void keypad_init(void) {	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	GPIO_InitTypeDef keypad_In;
 	GPIO_InitTypeDef keypad_Out;
@@ -40,15 +39,7 @@ void keypad_init(void){
 	
 }
 
-void buffer_init(void){
-	lce_buffer _lce_buffer = {
-		.current_password = {' '},
-		.entered_characters_buffer = {' '},
-		.entered_characters_timer = {' '},
-	};
-}
-
-void keyboardActivate(unsigned int row){
+void keyboardActivate(unsigned int row) {
 	//Aktivera angiven rad hos tangentbordet eller deaktivera samtliga
 	switch(row){
 		case 1: GPIO_SetBits(GPIOE,GPIO_Pin_4); break; //GPIO_SetBits(GPIOD,GPIO_Pin_4)
@@ -58,7 +49,8 @@ void keyboardActivate(unsigned int row){
 		case 0: GPIO_Write(GPIOE, 0x0000); break;
 	}
 }
-int keyboardGetColumn(void){
+
+int keyboardGetColumn(void) {
 	//Om någon tangent i den aktiverade raden är nedtryckt
 	// returneras dess kolumnnummer. Annars 0.	
 	if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_3)) { return 4; }
@@ -68,7 +60,7 @@ int keyboardGetColumn(void){
 	return 0;
 	}
 
-char keyboard(void){
+unsigned char keyboard(void) {
 	unsigned const char key[] = {'1','2','3','0xA','4','5','6','0xB','7','8','9','0xC','0xE','0','0xF','0xD'};
 	int row, col;
 	for(row = 1; row < 5; row++){
@@ -82,81 +74,58 @@ char keyboard(void){
 	return 0xFF;
 }
 
-void store_password(void)
-{
-	for(int i = 0; i < PASSWORD_LENGTH; i++){
-		unsigned char new_char = keyboard();
-		_lce_buffer.current_password[i] = new_char;
-		store_timer_to_buffer(i);
+char* get_latest_chars_entered(unsigned char amount_of_chars) {
+	if (amount_of_chars > CHARACTER_BUFFER_LENGTH) {
+		print("Invalid amount_of_chars value entered");
+		return 0;
 	}
+	char* latest_chars;
+	int index = latest_char_buffer.current_index;
+
+	for (int i = 0; i < amount_of_chars; i++) {
+		*latest_chars = latest_char_buffer.entered_characters_buffer[index];
+		latest_chars++;
+		index--;
+		if (index < 0) {
+			index = CHARACTER_BUFFER_LENGTH;
+		}
+	}
+	return latest_chars;
 }
 
-void store_timer_to_buffer(unsigned int index){
-	_lce_buffer.entered_characters_timer[index] ==  timer_ms;
-}
-
-void check_password(){
+int check_password() {
 	unsigned char size;
-	unsigned char min = get_indexof(_lce_buffer.entered_characters_timer, min_value(_lce_buffer.entered_characters_timer));
-	for(int i = min; i < PASSWORD_LENGTH; i++){
-		if(_lce_buffer.entered_characters_buffer[i] == _lce_buffer.current_password[size]) {
-			size++;
+	char* latest_password;
+	latest_password = get_latest_chars_entered(PASSWORD_LENGTH);
+	for(int i = 0; i < PASSWORD_LENGTH; i++){
+		if(latest_password[i] != latest_char_buffer.current_password[i]) {
+			return 0;
 		}
-	} 
-	return (size == sizeof(_lce_buffer.current_password));
+	}
+	return 1;
 }
 
-void add_char(unsigned char number_digits){
-	for(int i = 0; i < number_digits; i++){
-		unsigned char temp = keyboard();
-		add_char_to_buffer(temp);
+void increment_index() {
+	latest_char_buffer.current_index++;
+	if (latest_char_buffer.current_index > (CHARACTER_BUFFER_LENGTH - 1)) {
+		latest_char_buffer.current_index = 0;
 	}
 }
 
-void add_char_to_buffer( unsigned char new_char ) {
-	unsigned int char_added = 0;
-	
-	for (int i = 0; i < sizeof(_lce_buffer.entered_characters_buffer); i++) {
-		if (_lce_buffer.entered_characters_buffer[i] == '\0') {
-			_lce_buffer.entered_characters_buffer[i] = new_char;
-			store_timer_to_buffer(i);
-			char_added = 1;
-		}else
-			{
-			unsigned index = get_indexof(max_value(_lce_buffer.entered_characters_timer),_lce_buffer.entered_characters_timer);
-			_lce_buffer.entered_characters_buffer[index] = new_char;
-			store_timer_to_buffer(index);
-			char_added = 1;
+void add_char_to_buffer( char new_char ) {
+	increment_index();
+	latest_char_buffer.entered_characters_buffer[latest_char_buffer.current_index] = new_char;
+}
+
+void keypad_update() {
+	unsigned char new_char = keyboard();
+	// A new character has been entered, add it to the buffer if it is a new char
+	if (new_char != latest_entered_character) {
+		// If no button is pressed, keyboard returns 0xFF
+		// This means a character has been let go, don't add 0xFF to the buffer but update latest_entered_character
+		latest_entered_character = new_char;
+		if (new_char != 0xFF) {
+			add_char_to_buffer(new_char);
 		}
 	}
 }
-
-/*
-unsigned int check_door_id(u_door* doors){
-	unsigned char index_door_id = (min_value(_lce_buffer.entered_characters_timer));
-	unsigned char door_id = _lce_buffer.entered_characters_buffer[index_door_id];
-	switch (door_id){
-		case '1': return 1;break;
-		case '2': return 2;break;
-		case '3': return 3;break;
-		case '4': return 4;break;
-	}
-}
- */
-
-// save when a msg is entered by using timer in an array
-// if array is full, no place to add char, swap the oldest element with the newest one and update timer for this new element
-//
-
-void main(void){
-	buffer_init();
-	timer_init();
-	keypad_init();
-	while(1){
-		unsigned char new_char = keyboard();
-		add_char_to_buffer(new_char);
-		//print(_lce_buffer.entered_characters_buffer);
-		}
-}
-
-

@@ -40,7 +40,7 @@ void main(void)
 			for(int i = 0; i < sizeof(outgoing.Data); i++){
 				outgoing.Data[i] = 0;
 			}
-			CAN_Transmit(CAN1, outgoing);
+			CAN_Transmit(CAN1, &outgoing);
 		}
 	}
 }
