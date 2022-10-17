@@ -47,16 +47,8 @@ void main(void)
     central_unit.num_sub_units = 0;
     units[0] = central_unit;
 
-    char password_entered = 0;
-
     while (1) {
         keypad_update();
-        if (password_entered) {
-            // Turn off alarm if it is on   
-        }
-        else if (check_password()) {
-            password_entered = 1;
-        }
         can_update(&_rt_info, &_ls_info);
         if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {

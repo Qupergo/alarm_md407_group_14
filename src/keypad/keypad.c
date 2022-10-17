@@ -119,8 +119,13 @@ void add_char_to_buffer( char new_char ) {
 
 void keypad_update() {
 	unsigned char new_char = keyboard();
+	int password_entered = 0;
 	// A new character has been entered, add it to the buffer if it is a new char
 	if (new_char != latest_entered_character) {
+		// Check if the latest PASSWORD_LENGTH characters entered matches the character
+		if (check_password()) {
+			password_entered = 1;
+		}
 		// If no button is pressed, keyboard returns 0xFF
 		// This means a character has been let go, don't add 0xFF to the buffer but update latest_entered_character
 		latest_entered_character = new_char;
