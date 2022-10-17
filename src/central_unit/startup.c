@@ -23,6 +23,7 @@ void trigger_alarm() {
 
 void main(void)
 {
+    keypad_init();
     can_init(CAN1);
     rx_can_msg rx_msg;
     rt_info _rt_info;
@@ -38,7 +39,7 @@ void main(void)
     for (int i = 0; i < MAX_RT_FRAMES; i++) {
         _rt_info.rt_frames[i].is_used = 0;
     }
-    
+
     u_info central_unit;
     central_unit.is_used = 1;
     central_unit.type = TYPE_CENTRAL_UNIT;
@@ -46,7 +47,16 @@ void main(void)
     central_unit.num_sub_units = 0;
     units[0] = central_unit;
 
+    char password_entered = 0;
+
     while (1) {
+        keypad_update();
+        if (password_entered) {
+            // Turn off alarm if it is on   
+        }
+        else if (check_password()) {
+            password_entered = 1;
+        }
         can_update(&_rt_info, &_ls_info);
         if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
