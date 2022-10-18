@@ -141,6 +141,7 @@ På samma sätt kommer vibrationssensorn skicka en signal om den har känt av n�
     \centering
     \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
 \end{figure}
+
 \subsection{Delsystem}
 %gör beskrivning
 Här beskrivs de olika delsystemen.
@@ -149,7 +150,10 @@ Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över e
 Dessutom skall centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren skall få tillgång till systemet skall hen skriva in rätt lösenord. 
 Därefter skall användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
 Utöver det skall användaren också kunna ändra tröskelvärdet för avståndsmätaren.
-
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.05]{Projektrapport/central.png}
+\end{figure}
 
 
 \subsubsection{Dörrenhet}
@@ -168,6 +172,10 @@ Avståndet kommer att mättas kontinuerligt i intervaller av 60 millisekunder, o
 \\
 Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner av någon vibration kommer den att den skicka till centralenheten för att slå på det globala larmet.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.05]{Projektrapport/sensor.png}
+\end{figure}
 
 \subsubsection{Systemprotkoll}\\
 Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till fyra segment (figure 2). Högsta bit är tilldealde till bit-10, och lägsta bit är bit-0. Ett ställning av bit-10 innebär att detta meddlenade får högsta prioritet och därmed viktigt att utföras först i fall det skulle bygga up datakö i CAN-bussen. Noll-ställning av samma bit innebär då motsatsen, vilket är att meddalndet får lägsta prioritet och kan därmed vänta med utförning. Bit 9 till och med bit 6 är reservade till meddlandetypen som innehåller blandannat om meddelandet är ett begär att larma på eller av, eller bland annat information som föras mellan olika enheterna i regelbundet. Varje gång ett meddelande skickas, kommer bit-5 till och med bit-3 innehålla avsändaren ID, och bit2 till och med bit-0 ansvariga för mottagarens ID. 
