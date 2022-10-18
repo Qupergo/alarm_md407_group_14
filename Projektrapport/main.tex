@@ -13,10 +13,12 @@
 
 \begin{center}
         \title{\textbf{Larmsystem med MD407}\\ 
+         \hspace{10cm}
+         \hrule
         \hspace{10cm}
-        \small Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407-mikrokontroller}
+        \small Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407 mikrodator}
     
-        \author{Alamin Alreda, Sebastian Danckwardt, Isac Holm, Zaid Haj Ibrahim, Edvin Svahn}
+        \author{Alamin Alreda, Edvin Svahn, Isac Holm, Sebastian Danckwardt, Zaid Haj Ibrahim}
 
         \date{Oktober 2022}
 
@@ -32,25 +34,13 @@
 Lista över beteckningar som används i denna rapport.
 \begin{description}
 
-\item[MD407] En Mikrodator...
+\item[Buss] En buss är en kommunikationsport som kan användas för att utbyta information.
 
-\item[HCSR04] Avståndsmätare
+\item[CAN] Controller Area Network är en databuss som tillåter korten att kommunicera med varandra utan hjälp av en dator. Detta görs med två bussar som sitter på korten.
 
-\item[SW-18010] Vibrationssensor
-
-\item[Buss] En buss är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
-
-\item[CAN] Controller Area Network är en databuss som tillåter kommunikation mellan mikrokontrollers. Detta görs med två bussar som sitter på korten.
-
-\item[GPIO] General Purpose Input Output är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
+\item[GPIO] General Purpose Input Output är en anslutning på MD407 dit man kan koppla olika logiska enheter som antingen tar emot eller skickar data.
 
 \item[USART] Universal Synchronous/Asynchronous Reciever/Transmitter är kopplingen mellan MD407 och terminalen.
-
-\item[Kopplingsplatta] ...
-
-\item[Knappsats] En extern periferienhet med 16 knappar som används för att mata in siffror.
-
-\item[]
 
 
 \end{description}
@@ -58,13 +48,12 @@ Lista över beteckningar som används i denna rapport.
 
 \setcounter{page}{1}
 \section{Introduktion}
-Under året 2021 anmäldes 72 884 inbrottsstölder i Sverige vilket pekar på att det finns ett tydligt behov av larmsystem i dagens samhälle.\cite{BRa} Trots den oro som finns i allmänheten för att ens egendom ska bli stulen så tillkännager endast 13\% av unga mellan 23 och 35 år att de äger en larminstallation.\cite{MoFor} En av de största anledningarna till detta är kostnaden, 20\% av de som saknar ett hemlarm anger att priset på installation är för högt.\cite{MoFor} Genom att skapa ett larmsystem med rimligt pris kan man erbjuda möjligheten till en tryggare tillvaro.
+Under 2021 har 72 884 fall av inbrottsstöld anmälts, vilket visar ett tydligt behov av att skapa ett larmsystem som ökar trygghet och säkerhet.\cite{BRa} Däremot cirka 20\% svarar att anledningen som förhindra dem att ha ett hemlarmsystem är på grund av kostanden och att det är överprist.\cite{MoFor}.
+Genom att skapa ett larmsystem med rimligt pris kan man erbjuda möjligheten till bättre liv med trygg miljö.
 
 \subsection{Syfte}
 \\
-Projektet syftar till att skapa ett lättanvändligt larmsystem med rimligt pris som ska förhindra inbrott och stöld. Detta då endast 29\% av Sveriges befolkning innehavar ett larmsystem.\cite{SSF} Systemet kommer eventuellt att kunna installeras i byggnader och institutioner, vilket kommer att sänka inbrottet och ökar tryggheten.
-
-%Projektet syftar till att skapa ett lättanvändligt larmsystem med rimligt pris för att förhindra inbrott och stöld. Detta då endast 29\% av Sveriges befolkning idag äger ett
+Projektet syftar till att skapa ett lättanvändligt larmsystem med rimligt pris för att skydda mot stöld och bekämpa inbrott i alla områden i Sverige. Detta då endast 29\% av Sveriges befolkning idag använder ett larmsystem.\cite{SSF} Systemet kommer eventuellt att kunna installeras i byggnader och instituationer, vilket kommer att sänka inbrottet och ökar tryggheten.
 
 \subsection{Mål}
 \\
@@ -72,47 +61,56 @@ Målet med projektet är att konstruera ett larm och låssystem med två olika l
 En central styrenhet skall utgöra den del av larmsystemet som har i uppgift att kommunicera med de fristående larmenheterna.
 Detta skall möjliggöra centraliserad kontroll och kalibrering av flera periferienheter i ett större larmsystem.
 Ytterligare en periferienhet skall simulera ett simulerat defekt larm som dess syfte är att skicka massa data till central enheten.
+\\
+\\
+När den centrala styrenheten startar skall en förfråga skickas till de anslutna periferienheterna. Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. Dörrenheten skall inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid. Avaståndsmätare ska upptäcka ifall något passerar framför den på ett visst avstånd medans vibrationssensor ska detektera rörelse. Det skall även vara möjligt att låsa in eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en fyrasiffrig tangentsbord.
 
-När den centrala styrenheten startar skall en förfrågan skickas till de anslutna periferienheterna. Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. Dörrenheten skall inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid. Avståndsmätare ska upptäcka ifall något passerar framför den på ett visst avstånd medans vibrationssensor ska detektera rörelse. Det skall även vara möjligt att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenhet.
 
-
-\subsection{Arbetsmetod}
+\subsection{Arbetsmetod LÄGG TILL MER }
 I arbetsmetod beskrivs hur .
 
-\subsubsection{Planering}
+
 
 \subsubsection{Process}
 När gruppen började skriva kod för projektet delades den upp i två undergrupper som var och en arbetade självständigt med separata delar av projektet. 
 Undergrupperna arbetade parallellt med varandra på distansmätaren och vibrationssensorn från början tills de var klara och sedan gick vidare till nästa del av projektet.
+
 Vi genomförde också rigorösa tester när en funktion var färdig eller behövde testas genom att följa en testplan som hela gruppen enades om. 
 Detta säkerställde att den nya koden integrerades väl med den befintliga koden och att den fungerade som det var tänkt.
-Vi använde också ett versionshanteringsystem för att hålla reda på ändringar i koden och för att enkelt kunna återgå till en äldre version om något gick fel.
+Vi använde också ett versionskontrollsystem för att hålla reda på ändringar i koden och för att enkelt kunna återgå till en äldre version om något gick fel.
+
 Projektgruppen hade också regelbundna möten med projektledaren,
 där vi gick igenom vad vi hade gjort under föregående vecka samt vad vi arbetade med under den aktuella veckan och om vi hade några problem.
 Detta hjälpte oss att hålla projektet på rätt spår och se till att vi gjorde goda framsteg.
 
 \newpage
 \section{Teknisk beskrivning}
-I det här kapitlet redogörs projektets tekniska bedrifter. 
-I den tekniska bakgrunden beskrivs varför systemet är uppbyggt av de delar som det är.
-Därefter ger Systemöversikten en övergripande förståelse för hur systemet är uppbyggt och sist men inte minst förklarar Delsystem hur delarna är uppbyggda.
+I det här kapitlet redogörs en teknisk beskrivning av systemet. 
+I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte.
+Därefter ger Systemöversikten en övergripande förståelse för hur systemet är uppbyggt.Delsystem förklarar hur samtliga delarna är uppbyggda.
 
+\subsection{Teknisk bakgrund INTE KLAR }\\
+%Vad är utgångspunkten för konstruktionsarbetet?
+I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effiktiva och innovativa, exmpelvis ett larmsystem. 
 
-\subsection{Teknisk bakgrund}\\
-Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
+\subsubsection{Centralenhet}
+Systemet bygger på en MD407-mikrokontroller, vilket är den centrala komponenten i konstruktionsarbetet. 
+Dessutom är den en laborationsdator som har utvecklats i utbildningssyfte. (Beskrivning på MD KORT)
 
-I konstruktionsarbetet är MD407-mikrokontroller den centrala komponenten. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. Då datorn är utvecklad för utbildning finns det skydd mot ESD, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
+\subsubsection{Sensorer}
+Vibrationssensor (SW-18010P), avståndsmätare (HC-SR04) samt strömbrytare kan anslutas till mikrokontrollern via en av GPIO-portarna.\\
+Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
+Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
+Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.
 
-För att MD407 ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO (General Purpose Input Output) lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor (HC-SR04 respektive SW-18010P). Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
+\subsubsection{Dörrenhet}
+(Kort inledande beskrvning på vad dörr enheterna har för roll och hur de är uppbyggda)
 
-Då åtskilliga MD407-mikrokontrollers behöver kommunicera med varandra är de bestyckade med två CAN portar, vilket möjliggör en loopback där samma mikrokontroller kan skicka meddelanden till sig själv vilket förenklar testning. MD407 ansluts via CAN bussarna med RJ-11 kablage.
+Med tre kort och lägsta möjliga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
+Det betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.\\
 
-%Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
-%Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
-%Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.\\
-
-%Med tre kort och lägsta möjliga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
-%Det betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.\\
+Varje MD407-mikrokontroller har 5 GPIO-portar med 16 pinnar var, pinnarna kan individuellt konfigureras som utgångar eller ingångar.
+Eftersom larmsystemet består av flera mikrokontrollers måste kommunikation ske mellan dem vilket i detta system utförs via en CAN buss.
 
 \subsection{Systemöversikt}
 
@@ -124,27 +122,30 @@ Då åtskilliga MD407-mikrokontrollers behöver kommunicera med varandra är de 
     \label{fig:drawing}
 \end{figure}
 
-Systemet består i stort av tre delar - en centralenhet och två periferienheter. 
-Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och sju-segment. Ett md407-kort används som en ARM-processor för att koppla ihop olika instrument beroende på deras funktion och uppgifter (figure 1).
-Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och pc sker över USART. \\
-
-Periferienhet 1 skall vara ansluten till en kopplingsplatta, på plattan skall det finnas lampor och en dörr-strömbrytare. 
+Systemet består i stort av tre delar, en centralenhet och två periferienheter, en dörrenhet och sensorenhet. 
+Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och 7-segmentdisplay. Ett MD407-kort används som en centralenhet för att koppla ihop olika komponenter beroende på deras funktion och uppgifter (figure 1).
+Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART. \\
+\\
+Dörrenhet skall vara ansluten till en kopplingsplatta, på plattan skall det finnas lampor och en dörr-strömbrytare som läser av dörrenstillsånd.
 Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. 
-Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. \\
-
-Periferienhet 2 skall vara kopplad till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). 
+Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. 
+\\
+Sensorenhet skall vara kopplades till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). 
 Avståndmätaren kommer att skicka en signal om avståndet har ändrats. 
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer. \\
 
-// CANBUSS = 1 /= 2 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
+    \caption {Visuell framställning av Kommunikationsprotokoll}
+    \label{fig:drawing}
 \end{figure}
+
 
 \subsection{Delsystem}
 %gör beskrivning
-Här beskrivs de olika delsystemen.
+Här beskrivs vad de olika delsystemen har för tekniska funktioner samt arbetsroller under utförandetr av systemet. 
+
 \subsubsection{Centralenhet}
 Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN-buss, denna kommunikation kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. 
 Dessutom skall centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren skall få tillgång till systemet skall hen skriva in rätt lösenord. 
@@ -153,8 +154,9 @@ Utöver det skall användaren också kunna ändra tröskelvärdet för avstånds
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.05]{Projektrapport/central.png}
+    \caption {Hårdvaran som har funktionen som centralenhet}
+    \label{fig:drawing}
 \end{figure}
-
 
 \subsubsection{Dörrenhet}
 
@@ -175,8 +177,9 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.05]{Projektrapport/sensor.png}
+    \caption {Hårdvaran till vänster är vibrationssensor, till höger är avståndsmätare}
+    \label{fig:drawing}
 \end{figure}
-
 \subsubsection{Systemprotkoll}\\
 Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till fyra segment (figure 2). Högsta bit är tilldealde till bit-10, och lägsta bit är bit-0. Ett ställning av bit-10 innebär att detta meddlenade får högsta prioritet och därmed viktigt att utföras först i fall det skulle bygga up datakö i CAN-bussen. Noll-ställning av samma bit innebär då motsatsen, vilket är att meddalndet får lägsta prioritet och kan därmed vänta med utförning. Bit 9 till och med bit 6 är reservade till meddlandetypen som innehåller blandannat om meddelandet är ett begär att larma på eller av, eller bland annat information som föras mellan olika enheterna i regelbundet. Varje gång ett meddelande skickas, kommer bit-5 till och med bit-3 innehålla avsändaren ID, och bit2 till och med bit-0 ansvariga för mottagarens ID. 
 
