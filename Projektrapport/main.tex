@@ -49,7 +49,7 @@ Lista över beteckningar som används i denna rapport.
 \setcounter{page}{1}
 \section{Introduktion}
 Under 2021 har 72 884 fall av inbrottsstöld anmälts, vilket visar ett tydligt behov av att skapa ett larmsystem som ökar trygghet och säkerhet.\cite{BRa} Däremot cirka 20\% svarar att anledningen som förhindra dem att ha ett hemlarmsystem är på grund av kostanden och att det är överprist.\cite{MoFor}.
-Genom att skapa ett larmsystem med rimligt pris kan man erbjuda möjligheten till bättre liv med trygg miljö.
+Genom att skapa ett larmsystem med prisvärt pris kan man erbjuda möjligheten till bättre liv med trygg miljö.
 
 \subsection{Syfte}
 \\
@@ -180,8 +180,8 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
     \caption {Hårdvaran till vänster är vibrationssensor, till höger är avståndsmätare}
     \label{fig:drawing}
 \end{figure}
-\subsubsection{Systemprotkoll}\\
-Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till fyra segment (figure 2). Högsta bit är tilldealde till bit-10, och lägsta bit är bit-0. Ett ställning av bit-10 innebär att detta meddlenade får högsta prioritet och därmed viktigt att utföras först i fall det skulle bygga up datakö i CAN-bussen. Noll-ställning av samma bit innebär då motsatsen, vilket är att meddalndet får lägsta prioritet och kan därmed vänta med utförning. Bit 9 till och med bit 6 är reservade till meddlandetypen som innehåller blandannat om meddelandet är ett begär att larma på eller av, eller bland annat information som föras mellan olika enheterna i regelbundet. Varje gång ett meddelande skickas, kommer bit-5 till och med bit-3 innehålla avsändaren ID, och bit2 till och med bit-0 ansvariga för mottagarens ID. 
+\subsubsection{Systemprotokoll}\\
+Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till fyra segment (figure 2). Högsta bit är tilldealde till bit-10, och lägsta bit är bit-0. Ett ställning av bit-10 innebär att detta meddelenade får högsta prioritet och därmed viktigt att utföras först i fall det skulle bygga up datakö i CAN-bussen. Noll-ställning av samma bit innebär då motsatsen, vilket är att meddalndet får lägsta prioritet och kan därmed vänta med utförning. Bit 9 till och med bit 6 är reservade till meddlandetypen som innehåller blandannat om meddelandet är ett begär att larma på eller av, eller bland annat information som föras mellan olika enheterna i regelbundet. Varje gång ett meddelande skickas, kommer bit-5 till och med bit-3 innehålla avsändaren ID, och bit2 till och med bit-0 ansvariga för mottagarens ID. 
 
 \section{Resultat}
 Detta avsnitt redovisar resultatet av genomförd verifiering av systemet och dess olika delar
