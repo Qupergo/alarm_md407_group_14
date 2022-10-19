@@ -114,8 +114,11 @@ Delsystem förklarar hur samtliga delarna är uppbyggda.
 
 Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
 
-I konstruktionsarbetet är MD407-kort den centrala komponenten. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
-För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
+I konstruktionsarbetet är MD407-kort den centrala komponenten. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. 
+Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
+För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. 
+GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. 
+Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
 
 Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar, vilket möjliggör att samma kort kan skicka meddelanden till sig själv ifall protokollet för att skicka behöver testas.
 
