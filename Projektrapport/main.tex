@@ -11,17 +11,17 @@
 \usepackage[table]{xcolor}
 \usepackage{pgfgantt}
 
-    \title{\textbf{Larmsystem med MD407}\\ 
-     \hspace{10cm}
-     \hrule
-    \hspace{10cm}
-    Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407 mikrodator}
+\title{\textbf{Larmsystem med MD407}\\ 
+\hspace{10cm}
+\hrule
+\hspace{10cm}
+Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407 mikrodator}
     
-    \author{\\Alamin Alreda\\Sebastian Danckwardt\\Isac Holm\\Zaid Haj Ibrahim\\Edvin Svahn}
+\author{\\Alamin Alreda\\Sebastian Danckwardt\\Isac Holm\\Zaid Haj Ibrahim\\Edvin Svahn}
 
-    \date{19 Oktober 2022}
+\date{\today}
     
-    %LÄÖGGG TILL: handledare, e-post adresser, sektion, datum för senaste revision
+%LÄÖGGG TILL: handledare, e-post adresser, sektion, datum för senaste revision
     
 \begin{document}
 
@@ -61,7 +61,6 @@ Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tr
 %NY INTRODUKTION ADDERAD
 
 \subsection{Syfte}
-
 Projektet syftar till att skapa ett larmsystem som är lätt att använda och kostar lite.
 Detta då endast 29 \% av Sveriges befolkning innehar ett larmsystem.\cite{SSF} 
 Systemet är menat installeras i byggnader och institutioner, vilket kommer att sänka inbrott samt öka trygghet i framförallt låg-inkomsthushåll.
@@ -70,7 +69,6 @@ För att larmsystemet ska fungera säkert och korrekt, måste mål sättas upp.
 %ÄNDRA: sista meningen skum ändra från "eventuellt att kunna installeras"
 
 \subsection{Mål}
-
 Målet med projektet är att konstruera ett larm och låssystem med två periferienheter.
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
 Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de perifera larmenheterna.
@@ -94,7 +92,7 @@ I arbetsmetod beskrivs hur .
 \subsubsection{Process}
 När gruppen började skriva kod för projektet delades den upp i två undergrupper som var och en arbetade självständigt med separata delar av projektet. 
 Undergrupperna arbetade parallellt med varandra på distansmätaren och vibrationssensorn från början tills de var klara och sedan gick vidare till nästa del av projektet.
-oggranna tester när en funktion var färdig eller behövde testas genom att följa en testplan som hela gruppen enades om. 
+Vi genomförde också rigorösa tester när en funktion var färdig eller behövde testas genom att följa en testplan som hela gruppen enades om. 
 Detta säkerställde att den nya koden integrerades väl med den befintliga koden och att den fungerade som det var tänkt.
 Vi använde också ett versionshanteringsystem för att hålla reda på ändringar i koden och för att enkelt kunna återgå till en äldre version om något gick fel.
 Projektgruppen hade också regelbundna möten med projektledaren,
@@ -117,19 +115,15 @@ Delsystem förklarar hur samtliga delarna är uppbyggda.
 Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
 
 I konstruktionsarbetet är MD407-kort den centrala komponenten. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
-
 För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
 
 Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar, vilket möjliggör att samma kort kan skicka meddelanden till sig själv ifall protokollet för att skicka behöver testas.
 
 Eftersom att centralenheten inte har möjlighet att 
 
-%Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
-%Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
-%Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.\\
+För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
 
-%Med tre kort och lägsta möjliga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
-%Det betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.\\
+Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar, vilket möjliggör att samma kort kan skicka meddelanden till sig själv ifall protokollet för att skicka behöver testas. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
 \subsection{Systemöversikt}
 
@@ -141,7 +135,7 @@ Eftersom att centralenheten inte har möjlighet att
     \label{fig:drawing}
 \end{figure}
 
-Systemet består i stort av tre delar, en centralenhet och två periferienheter, en dörrenhet och sensorenhet. 
+Systemet i sin helhet består av tre delar, en centralenhet och två periferienheter, en dörrenhet och sensorenhet. 
 Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och 7-segmentdisplay. Ett MD407-kort används som en centralenhet för att koppla ihop olika komponenter beroende på deras funktion och uppgifter (figure 1).
 Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART. \\
 \\
@@ -181,10 +175,10 @@ Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsm�
 
 \subsubsection{Dörrenhet}
 
-Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grön lysdiod, en röd lysdiod och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
-När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lysdioden lyser. 
+Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grön lampa, en röd lampa och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
+När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lampan lyser. 
 Efter två tröskelvärden kommer dörrenheten att skicka till centralenheten för att påställa störenheten. 
-Om dörren är stängd ska den gröna lysdioden lysa medan det lokala och centrala larmet ska vara avstängda. 
+Om dörren är stängd ska den gröna lampan lysa medan det lokala och centrala larmet ska vara avstängda. 
 
 \subsubsection{Sensorenhet}
 
