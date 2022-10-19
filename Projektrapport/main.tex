@@ -58,17 +58,19 @@ Under året 2021 anmäldes 72 884 inbrottsstölder i Sverige vilket pekar på at
 %NY INTRODUKTION ADDERAD
 
 \subsection{Syfte}
-Projektet syftar till att skapa ett lättanvändligt larmsystem med rimligt pris som ska förhindra inbrott och stöld. Detta då endast 29 \% av Sveriges befolkning innehavar ett larmsystem.\cite{SSF} Systemet kommer eventuellt att kunna installeras i byggnader och institutioner, vilket kommer att sänka inbrottet och ökar tryggheten.
+Projektet syftar till att skapa ett enkelt larmsystem med rimligt pris som ska . Detta då endast 29 \% av Sveriges befolkning innehavar ett larmsystem.\cite{SSF} Systemet kommer eventuellt att kunna installeras i byggnader och institutioner, vilket kommer att sänka inbrottet och ökar tryggheten.
+
+%För att larmsystemet ska fungera säkert och korrekt måste flera krav ställas på systemet innan installation kan göras i fastigheter.
 
 %ÄNDRA: sista meningen skum ändra från "eventuellt att kunna installeras"
 
 \subsection{Mål}
-Målet med projektet är att konstruera ett larm och låssystem med två olika larmenheter. Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera rörelse och vibrationer. 
-En central styrenhet ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de fristående larmenheterna.
+Målet med projektet är att konstruera ett larm och låssystem med två olika larmenheter. Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera rörelse och vibrationer.
+Ett delmål är attcentral styrenhet ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de fristående larmenheterna.
 Detta ska möjliggöra centraliserad kontroll och kalibrering av flera periferienheter i ett större larmsystem.
 Ytterligare en periferienhet ska simulera ett defekt larm som ska skicka data i överflöd till central enheten.
 
-När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. Dörrenheten ska inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid. Avståndsmätare ska upptäcka ifall något passerar framför den på ett visst avstånd och vibrationssensor ska detektera rörelse. Det ska även vara möjligt att låsa in eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenhet.
+Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. Dörrenheten ska inledningsvis larma lokalt med en röd lysdiod, om specifika krav nås meddelas den centrala styrenheten. Dörrlarmet larmar till centralenheten efter en bestämd tid. Avståndsmätare ska upptäcka ifall något passerar framför den på ett visst avstånd och vibrationssensor ska detektera rörelse. Det ska även vara möjligt att låsa in eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenhet.
 
 %ÄNDRA: gör tydligt vad som är delmålen i projektet
 
@@ -79,7 +81,7 @@ I arbetsmetod beskrivs hur .
 \subsubsection{Process}
 När gruppen började skriva kod för projektet delades den upp i två undergrupper som var och en arbetade självständigt med separata delar av projektet. 
 Undergrupperna arbetade parallellt med varandra på distansmätaren och vibrationssensorn från början tills de var klara och sedan gick vidare till nästa del av projektet.
-Vi genomförde också rigorösa tester när en funktion var färdig eller behövde testas genom att följa en testplan som hela gruppen enades om. 
+oggranna tester när en funktion var färdig eller behövde testas genom att följa en testplan som hela gruppen enades om. 
 Detta säkerställde att den nya koden integrerades väl med den befintliga koden och att den fungerade som det var tänkt.
 Vi använde också ett versionshanteringsystem för att hålla reda på ändringar i koden och för att enkelt kunna återgå till en äldre version om något gick fel.
 Projektgruppen hade också regelbundna möten med projektledaren,
@@ -96,7 +98,7 @@ I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte.
 Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. Delsystem förklarar hur samtliga delarna är uppbyggda.
 
 \subsection{Teknisk bakgrund}\\
-I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effiktiva och innovativa, exmpelvis ett larmsystem. 
+%I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effiktiva och innovativa, exmpelvis ett larmsystem.
 
 Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
 
@@ -104,7 +106,7 @@ I konstruktionsarbetet är MD407-mikrokontroller den centrala komponenten. Detta
 
 För att MD407 ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
 
-Då åtskilliga MD407-mikrokontrollers behöver kommunicera med varandra är de bestyckade med två CAN portar, vilket möjliggör en loopback där samma mikrokontroller kan skicka meddelanden till sig själv vilket förenklar testning.
+Då åtskilliga MD407-mikrokontrollers behöver kommunicera med varandra är de bestyckade med två CAN portar, vilket möjliggör en så kallad loopback där samma mikrokontroller kan skicka meddelanden till sig själv vilket förenklar testning.
 
 %Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
 %Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
@@ -163,10 +165,10 @@ Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsm�
 
 \subsubsection{Dörrenhet}
 
-Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grön lampa, en röd lampa och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
-När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lampan lyser. 
+Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grön lysdiod, en röd lysdiod och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
+När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lysdioden lyser. 
 Efter två tröskelvärden kommer dörrenheten att skicka till centralenheten för att påställa störenheten. 
-Om dörren är stängd ska den gröna lampan lysa medan det lokala och centrala larmet ska vara avstängda. 
+Om dörren är stängd ska den gröna lysdioden lysa medan det lokala och centrala larmet ska vara avstängda. 
 
 \subsubsection{Sensorenhet}
 
