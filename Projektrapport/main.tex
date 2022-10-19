@@ -130,7 +130,7 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
 %\newpage 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.8]{Projektrapport/diagram.png}
+    \includegraphics[scale=0.6]{Projektrapport/diagram.png}
     \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrerna/sensorerna till MD-kort. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
     \label{fig:drawing}
 \end{figure}
@@ -202,7 +202,7 @@ Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till
 Detta avsnitt redovisar resultatet av genomförd verifiering av systemet och dess olika delar
 
 \subsection{Mätning av avstånd}
-Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet är det som räknas. Testet genfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. Resultatet visade att att avstånddsmätaren kunde räkna precisa värden i centimeter. Ett ytterligare test genomfördes för att kontrollera att sensorenheten kommer att skicka ett larm när avståndet har understiget eller blivit större än tröskelvärdet. Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet. 
+Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet är det som räknas. Testet genfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. Resultatet visade att att avstånddsmätaren kunde räkna precisa värden i centimeter. Ett ytterligare test genomfördes för att kontrollera att sensorenheten kommer att skicka ett larm när avståndet har understiget eller blivit större än tröskelvärdet. Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
 
 \subsection{Mätning av vibrationer}
 Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
