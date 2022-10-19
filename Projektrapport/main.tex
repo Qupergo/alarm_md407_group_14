@@ -50,6 +50,7 @@ Lista över beteckningar som används i denna rapport.
 
 \setcounter{page}{1}
 \section{Introduktion}
+
 Under året 2021 anmäldes 72 884 inbrottsstölder i Sverige vilket pekar på att det finns ett tydligt behov av larmsystem i dagens samhälle.\cite{BRa} Trots den oro som finns i allmänheten för att ens egendom ska bli stulen så tillkännager endast 13 \% av unga mellan 23 och 35 år att de äger en larminstallation.\cite{MoFor} En av de största anledningarna till detta är kostnaden, 20 \% av de som saknar ett hemlarm anger att priset på installation är för högt.\cite{MoFor} Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tryggare tillvaro.
 
 %NY INTRODUKTION ADDERAD
@@ -72,6 +73,7 @@ När den centrala styrenheten startar ska en förfråga skickas till de anslutna
 \subsection{Arbetsmetod LÄGG TILL MER }
 I arbetsmetod beskrivs hur .
 
+
 \subsubsection{Process}
 När gruppen började skriva kod för projektet delades den upp i två undergrupper som var och en arbetade självständigt med separata delar av projektet. 
 Undergrupperna arbetade parallellt med varandra på distansmätaren och vibrationssensorn från början tills de var klara och sedan gick vidare till nästa del av projektet.
@@ -90,18 +92,34 @@ Detta hjälpte oss att hålla projektet på rätt spår och se till att vi gjord
 \section{Teknisk beskrivning}
 I det här kapitlet redogörs en teknisk beskrivning av systemet. 
 I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte.
-Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt.Delsystem förklarar hur samtliga delarna är uppbyggda.
 
-\subsection{Teknisk bakgrund}\\
+Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. Delsystem förklarar hur samtliga delarna är uppbyggda.
+
+\subsection{Teknisk bakgrund INTE KLAR }\\
+%Vad är utgångspunkten för konstruktionsarbetet?
+%välj en av följande stycken
+I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effiktiva och innovativa, exmpelvis ett larmsystem. 
+
 Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor kommer larmet att aktiveras och användaren underrättas.
 
-I konstruktionsarbetet är MD407-mikrokontroller den centrala komponenten. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. Då datorn är utvecklad för utbildning finns det skydd mot ESD, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
+\subsubsection{Centralenhet}
+Systemet bygger på en MD407-mikrokontroller, vilket är den centrala komponenten i konstruktionsarbetet. 
+Dessutom är den en laborationsdator som har utvecklats i utbildningssyfte. (Beskrivning på MD KORT)
 
-För att MD407 ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO (General Purpose Input Output) lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor (HC-SR04 respektive SW-18010P). Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
+\subsubsection{Sensorer}
+Vibrationssensor (SW-18010P), avståndsmätare (HC-SR04) samt strömbrytare kan anslutas till mikrokontrollern via en av GPIO-portarna.\\
+Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
+Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
+Det finns ingen prispunkt på MD407-korten på internet men liknande kort finns för överkant 150 kr.
 
-Då åtskilliga MD407-mikrokontrollers behöver kommunicera med varandra är de bestyckade med två CAN portar, vilket möjliggör en loopback där samma mikrokontroller kan skicka meddelanden till sig själv. MD407 ansluts via CAN bussarna med RJ-11 kablage.
+\subsubsection{Dörrenhet}
+(Kort inledande beskrvning på vad dörr enheterna har för roll och hur de är uppbyggda)
 
-%TEKNISK BAKGRUND är dubbelskriven, ta bra delar från båda och skriv ny?
+Med tre kort och lägsta möjliga sensorer kostar det ca 750 kr vilket är en engångssumma till skillnad från ett hemlarm på prenumeration kan kosta ca 250 kr i månaden \cite{Offerta}.
+Det betyder att du har tjänat in kostnaden efter ca 3 månader beroende på hur många komponenter du köper.\\
+
+Varje MD407-mikrokontroller har 5 GPIO-portar med 16 pinnar var, pinnarna kan individuellt konfigureras som utgångar eller ingångar.
+Eftersom larmsystemet består av flera mikrokontrollers måste kommunikation ske mellan dem vilket i detta system utförs via en CAN buss.
 
 \subsection{Systemöversikt}
 
@@ -117,7 +135,8 @@ Systemet består i stort av tre delar, en centralenhet och två periferienheter,
 Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och 7-segmentdisplay. Ett MD407-kort används som en centralenhet för att koppla ihop olika komponenter beroende på deras funktion och uppgifter (figure 1).
 Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART. \\
 \\
-Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare som läser av dörrenstillsånd.
+
+Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare som läser av dörrens tillsånd.
 Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. 
 Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. 
 \\
@@ -142,6 +161,7 @@ Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över e
 Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska det korrekta lösenordet skrivas in. 
 Därefter ska användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
 Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren.
+
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.05]{Projektrapport/central.png}
