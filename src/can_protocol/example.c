@@ -57,7 +57,7 @@ void main(void)
         if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
                 // For central unit
-                case NEW_ALIVE:
+                case MSGID_NEW_ALIVE:
                     for (int i = 0; i < MAX_UNITS; i++) {
                         if (!units[i].is_used) {
                             units[i].is_used = 1;
