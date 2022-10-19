@@ -131,19 +131,20 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
     \label{fig:drawing}
 \end{figure}
 
-Systemet i sin helhet består av tre delar, en centralenhet och två periferienheter, en dörrenhet och sensorenhet. 
-Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och 7-segmentdisplay. Ett MD407-kort används som en centralenhet för att koppla ihop olika komponenter beroende på deras funktion och uppgifter (figur 1).
-Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
+Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. 
+Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. 
+Ett exempel på det kan vara knappsatsen.
+Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1).
+Kommunikation mellan samtliga MD407-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
 
 \newpage
 
-Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare som läser av dörrens tillsånd.
-Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. 
-Dörr-strömbrytarna kommer att simulera dörröppning eller dörrstängning. 
-\\
-Sensorenhet ska vara kopplades till en avståndsmätare (HC-SR04) och en vibrationssensor (SW-18010P). 
-Avståndmätaren kommer att skicka en signal om avståndet har ändrats. 
-På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer. \\
+Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lysdioder och möjlighet till att läsa av i fall dörren är öppen respektive stängd.
+Lysdioderna kommer lysa rött när dörrenheten larmar lokalt eller grönt om inget larm har gått.
+
+Till sensorenheten kopplas avståndsmätare (HC-SR04) och vibrationssensor (SW-18010P).
+Avståndsmätaren kommer att skicka en signal om det avmätta avståndet ligger inom ett visst tröskelvärde.
+På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer över ett tröskelvärde.
 
 \begin{figure}[h]
     \centering
