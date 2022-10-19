@@ -85,18 +85,35 @@ Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dö
 
 %ÄNDRA: gör tydligt vad som är delmålen i projektet
 
-\subsection{Arbetsmetod LÄGG TILL MER }
-I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det själv tekniksa genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
+\subsection{Arbetsmetod}
+I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det själv tekniska genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
 
 \subsubsection{Förarbete}
-Innan kod skrevs behövdes genomförandet av projektet planeras. Detta inkluderar bestämning av versionskontroll system, kommunikationsplatform, testning av produkten samt ordning av larmsystemets olika delar. Versionskontrollsystemet som valdes var Github, kommunikationsplatform valdes Discord. För att testa systemet gjordes en testmall för hur ett test skulle genomföras. Ordning av projektets olika delar gjordes genom en planering av olika milstolpar, först las stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN protokollet för att kommunicera mellan dem. Motivationen till detta var att CAN protokollet inte skulle behövas föräns pereferienheterna är klara och att jobba på de enheterna skulle ge en klarare bild över hur CAN protokollet skulle mest effektivt kunna fungera.
+Innan kod skrevs behövdes genomförandet av projektet planeras. 
+Detta inkluderar bestämning av versionskontroll system, kommunikationsplatform, testning av produkten samt ordning av larmsystemets olika delar. 
+Versionskontrollsystemet som valdes var Github, kommunikationsplatform valdes Discord. 
+För att testa systemet gjordes en testmall för hur ett test skulle genomföras. 
+Ordning av projektets olika delar gjordes genom en planering av olika milstolpar, först lades stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN protokollet för att kommunicera mellan dem. 
+Motivationen till detta var att CAN protokollet inte skulle behövas förrän pereferienheterna var klara och att jobba på de enheterna skulle ge en klarare bild över hur CAN protokollet skulle fungera som effektivast.
 
 \subsubsection{Tekniskt genomförande}
-När kod började skrivas delades projektgruppen in i 3 delgrupper. Grupp 1 fokuserade på vibrationssensorn medans grupp 2 jobbade på avståndsmätaren och grupp 3 på knappsatsen. När en delgrupp var klar försökte de hjälpa de andra att komma ikapp tills alla grupper var klara med sin del. Sedan gick gruppen igenom vad som var kvar och delegerade arbetet. I början var gruppen inte helt bekväm med kommunikationsmediet vilket förvärrades av att alla i gruppen inte var på plats vilket ledde till att det producerades två versioner av avståndsmätaren. Detta löstes genom att en ny version skapades från de bästa delarna av dem. Efter dessa delar var klara gjordes CAN protokollet medans buggar fixades i pereferienheterna. Centralenheten gjordes i samband med CAN protokollet då centralenhetens jobb inte kunde utföras utan en fungerande kommunikationsmodell. Efter detta gjordes störenheten för att simulera en defekt enhet.
+När kod började skrivas delades projektet upp i tre delar som arbetades på parallellt med varandra.
+När en del var klar försökte de hjälpa de andra att komma ikapp tills alla var klara med sin del. 
+Sedan gick gruppen igenom vad som var kvar och delegerade arbetet. 
+I början var gruppen inte helt bekväm med kommunikationsmediet vilket förvärrades av att alla i gruppen inte var på plats vilket ledde till att det producerades två versioner av avståndsmätaren. 
+Detta löstes genom att en ny version skapades från de bästa delarna av dem. 
+Efter dessa delar var klara gjordes CAN protokollet medans buggar fixades i pereferienheterna. Centralenheten gjordes i samband med CAN protokollet då centralenhetens jobb inte kunde utföras utan en fungerande kommunikationsmodell. 
+Efter detta gjordes störenheten för att simulera en defekt enhet.
 
-\subsubsection{Testning, verifiering}
-För att säkerställa kvaliten hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar. Rent praktiskt var ofta olika print-statements placerade i koden för att kolla så att korrekt resultat producerades i kombination med att sätta objekt framför avståndsmätare, osv. Då inget fel noterades var testet markerat som godkänt och ingen vidare åtgärd tillämpades. Däremot när resultat inte blev som testet förväntat söktes felkälla upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa fungerande produkt. Utöver att testa kodens vanliga funktion har den testas mot olika typer av angrepp med hjälp en störenhet som skickar data för att störa centralenhetens normala funktion. Detta genom att  skicka stora volymer data. Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens motstånd mot återuppspelningsattacker samt imitationsattacker.
+\subsubsection{Testning och verifiering}
+För att säkerställa kvaliten hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar. 
+Rent praktiskt var ofta olika print-statements placerade i koden för att kolla så att korrekt resultat producerades i kombination med att sätta objekt framför avståndsmätare, osv. 
+Då inget fel noterades var testet markerat som godkänt och ingen vidare åtgärd tillämpades. 
+Däremot när resultat inte blev som testet förväntat söktes felkälla upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa fungerande produkt. 
+Utöver att testa kodens vanliga funktion har den testas mot olika typer av angrepp med hjälp en störenhet som skickar data för att störa centralenhetens normala funktion. 
+Detta genom att  skicka stora volymer data. 
+Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens motstånd mot återuppspelningsattacker samt imitationsattacker.
 
 \newpage
 \section{Teknisk beskrivning}
@@ -107,15 +124,19 @@ Därefter ger Systemöversikt en övergripande förståelse för hur systemet ä
 Delsystem förklarar hur samtliga delarna är uppbyggda.
 
 \subsection{Teknisk bakgrund}
-%I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effektiva och innovativa, exmpelvis ett larmsystem. 
 
-Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
+Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. 
+Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. 
+I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
 
 I konstruktionsarbetet är MD407-kort den centrala komponenten. 
 Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. 
 Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
 
-För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
+För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. 
+GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. 
+Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. 
+Det finns även kontaktstift för ström samt jord som används av sensorerna.
 
 Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar, vilket möjliggör att samma kort kan skicka meddelanden till sig själv ifall protokollet för att skicka behöver testas. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
@@ -124,7 +145,7 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.6]{Projektrapport/diagram.png}
-    \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrerna/sensorerna till MD-kort. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
+    \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrarna/sensorerna till kortet. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
     \label{fig:drawing}
 \end{figure}
 
@@ -170,10 +191,11 @@ Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsm�
 
 \subsubsection{Dörrenhet}
 
-Dörrenheten kommer att vara kopplad till flera dörrar, där varje dörr kommer att vara kopplad till en grön lampa, en röd lampa och ett lås.Utöver det kommer varje dörr att ha sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
-När tiden har gått ett tröskelvärde kommer det lokala larmet att gå av och det kan man se genom att den röda lampan lyser. 
-Efter två tröskelvärden kommer dörrenheten att skicka till centralenheten för att påställa störenheten. 
-Om dörren är stängd ska den gröna lampan lysa medan det lokala och centrala larmet ska vara avstängda. 
+Dörrenheten är kopplad till flera dörrar, där varje dörr kopplas till en grön lampa, en röd lampa och ett lås. 
+Utöver det har varje dörr sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
+När tiden har gått ett tröskelvärde går det lokala larmet och det kan man se genom att den röda lampan lyser. 
+Efter två tröskelvärden kommer larmar dörrenheten till centralenheten för att sätta igång ett globalt larm. 
+Om dörren är stängd lyser den gröna lampan medan det lokala och centrala larmet ska vara avstängda. 
 
 \subsubsection{Sensorenhet}
 
@@ -191,20 +213,30 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
     \label{fig:drawing}
 \end{figure}
 \subsubsection{Systemprotkoll}
-Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till fyra segment (figure 2). Högsta bit är tilldelade till bit-10, och lägsta bit är bit-0. Ett ställning av bit-10 innebär att detta meddelande får högsta prioritet och därmed viktigt att utföras först i fall det skulle bygga up datakö i CAN-bussen. Noll-ställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. Bit 9 till och med bit 6 är reserverade till meddlandetypen som innehåller blandannat om meddelandet är ett begär att larma på eller av, eller bland annat information som föras mellan olika enheterna i regelbundet. Varje gång ett meddelande skickas, kommer bit-5 till och med bit-3 innehålla avsändaren ID, och bit2 till och med bit-0 ansvariga för mottagarens ID. 
+Kommunikationsprotkollet är en 11 bitar långt protokoll, vilket är uppdelat i fyra segment (figur 2).
+Den mest signifikanta biten är bit 10 och minst signifikanta biten är bit 0. 
+Ett ställning av bit 10 innebär att detta meddelande får högsta prioritet när det tas emot på bussen ifall det skulle uppstå kö.
+Noll-ställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. 
+Bit 9 till och med bit 6 är reserverade till meddlandetypen som innehåller bland annat ifall meddelandet är en förfrågan att larma på eller av, eller information som skickas mellan enheterna regelbundet. 
+Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla avsändarens ID, och bit 2 till och med bit 0 innehålla mottagarens ID. 
 
 \section{Resultat}
 Detta avsnitt redovisar resultatet av genomförd verifiering av systemet och dess olika delar
 
 \subsection{Mätning av avstånd}
-Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet är det som räknas. Testet genfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. Resultatet visade att att avstånddsmätaren kunde räkna precisa värden i centimeter. Ett ytterligare test genomfördes för att kontrollera att sensorenheten kommer att skicka ett larm när avståndet har understiget eller blivit större än tröskelvärdet. Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
+Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
+Testet genomfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. 
+Resultatet visade att avståndsmätaren kunde räkna precisa värden i centimeter. 
+Ett ytterligare test genomfördes för att kontrollera att sensorenheten kunde skicka ett larm när avståndet hade passerat tröskelvärdet. 
+Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
 
 \subsection{Mätning av vibrationer}
 Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
 
 
 \subsection{Dörrlarm}
-Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. Under testningen av enheten har den uppfyllt de målen som krävdes.
+Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. 
+Under testningen av enheten har den uppfyllt de målen som krävdes.
 
 
 \section{Slutsats och diskussion}
@@ -214,12 +246,11 @@ Tyvärr så kan mycket problem uppstå ifall man väljer att skapa systemet sjä
 För det första så måste man räkna med att få spendera mer tid för att programmera de olika delsystemen samt för att koppla ihop allting, för att inte tala om att bygga ett protokoll från grunden.
 I fallet med kortet MD407 kan det bli begränsande vilka utvecklingsmiljöer som fungerar att använda felfritt då det inte finns så mycket dokumentation på just det kortet jämfört med kanske lite vanligare kort såsom en Arduino eller ett Raspberry Pi.\\
 
-Fördelarna väger fortfarande tungt då det både är billigare att köpa in de diverse komponenterna och koppla själv än att köpa en prenumeration där installation ingår, 
-samt ger en större valmöjlighet när det kommer till egenskaper. 
-Man kan till exempel använda sig av en motor som man kopplar en avståndsmätare på för att kunna få den att snurra runt sin axel och på så sätt kunna få en kamera som kan se runt sig och få en bild av omgivningen i form av avstånd.
+Fördelarna väger fortfarande tungt då det både är billigare att köpa in de diverse komponenterna och koppla själv än att köpa en prenumeration där installation ingår, samt ger en större valmöjlighet när det kommer till egenskaper. 
+Man kan till exempel använda sig av en motor som man kopplar en avståndsmätare på för att kunna få den att snurra runt sin axel och på så sätt kunna få en kamera som kan se runt sig och få en bild av omgivningen i form av avstånd.\\
 
 \newpage
-\section{Källförteckning}
+\section*{Källförteckning}
 \printbibliography[heading=none]
 
 \end{document}
