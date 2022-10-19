@@ -109,7 +109,7 @@ I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte.
 Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. 
 Delsystem förklarar hur samtliga delarna är uppbyggda.
 
-\subsection{Teknisk bakgrund}\\
+\subsection{Teknisk bakgrund}
 %I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effektiva och innovativa, exmpelvis ett larmsystem. 
 
 Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
@@ -134,7 +134,7 @@ Eftersom att centralenheten inte har möjlighet att
 %\newpage 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.8]{Projektrapport/diagram.png}
+    \includegraphics[scale=0.6]{Projektrapport/diagram.png}
     \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrerna/sensorerna till MD-kort. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
     \label{fig:drawing}
 \end{figure}
@@ -199,7 +199,7 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
     \caption {Hårdvaran till vänster är vibrationssensor, till höger är avståndsmätare}
     \label{fig:drawing}
 \end{figure}
-\subsubsection{Systemprotkoll}\\
+\subsubsection{Systemprotkoll}
 Kommunikationsprotkollet är en 10-bit lång protokoll, vilket är uppdelat till fyra segment (figure 2). Högsta bit är tilldelade till bit-10, och lägsta bit är bit-0. Ett ställning av bit-10 innebär att detta meddelande får högsta prioritet och därmed viktigt att utföras först i fall det skulle bygga up datakö i CAN-bussen. Noll-ställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. Bit 9 till och med bit 6 är reserverade till meddlandetypen som innehåller blandannat om meddelandet är ett begär att larma på eller av, eller bland annat information som föras mellan olika enheterna i regelbundet. Varje gång ett meddelande skickas, kommer bit-5 till och med bit-3 innehålla avsändaren ID, och bit2 till och med bit-0 ansvariga för mottagarens ID. 
 
 \section{Resultat}
