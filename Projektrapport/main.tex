@@ -86,20 +86,17 @@ Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dö
 %ÄNDRA: gör tydligt vad som är delmålen i projektet
 
 \subsection{Arbetsmetod LÄGG TILL MER }
-I arbetsmetod beskrivs hur .
+I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det själv tekniksa genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
 
-\subsubsection{Process}
-När gruppen började skriva kod för projektet delades den upp i två undergrupper som var och en arbetade självständigt med separata delar av projektet. 
-Undergrupperna arbetade parallellt med varandra på distansmätaren och vibrationssensorn från början tills de var klara och sedan gick vidare till nästa del av projektet.
-Vi genomförde också rigorösa tester när en funktion var färdig eller behövde testas genom att följa en testplan som hela gruppen enades om. 
-Detta säkerställde att den nya koden integrerades väl med den befintliga koden och att den fungerade som det var tänkt.
-Vi använde också ett versionshanteringsystem för att hålla reda på ändringar i koden och för att enkelt kunna återgå till en äldre version om något gick fel.
-Projektgruppen hade också regelbundna möten med projektledaren,
-där vi gick igenom vad vi hade gjort under föregående vecka samt vad vi arbetade med under den aktuella veckan och om vi hade några problem.
-Detta hjälpte oss att hålla projektet på rätt spår och se till att vi gjorde goda framsteg.
-%SKRIV OM / FLYTTA till efter teknisk beskrivning?
+\subsubsection{Förarbete}
+Innan kod skrevs behövdes genomförandet av projektet planeras. Detta inkluderar bestämning av versionskontroll system, kommunikationsplatform, testning av produkten samt ordning av larmsystemets olika delar. Versionskontrollsystemet som valdes var Github, kommunikationsplatform valdes Discord. För att testa systemet gjordes en testmall för hur ett test skulle genomföras. Ordning av projektets olika delar gjordes genom en planering av olika milstolpar, först las stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN protokollet för att kommunicera mellan dem. Motivationen till detta var att CAN protokollet inte skulle behövas föräns pereferienheterna är klara och att jobba på de enheterna skulle ge en klarare bild över hur CAN protokollet skulle mest effektivt kunna fungera.
 
+\subsubsection{Tekniskt genomförande}
+När kod började skrivas delades projektgruppen in i 3 delgrupper. Grupp 1 fokuserade på vibrationssensorn medans grupp 2 jobbade på avståndsmätaren och grupp 3 på knappsatsen. När en delgrupp var klar försökte de hjälpa de andra att komma ikapp tills alla grupper var klara med sin del. Sedan gick gruppen igenom vad som var kvar och delegerade arbetet. I början var gruppen inte helt bekväm med kommunikationsmediet vilket förvärrades av att alla i gruppen inte var på plats vilket ledde till att det producerades två versioner av avståndsmätaren. Detta löstes genom att en ny version skapades från de bästa delarna av dem. Efter dessa delar var klara gjordes CAN protokollet medans buggar fixades i pereferienheterna. Centralenheten gjordes i samband med CAN protokollet då centralenhetens jobb inte kunde utföras utan en fungerande kommunikationsmodell. Efter detta gjordes störenheten för att simulera en defekt enhet.
+
+\subsubsection{Testning, verifiering}
+För att säkerställa kvaliten hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar. Rent praktiskt var ofta olika print-statements placerade i koden för att kolla så att korrekt resultat producerades i kombination med att sätta objekt framför avståndsmätare, osv. Då inget fel noterades var testet markerat som godkänt och ingen vidare åtgärd tillämpades. Däremot när resultat inte blev som testet förväntat söktes felkälla upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa fungerande produkt. Utöver att testa kodens vanliga funktion har den testas mot olika typer av angrepp med hjälp en störenhet som skickar data för att störa centralenhetens normala funktion. Detta genom att  skicka stora volymer data. Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens motstånd mot återuppspelningsattacker samt imitationsattacker.
 
 \newpage
 \section{Teknisk beskrivning}
