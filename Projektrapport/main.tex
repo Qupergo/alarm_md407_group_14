@@ -122,9 +122,8 @@ För att MD407-kort ska kunna skicka och ta emot data från externa perifierienh
 
 Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar, vilket möjliggör att samma kort kan skicka meddelanden till sig själv ifall protokollet för att skicka behöver testas. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
+\newpage
 \subsection{Systemöversikt}
-
-%\newpage 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.6]{Projektrapport/diagram.png}
@@ -133,9 +132,10 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
 \end{figure}
 
 Systemet i sin helhet består av tre delar, en centralenhet och två periferienheter, en dörrenhet och sensorenhet. 
-Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och 7-segmentdisplay. Ett MD407-kort används som en centralenhet för att koppla ihop olika komponenter beroende på deras funktion och uppgifter (figure 1).
-Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART. \\
-\\
+Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet i sin helhet såsom tangentbord och 7-segmentdisplay. Ett MD407-kort används som en centralenhet för att koppla ihop olika komponenter beroende på deras funktion och uppgifter (figur 1).
+Kommunikation mellan samtliga md-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
+
+\newpage
 
 Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lampor och en dörr-strömbrytare som läser av dörrens tillsånd.
 Lamporna kommer lysa rött efter att dörren har varit öppen en viss tid eller grönt om inget larm har gått. 
