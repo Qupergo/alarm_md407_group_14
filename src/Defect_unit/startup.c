@@ -3,8 +3,12 @@
  *
  */
  
- #include <stdio.h>
- #include <usart.h>
+ #include "defect_unit.h"
+ #include "usart.h"
+ #include "can.h"
+ #include "stm32f4xx_can.h"
+ #include "timer.h"
+ 
 __attribute__((naked)) __attribute__((section (".start_section")) )
 void startup ( void )
 {
@@ -15,46 +19,29 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 }
 
 
-
-void CAN_send(char* p)
-{
-	//Function placeholder for CAN-protocol function
-	print("hello world");
-}
- typedef struct
-{
-	int priority;		// Priority bit 10
-	int type;			// Message type bits 9-6
-	int sender;			// Sender ID bits 5-3
-	int receiver;		// Receiver ID  bits 3-0
-
-} CAN_msg;
-
-void delayms(int i)
-{
-	//delay from TIM
-}
-
 void main(void)
 {
-	// If only send data via a function for send this will be fine, 
-	// just need to check so it's the right amout of bits sent in the array
-	char jumble[] = {'D','e','f','e','c','t',' ','B','o','a','r','d'};
-//	int i = 8;
-	while(1)
-	{
-		CAN_send(jumble);
-//		delayms(3);
+	int timestamp_of_last_send = 0;
+	timer_init();
+
+	while (1) {
+		
+		if((TIME_BETWEEN_SEND_MS + timestamp_of_last_send) <= timer_ms ) {
+			timestamp_of_last_send = timer_ms;
+			// send message with standard id and specify the length of the data
+			CanTxMsg outgoing = {
+			.StdId = 5, // Id is 3 bits meaning the highest possible would be 7
+			.DLC = 8, // 8 is the greatest amount, do not change volume using this, change with frequency instead
+			.RTR = CAN_RTR_DATA,
+			.IDE = CAN_Id_Standard
+			};
+	
+			// fill the data field
+			for(int i = 0; i < sizeof(outgoing.Data); i++){
+				outgoing.Data[i] = 0;
+			}
+			CAN_Transmit(CAN1, &outgoing);
+		}
 	}
-	
-	// If send data by using a CAN.struct
-	CAN_msg mumble;
-	mumble.priority	= 0b10000000000;
-	mumble.type		= 0b01111000000;
-	mumble.sender	= 0b00000111000;
-	mumble.receiver	= 0b00000000111;
-	
-	// Send mumble
-	// Waiting for CAN protocol to finish
 }
 
