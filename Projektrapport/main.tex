@@ -19,9 +19,9 @@
     
     \author{\\Alamin Alreda\\Sebastian Danckwardt\\Isac Holm\\Zaid Haj Ibrahim\\Edvin Svahn}
 
-    \date{Oktober 2022}
+    \date{19 Oktober 2022}
     
-    %LÄÖGGG TILL: handledare, e-post adresser, sektion
+    %LÄÖGGG TILL: handledare, e-post adresser, sektion, datum för senaste revision
     
 \begin{document}
 
@@ -30,23 +30,20 @@
 \tableofcontents
 \newpage
 \section*{Ordlista}
-Lista över beteckningar som används i denna rapport.
+Ordlista
 \begin{description}
-
 
 \item[Buss] En buss är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
 
 \item[CAN] Controller Area Network är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är bestyckad med två CAN bussar.
 
-\item[CAN] Controller Area Network är en databuss som tillåter kommunikation mellan mikrokontrollers. Detta görs med två bussar som sitter på korten.
-
 \item[GPIO] General Purpose Input Output är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
+
+\item[HC-SR04] En ultraljudsbaserad avståndsmätare
 
 \item[Knappsats] En extern periferienhet med 16 knappar som används för inmatning av data till mikrokontroller.
 
-\item[Kopplingsplatta] En platta där logiska enheter kan anslutas med kablar via kopplingsstift.
-
-\item[SW-18010] Vibrationssensor
+\item[SW-18010] En fjäderbaserad vibrationssensor.
 
 \item[USART] Universal Synchronous/Asynchronous Reciever/Transmitter är kopplingen mellan MD407 och terminalen.
 
@@ -99,17 +96,15 @@ I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte.
 Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. Delsystem förklarar hur samtliga delarna är uppbyggda.
 
 \subsection{Teknisk bakgrund}\\
-%Vad är utgångspunkten för konstruktionsarbetet?
-%välj en av följande stycken
 I dagens samhälle har digitalisering en stor del av världens revolution och utveckling, en revolution att jämföra med industliersering i 1900. Begreppet digitalisering innebär att,med hjälp av teknik, förbättra människors livstill. Detta sker genom att omvandla beffintliga verksamhet till nya som är mer effiktiva och innovativa, exmpelvis ett larmsystem. 
 
 Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
 
 I konstruktionsarbetet är MD407-mikrokontroller den centrala komponenten. Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. Då datorn är utvecklad för utbildning finns det skydd mot ESD, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
 
-För att MD407 ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO (General Purpose Input Output) lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor (HC-SR04 respektive SW-18010P). Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
+För att MD407 ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. Det finns även kontaktstift för ström samt jord som används av sensorerna.
 
-Då åtskilliga MD407-mikrokontrollers behöver kommunicera med varandra är de bestyckade med två CAN portar, vilket möjliggör en loopback där samma mikrokontroller kan skicka meddelanden till sig själv vilket förenklar testning. MD407 ansluts via CAN bussarna med RJ-11 kablage.
+Då åtskilliga MD407-mikrokontrollers behöver kommunicera med varandra är de bestyckade med två CAN portar, vilket möjliggör en loopback där samma mikrokontroller kan skicka meddelanden till sig själv vilket förenklar testning.
 
 %Vibrationssensorn går att köpa för ca 7 kr och en avståndsmätare för ca 50 kr.
 %Lägg till några kablar och en bräda att koppla det på så blir det kanske runt ca 150 kr. 
