@@ -1,8 +1,3 @@
-/*
- * 	startup.c
- *
- */
-
 #include "sensor_unit.h"
 
 __attribute__((naked)) __attribute__((section(".start_section")))
@@ -33,6 +28,7 @@ u_ultrasonic_sensor ultraSonicSensor = {
 unsigned char SELF_TYPE = TYPE_SENSOR_UNIT;
 unsigned char num_sub_units = 2;
 unsigned char self_id;
+int send_alarm = 0;
 
 void Init_GPIO(void) {
     // Configration of GPIO pins and ports 
@@ -64,9 +60,24 @@ void TIM_Configration(void) {
     TIM_Cmd(TIM5, ENABLE);
 }
 
+void ultraSonic_irq_handler(void) {
+    if (distance < ultraSonicSensor.local_alarm_distance_threshold){
+        GPIO_SetBits(GPIOD, ultraSonicSensor.alarm_led);
+
+        if (distance < ultraSonicSensor.central_alarm_distance_threshold) {
+            send_alarm = 1;
+        }
+    }
+    else {
+        // Turn off the led
+        GPIO_ResetBits(GPIOD, ultraSonicSensor.alarm_led);
+    }
+	EXTI_ClearFlag(EXTI_Line1);
+}
+
 void vibration_irq_handler(void) {
     if (!GPIO_ReadInputDataBit(vibrationSensor.GPIO_unit, vibrationSensor.vibration_pin)) {
-        print("vib");
+        send_alarm = 1;
     }
 
     EXTI_ClearFlag(EXTI_Line4);
@@ -88,12 +99,20 @@ void EXTIInit(void) {
 
     exti_init.EXTI_Line = EXTI_Line4; //Configration of EXTI for Vibration pin
     exti_init.EXTI_Mode = EXTI_Mode_Interrupt;
-    exti_init.EXTI_Trigger = EXTI_Trigger_Falling;
+    exti_init.EXTI_Trigger = EXTI_Trigger_Rising;
     exti_init.EXTI_LineCmd = ENABLE;
     EXTI_Init(&exti_init);
 
     NVIC_InitTypeDef nvic_init;
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	
+	nvic_init.NVIC_IRQChannel = EXTI1_IRQn;        //Configration of NVIC for UltraSonic_irq_handler
+    nvic_init.NVIC_IRQChannelPreemptionPriority = 0x00;
+    nvic_init.NVIC_IRQChannelSubPriority = 0x00;
+    nvic_init.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&nvic_init);
+	
+	*((void (**) (void)) 0x2001C05C) = ultraSonic_irq_handler;
 
     nvic_init.NVIC_IRQChannel = EXTI4_IRQn; //Configration of NVIC for vibration_irq_handler
     nvic_init.NVIC_IRQChannelPreemptionPriority = 0x00;
@@ -104,9 +123,9 @@ void EXTIInit(void) {
     *((void( ** )(void)) 0x2001C068) = vibration_irq_handler;
 }
 
-unsigned int check_distance(void) {
+int check_distance( void ) {
     TIM_SetCounter(TIM5, 0); // 65 microseconds delay between measurments 
-    while (TIM_GetCounter(TIM5) < 84 );
+    while (TIM_GetCounter(TIM5) < 65 );
 
     GPIO_SetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin); // Set trigger pin	
 
@@ -115,8 +134,6 @@ unsigned int check_distance(void) {
 
     GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin); // Reset trigger pin
 
-    unsigned int echo_start, echo_end, echo_time, echo_distance;
-
     // wait for echo 
     while (!(GPIO_ReadInputDataBit(ultraSonicSensor.GPIO_unit, ultraSonicSensor.echo_pin))) {
         echo_start = TIM_GetCounter(TIM5);
@@ -124,7 +141,6 @@ unsigned int check_distance(void) {
 
     while (GPIO_ReadInputDataBit(ultraSonicSensor.GPIO_unit, ultraSonicSensor.echo_pin)) {
         echo_end = TIM_GetCounter(TIM5);
-
     }
 
     // Correction for clock during measurment.
@@ -134,60 +150,67 @@ unsigned int check_distance(void) {
     else {
         echo_time = (echo_end - echo_start);
     }
+
     echo_distance = echo_time / 58;  // distance in centimeters
+	
     return echo_distance;
 }
 
-void set_threshold_values(unsigned int distance) {
-    ultraSonicSensor.initial_distance = distance;  // initial value for distance 
-    ultraSonicSensor.local_alarm_distance_threshold = LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD * distance;  // initial value for local alaram distance 
-    ultraSonicSensor.central_alarm_distance_threhold = CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD * distance; // initial value for central alarm distance 
+void set_threshold_values(void) {
+	GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin);  // reset trig pin
+    ultraSonicSensor.initial_distance = check_distance();  // initial value for distance 
+    ultraSonicSensor.local_alarm_distance_threshold = LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD * ultraSonicSensor.initial_distance;  // initial value for local alaram distance 
+    ultraSonicSensor.central_alarm_distance_threshold = CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD * ultraSonicSensor.initial_distance; // initial value for central alarm distance 
 }
 
 void main(void) {
-    print("\nwelcome");
-
+    print("\nSensor unit started!\n");
     Init_GPIO();
     TIM_Configration();
-    GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin);
-    unsigned int distance = check_distance();
-    set_threshold_values(distance);
+    set_threshold_values();
     timer_init();	
     EXTIInit();
     USART1_Init();
 
-    can_init(CAN1);
     rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;
+
+    can_init(CAN1, 0);
+
+    for (int i = 0; i < MAX_UNITS; i++) {
+        _rt_info.transmit_sequence_num[i] = 1;
+        _rt_info.recieve_sequence_num[i] = 0;
+        _ls_info.is_connected[i] = 0;
+        _ls_info.latest_self_lifesign_timestamp = 0;
+        _ls_info.recieved_lifesigns[i] = 0;
+    }
+    for (int i = 0; i < MAX_RT_FRAMES; i++) {
+        _rt_info.rt_frames[i].is_used = 0;
+    }
 
     // Send initial alive message to central unit
     tx_can_msg initial_alive;
     initial_alive.priority = 1;
     initial_alive.message_type = MSGID_NEW_ALIVE;
+    initial_alive.reciever_id = 0;
     initial_alive.content[0] = SELF_TYPE;
     initial_alive.content[1] = num_sub_units;
-    initial_alive.reciever_id = 0;
     can_send_message(&_rt_info, &_ls_info, CAN1, initial_alive);
     unsigned char waiting_for_alive_response = 1;
 
     while (1) {
-        distance = check_distance();
-        if (ultraSonicSensor.local_alarm_distance_threshold < distance) {
-            // Start the local alarm
-            GPIO_SetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.alarm_led);
-        }
+         distance = check_distance();
 
-        if (ultraSonicSensor.central_alarm_distance_threhold < distance) {
-            // Send global alarm message to central unit
-            tx_can_msg alarm_message;
-            alarm_message.priority = 0; // Highest priority
-            alarm_message.reciever_id = 0; // To central unit
-            alarm_message.message_type = MSGID_START_ALARM;
-            can_send_message(&_rt_info, &_ls_info, CAN1, alarm_message);
+        if (send_alarm) {
+            can_send_message(&_rt_info, &_ls_info, CAN1, MSG_STANDARD_ALARM);
+            send_alarm = 0;
         }
-
-        can_update(&_rt_info, &_ls_info);
+		// Only start updating units after they have recieved their alive response
+		// So they have an assigned ID
+		if (!waiting_for_alive_response) {
+			can_update(&_rt_info, &_ls_info);
+		}
 
         if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
@@ -196,6 +219,7 @@ void main(void) {
                         if (rx_msg.content[0] == SELF_TYPE) {
                             waiting_for_alive_response = 0;
                             self_id = rx_msg.content[1];
+							
                             _rt_info.recieve_sequence_num[rx_msg.sender_id] = 0;
                             _rt_info.transmit_sequence_num[rx_msg.sender_id] = 1;
                         }

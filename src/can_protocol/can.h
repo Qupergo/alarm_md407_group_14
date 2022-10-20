@@ -1,11 +1,10 @@
-#include <stdint.h>
 #include "stm32f4xx_can.h"
 
 #define MAX_UNITS 10
 #define MAX_RT_FRAMES 30
 #define ACK_TIMEOUT_MS 1000
 #define LIFESIGN_FREQUENCY_MS 500
-#define IS_CENTRAL_UNIT 1
+#define DEBUG 0
 
 
 // All possible message types and their corresponding ids
@@ -78,8 +77,14 @@ typedef struct lifesign_info {
     unsigned int latest_self_lifesign_timestamp;
 } ls_info;
 
+tx_can_msg MSG_STANDARD_ALARM = {
+    .priority = 0,
+    .message_type = MSGID_START_ALARM,
+    .reciever_id = 0,
+};
+
 // Configures selected CAN interface for incoming messages
-void can_init(CAN_TypeDef * CANx);
+void can_init(CAN_TypeDef * CANx, int is_central_unit);
 // Gets a pending message from a specified can peripheral.
 // The message is then decoded and acks are sent as required.
 // Returns true if a message was read, false otherwise.

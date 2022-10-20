@@ -3,12 +3,13 @@
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_can.h"
 #include "can.h"
+#include "timer.h"
 
 unsigned short self_id;
 unsigned char waiting_for_alive_response = 0;
 
 // Configures selected CAN interface for incoming messages
-void can_init(CAN_TypeDef * CANx){
+void can_init(CAN_TypeDef * CANx, int is_central_unit) {
     // enable clocks
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE); 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN2, ENABLE); 
@@ -70,6 +71,15 @@ void can_init(CAN_TypeDef * CANx){
     can_filter_init.CAN_FilterFIFOAssignment = 0;
     can_filter_init.CAN_FilterActivation = ENABLE;
     CAN_FilterInit(&can_filter_init);
+	
+	if (is_central_unit) {
+		self_id = 0;
+	}
+	else {
+		// 7 is the largest number available for the id, this is to prevent it from colliding with other units
+		// And most importantly to keep it from colliding with the central unit.
+		self_id = 7;
+	}
 }
 // Gets a pending message from a specified can peripheral.
 // The message is then decoded and acks are sent as required.
@@ -81,16 +91,22 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     CAN_Receive(CANx, CAN_FIFO0, &can_msg);
 
     // Decode the sender_id, reciever_id and the type of message from the StdId field
-    unsigned char message_type = can_msg.StdId & 0b01111000000;
-    unsigned char sender_id = can_msg.StdId & 0b00000111000;
+    unsigned char message_type = (can_msg.StdId & 0b01111000000) >> 6;
+    unsigned char sender_id = (can_msg.StdId & 0b00000111000) >> 3;
     unsigned char reciever_id = can_msg.StdId & 0b00000000111;
 
     // Get the last two chars in the data which correspond to the sequence number
     unsigned short sequence_n = can_msg.Data[6] << 8;
     sequence_n |= can_msg.Data[7];
 
+
     // Invalid message type was sent
-    if (message_type > MAX_MSGID) { return 0; }
+    if (message_type > MAX_MSGID) { 
+        if (DEBUG) {
+            print("Invalid message type\n"); 
+        }
+        return 0; 
+    }
 
     // If a unit recieved a message that is supposed to be from itself
     // Then a replay attack may be happening, start the alarm
@@ -101,8 +117,11 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // If the central unit recieves a message from a unit
     // That has not sent its first alive message
     // Then it could be a hostile unit, just ignore the message
-    if (IS_CENTRAL_UNIT) {
-        if (!units[sender_id].is_used) {
+    if (self_id == 0) {
+        if (!units[sender_id].is_used && message_type != MSGID_NEW_ALIVE && message_type != MSGID_ACK) {
+            if (DEBUG) {
+    			print("Unrecognised unit message recieved\n");
+            }
             return 0;
         }
     }
@@ -111,8 +130,11 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // They cant confirm if a unit is hostile or not because they dont have unit info
     // So they should only accept messages from the central unit
     // If a unit tries to impersonate the central unit, an alarm will be started
-    if (!IS_CENTRAL_UNIT) {
+    if (self_id != 0) {
         if (sender_id != 0) {
+            if (DEBUG) {
+    			print("Non central unit recieved message from non central unit\n");
+            }
             return 0;
         }
     }
@@ -124,23 +146,38 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     for (int i = 0; i < content_length; i++) {
         rx_msg->content[i] = can_msg.Data[i];
     }
+	
+	if (self_id != 7) {
+		// If the unit has not been initialized then it cant check if a message was meant for itself or not
+		// Message is not meant for this unit
+		if (reciever_id != self_id) { 
+            if (DEBUG) {
+                print("Message not meant for this unit\n");
+            }
+            return 0; 
+        }
 
-    // Message is not meant for this unit
-    if (reciever_id != self_id) { return 0; }
+	}
 
     // If we recieve an ack for a message
     // Then we know that the retransmit frame will no longer be needed
     // Set is used for that frame to 0
-    else if (message_type == MSGID_ACK) {
+    if (message_type == MSGID_ACK) {
+		
         for (int i = 0; i < MAX_RT_FRAMES; i++) {
             if (_rt_info->rt_frames[i].sequence_n == sequence_n) {
+				
                 _rt_info->rt_frames[i].is_used = 0;
+				break;
             }
         }
     }
 
     // Lifesigns and acks should not be acked
     else if (!(message_type == MSGID_LIFESIGN)) {
+        if (DEBUG) {
+    		print("Recieved non ack, non lifesign message\n");
+        }
         tx_can_msg ack;
 
         ack.message_type = MSGID_ACK;
@@ -152,14 +189,24 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
             // send back an ack
             _rt_info->recieve_sequence_num[sender_id] = sequence_n;
             can_send_message(_rt_info, _ls_info, CANx, ack);
+            if (DEBUG) {
+    			print("Sent ack for message\n");
+            }
             return 1;
         }
         else if ((_rt_info->recieve_sequence_num[sender_id] + 1) > sequence_n) {
+            if (DEBUG) {
+	    		print("recieved duplicate message, sending ack\n");
+            }
             // The message is a duplicate, ack might have been lost, send a new ack
             can_send_message(_rt_info, _ls_info, CANx, ack);
         }
         return 0;        
     }
+	else {
+		// Lifesigns should be recieved
+		return 1;
+	}
 }
 // Send a message over CAN and save the message in the retransmission buffer
 void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
@@ -175,7 +222,7 @@ void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, t
         .StdId = (tx_msg.priority << 10) + (tx_msg.message_type << 6) + (self_id << 3) + tx_msg.reciever_id,
         .DLC = length,
         .RTR = CAN_RTR_Data,
-        .IDE = CAN_Id_Extended
+        .IDE = CAN_ID_STD,
     };
 
     // The first 6 bytes of data should be the content
@@ -186,15 +233,17 @@ void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, t
     
     // The next 2 should be the sequence number
     // Which should be the latest sequence number saved in the context
-    outgoing.Data[content_length] = sequence_n & 0xff;
-    outgoing.Data[content_length + 1] = (sequence_n >> 8) & 0xff;
+    outgoing.Data[6] = (sequence_n >> 8) & 0xff;
+    outgoing.Data[7] = sequence_n & 0xff;
 
     // send the message over the selected CAN peripheral
     char mailbox = CAN_Transmit(CANx, &outgoing);
 
     // check if the transmission buffer was full
     if (mailbox == CAN_TxStatus_NoMailBox) {
-        print("CAN TxBuf full!");
+        if (DEBUG) {
+            print("CAN TxBuf full!\n");
+        }
     }
 
     _rt_info->transmit_sequence_num[tx_msg.reciever_id]++;
@@ -222,34 +271,37 @@ void can_update(rt_info* _rt_info, ls_info* _ls_info) {
     // Check if ack timeout has been reached for any of the messages sent
     for (int i = 0; i < MAX_RT_FRAMES; i++) {
         if (_rt_info->rt_frames[i].is_used) {
-            if (_rt_info->rt_frames[i].send_timestamp <= (timer_ms - ACK_TIMEOUT_MS)) {
+            if ((_rt_info->rt_frames[i].send_timestamp + ACK_TIMEOUT_MS) <= timer_ms) {
                 // Ack has not been recieved
                 // Retransmit the message
                 char mailbox = CAN_Transmit(_rt_info->rt_frames[i].CANx, &_rt_info->rt_frames[i].msg);
                 // check if the transmission buffer was full
                 if (mailbox == CAN_TxStatus_NoMailBox) {
-                    print("CAN TxBuf full!");
+                    if (DEBUG) {
+                        print("Can buffer full while attempting retransmit, trying again...\n");
+                    }
                 }
             }
         }
     }
 
     // If the current unit is not the central unit, send out lifesigns according to the LIEFSIGN_FREQUENCY_MS
-    if (!IS_CENTRAL_UNIT) {
-        if (_ls_info->latest_self_lifesign_timestamp <= (timer_ms - LIFESIGN_FREQUENCY_MS)) {
+    if (self_id != 0) {
+        if ((_ls_info->latest_self_lifesign_timestamp + LIFESIGN_FREQUENCY_MS) <= timer_ms) {
             _ls_info->latest_self_lifesign_timestamp = timer_ms;
             tx_can_msg lifesign;
             lifesign.priority = 1;
             lifesign.message_type = MSGID_LIFESIGN;
             lifesign.reciever_id = 0;
             can_send_message(_rt_info, _ls_info, CAN1, lifesign);
-        }
+        } 
     }
+	// Otherwise the unit is the central unit
     else {
         // Check if any of the units have not sent a lifesign after double the time they were given
         for(int i = 0; i < MAX_UNITS; i++) {
             if (_ls_info->is_connected[i]) {
-                if (_ls_info->recieved_lifesigns[i] <= (timer_ms - LIFESIGN_FREQUENCY_MS * 2)) {
+                if ((_ls_info->recieved_lifesigns[i] + LIFESIGN_FREQUENCY_MS * 2) <= timer_ms) {
                     // A connected device is no longer sending a lifesign
                     // It might have been disconnected, to prevent unauthorized access
                     // Start the alarm

@@ -17,7 +17,7 @@ void main(void)
 {
     // For all units
     timer_init();
-    can_init(CAN1);
+    can_init(CAN1, 0); // Change to 1 for central unit
     rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;

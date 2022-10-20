@@ -14,6 +14,7 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 unsigned char SELF_TYPE = TYPE_DOOR_UNIT;
 unsigned char num_sub_units = NUMBER_DOORS;
 unsigned char self_id;
+int send_alarm = 0;
 
 u_door doors[NUMBER_DOORS];
 
@@ -69,10 +70,6 @@ void check_if_door_opened(int door_index){
 	}	
 }
 
-// Start global alarm by sending CAN message to central unit.
-void start_global_alarm( void ) {
-
-}
 
 void start_local_alarm( int door_index ) {
 	GPIO_SetBits(GPIOD, doors[door_index].local_alarm_led_pin);
@@ -88,7 +85,7 @@ void door_update( void ) {
 			if ((doors[i].opened_door_timestamp_ms 
 				+ doors[i].local_alarm_time_threshold_s
 				+ doors[i].global_alarm_time_thershold_s * 1000) <= timer_ms) {
-				start_global_alarm();
+				send_alarm = 1;
 			}
 			else if ((doors[i].opened_door_timestamp_ms + doors[i].local_alarm_time_threshold_s * 1000) <= timer_ms) {
 				start_local_alarm(i);
@@ -129,6 +126,12 @@ void main(void) {
 
 	while (1) {
 		door_update();
+
+		if (send_alarm) {
+			can_send_message(&_rt_info, &_ls_info, CAN1, MSG_STANDARD_ALARM);
+            send_alarm = 0;
+		}
+
 		can_update()
 		if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {

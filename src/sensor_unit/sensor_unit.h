@@ -1,3 +1,4 @@
+
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
@@ -26,5 +27,8 @@ typedef struct {
 	uint16_t alarm_led;
 	int initial_distance;
 	int local_alarm_distance_threshold;
-	int central_alarm_distance_threhold;
+	int central_alarm_distance_threshold;
 } u_ultrasonic_sensor;
+
+
+int echo_start, echo_end, echo_time, echo_distance, distance;
