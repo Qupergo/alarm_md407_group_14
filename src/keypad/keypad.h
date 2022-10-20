@@ -14,6 +14,9 @@ typedef struct latest_characters_entered {
 } char_buffer;
 
 char_buffer latest_char_buffer;
+// Start with password 0000
+
+//latest_char_buffer.current_password = {'0','0','0','0'};
 
 // Add a new char to the char_buffer 
 void add_char_to_buffer(char new_char);

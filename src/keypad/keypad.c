@@ -117,20 +117,24 @@ void add_char_to_buffer( char new_char ) {
 	latest_char_buffer.entered_characters_buffer[latest_char_buffer.current_index] = new_char;
 }
 
-void keypad_update() {
+void reset_buffer( void ) {
+	for(int i = 0; i < CHARACTER_BUFFER_LENGTH; i++) {
+		latest_char_buffer.entered_characters_buffer[i] = '\0';
+	}
+	latest_char_buffer.current_index = 0;
+}
+
+int keypad_update() {
 	unsigned char new_char = keyboard();
-	int password_entered = 0;
 	// A new character has been entered, add it to the buffer if it is a new char
 	if (new_char != latest_entered_character) {
-		// Check if the latest PASSWORD_LENGTH characters entered matches the character
-		if (check_password()) {
-			password_entered = 1;
-		}
 		// If no button is pressed, keyboard returns 0xFF
 		// This means a character has been let go, don't add 0xFF to the buffer but update latest_entered_character
 		latest_entered_character = new_char;
 		if (new_char != 0xFF) {
 			add_char_to_buffer(new_char);
+			return 1;
 		}
 	}
+	return 0
 }
