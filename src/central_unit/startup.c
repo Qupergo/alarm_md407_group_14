@@ -107,8 +107,12 @@ int execute_option(int option, int chars_entered) {
 			break;
 		
 		case 8: ;
-			tx_can_msg re_start;
-			re_start.
+			tx_can_msg re_start_1;
+			tx_can_msg re_start_2;
+				re_start_1.message_type = MSGID_RESET_UNIT;
+				re_start_1.reciever_id = TYPE_SENSOR_UNIT;
+				re_start_2.message_type = MSGID_RESET_UNIT;
+				re_start_2.reciever_id = TYPE_DOOR_UNIT;
 	}
 }
 
