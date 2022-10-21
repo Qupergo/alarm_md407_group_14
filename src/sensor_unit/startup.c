@@ -11,7 +11,8 @@ void startup(void) {
 u_vibration_sensor vibrationSensor = {
     1, // ID
     GPIOD, // GPIO_Unit
-    GPIO_Pin_4 // DI pin
+    GPIO_Pin_4, // DI pin
+    0  // initial alarm status value
 };
 
 u_ultrasonic_sensor ultraSonicSensor = {
@@ -22,13 +23,15 @@ u_ultrasonic_sensor ultraSonicSensor = {
     GPIO_Pin_2, // led pin
     0, // distance
     0, // local alarm distance 
-    0 // central alarm distance
+    0, // central alarm distance
+    0  // initial alarm status value
 };
 
 unsigned char SELF_TYPE = TYPE_SENSOR_UNIT;
 unsigned char num_sub_units = 2;
 unsigned char self_id;
 int send_alarm = 0;
+
 
 void Init_GPIO(void) {
     // Configration of GPIO pins and ports 
@@ -63,6 +66,7 @@ void TIM_Configration(void) {
 void ultraSonic_irq_handler(void) {
     if (distance < ultraSonicSensor.local_alarm_distance_threshold){
         GPIO_SetBits(GPIOD, ultraSonicSensor.alarm_led);
+        ultraSonicSensor.status_local_alarm = 1; // set value to 1 indicating local alarm is sat off
 
         if (distance < ultraSonicSensor.central_alarm_distance_threshold) {
             send_alarm = 1;
@@ -71,6 +75,7 @@ void ultraSonic_irq_handler(void) {
     else {
         // Turn off the led
         GPIO_ResetBits(GPIOD, ultraSonicSensor.alarm_led);
+         ultraSonicSensor.status_local_alarm = 0; // set value to 0 indicating no alarm is sat off
     }
 	EXTI_ClearFlag(EXTI_Line1);
 }
@@ -230,6 +235,13 @@ void main(void) {
                     // Divide by local alarm factor to get the total distance 
                     char new_global_threshold_cm = (LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD / new_local_threshold_cm) * CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD;
                     break;
+
+                case MSGID_VIEW_STATUS:
+                //TODO
+                break;
+                case MSGID_RECALIBERATE:
+                //TODO
+                break;       
             }
         }
     }

@@ -17,6 +17,7 @@ typedef struct {
 	int id;
 	GPIO_TypeDef* GPIO_unit;
 	uint16_t vibration_pin;
+	int	status_local_alarm;
 } u_vibration_sensor;
 
 typedef struct {
@@ -28,6 +29,7 @@ typedef struct {
 	int initial_distance;
 	int local_alarm_distance_threshold;
 	int central_alarm_distance_threshold;
+	int	status_local_alarm;
 } u_ultrasonic_sensor;
 
 

@@ -21,7 +21,7 @@ char_buffer latest_char_buffer;
 // Add a new char to the char_buffer 
 void add_char_to_buffer(char new_char);
 // Should be periodically called to see if a key is being pressed and adds it to the buffer 
-void keypad_update();
+int keypad_update();
 // Increments the current index in the buffer
 void increment_index();
 // Compares the PASSWORD_LENGTH latest characters to the current password
