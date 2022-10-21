@@ -71,6 +71,12 @@ void check_if_door_opened(int door_index){
 }
 
 
+void stop_local_alarm( int door_index ) {
+	GPIO_SetBits(GPIOD, doors[door_index].is_closed_led_pin);
+	GPIO_ResetBits(GPIOD, doors[door_index].local_alarm_led_pin);
+	doors[door_index].status_local_alarm = 0;
+}
+
 void start_local_alarm( int door_index ) {
 	GPIO_SetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 1;
@@ -155,6 +161,14 @@ void main(void) {
 					else {
 						doors[door_id].global_alarm_time_threshold_s = new_threshold;
 					}
+					break;
+				case MSGID_START_ALARM:
+					char door_id = rx_msg.content[0];
+					start_local_alarm(door_id);
+					break;
+				case MSGID_STOP_ALARM:
+					char door_id = rx_msg.content[0];
+					stop_local_alarm(door_id);
 					break;
 			}
 		}
