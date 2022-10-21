@@ -237,11 +237,20 @@ void main(void) {
                     break;
 
                 case MSGID_VIEW_STATUS:
-                //TODO
+                    if(ultraSonicSensor.status_local_alarm){
+                        
+                    }
                 break;
-                case MSGID_RECALIBERATE:
-                //TODO
-                break;       
+               
+                case MSGID_RECALIBERATE: // both messages types have the same function/purpose.
+                case MSGID_RESET_UNIT:
+                    Init_GPIO();
+                    TIM_Configration();
+                    set_threshold_values();
+                    timer_init();	
+                    EXTIInit();
+                    USART1_Init();
+                break;      
             }
         }
     }
