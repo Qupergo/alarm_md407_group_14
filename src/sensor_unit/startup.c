@@ -224,7 +224,7 @@ void main(void) {
                         if (rx_msg.content[0] == SELF_TYPE) {
                             waiting_for_alive_response = 0;
                             self_id = rx_msg.content[1];
-							
+
                             _rt_info.recieve_sequence_num[rx_msg.sender_id] = 0;
                             _rt_info.transmit_sequence_num[rx_msg.sender_id] = 1;
                         }
