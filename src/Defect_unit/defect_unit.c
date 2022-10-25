@@ -1,5 +1,6 @@
 #include "defect_unit.h"
 
+/*
 void imitation_attack(void){
 	int data[6];
 	can_receive_message(&_rt_info, &_ls_info, CAN1, &_rx_msg);
@@ -23,3 +24,4 @@ void imitation_attack(void){
 void replay_attack(void){
 	
 }
+*/

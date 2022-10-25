@@ -12,6 +12,7 @@
 enum message_id {
     MSGID_START_ALARM,
     MSGID_STOP_ALARM,
+	MSGID_UNLOCK_DOOR,
     MSGID_NEW_ALIVE,
     MSGID_NEW_ALIVE_RESPONSE,
     MSGID_RESET_UNIT,
@@ -79,11 +80,13 @@ typedef struct lifesign_info {
     unsigned int latest_self_lifesign_timestamp;
 } ls_info;
 
+/*
 tx_can_msg MSG_STANDARD_ALARM = {
     .priority = 0,
     .message_type = MSGID_START_ALARM,
     .reciever_id = 0,
 };
+*/
 
 // Configures selected CAN interface for incoming messages
 void can_init(CAN_TypeDef * CANx, int is_central_unit);

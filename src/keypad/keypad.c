@@ -1,18 +1,11 @@
-#include "stm32f4xx.h"
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_rcc.h"
+//#include "stm32f4xx.h"
+//#include "stm32f4xx_gpio.h"
+//#include "stm32f4xx_rcc.h"
 #include "timer.h"
 #include "keypad.h"
 
-__attribute__((naked)) __attribute__((section (".start_section")) )
-void startup ( void ) 
-{
-__asm__ volatile(" LDR R0,=0x2001C000\n");		/* set stack */
-__asm__ volatile(" MOV SP,R0\n");
-__asm__ volatile(" BL main\n");					/* call main */
-__asm__ 
-volatile(".L1: B .L1\n");				/* never return */
-}
+
+unsigned char latest_entered_character = 0xFF;
 
 
 void keypad_init(void) {	
@@ -76,7 +69,7 @@ unsigned char keyboard(void) {
 
 char* get_latest_chars_entered(unsigned char amount_of_chars) {
 	if (amount_of_chars > CHARACTER_BUFFER_LENGTH) {
-		print("Invalid amount_of_chars value entered");
+		USART_Snd_StrLn("Invalid amount_of_chars value entered");
 		return 0;
 	}
 	char* latest_chars;

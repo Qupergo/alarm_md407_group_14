@@ -52,9 +52,9 @@ void can_init(CAN_TypeDef * CANx, int is_central_unit) {
 
     // initialize CAN settings
     if (CAN_Init(CANx, &can_init) == CAN_InitStatus_Success)
-        print("\nCAN init successful!");
+        USART_Snd_StrLn("CAN init successful!");
     else
-        print("\nCAN Init failed!");
+        USART_Snd_StrLn("CAN Init failed!");
 
     // config CAN-filter
     CAN_FilterInitTypeDef can_filter_init;
@@ -103,7 +103,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // Invalid message type was sent
     if (message_type > MAX_MSGID) { 
         if (DEBUG) {
-            print("Invalid message type\n"); 
+            USART_Snd_StrLn("Invalid message type"); 
         }
         return 0; 
     }
@@ -120,7 +120,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     if (self_id == 0) {
         if (!units[sender_id].is_used && message_type != MSGID_NEW_ALIVE && message_type != MSGID_ACK) {
             if (DEBUG) {
-    			print("Unrecognised unit message recieved\n");
+    			USART_Snd_StrLn("Unrecognised unit message recieved");
             }
             return 0;
         }
@@ -133,7 +133,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     if (self_id != 0) {
         if (sender_id != 0) {
             if (DEBUG) {
-    			print("Non central unit recieved message from non central unit\n");
+    			USART_Snd_StrLn("Non central unit recieved message from non central unit");
             }
             return 0;
         }
@@ -152,7 +152,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
 		// Message is not meant for this unit
 		if (reciever_id != self_id) { 
             if (DEBUG) {
-                print("Message not meant for this unit\n");
+                USART_Snd_StrLn("Message not meant for this unit");
             }
             return 0; 
         }
@@ -176,7 +176,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // Lifesigns and acks should not be acked
     else if (!(message_type == MSGID_LIFESIGN)) {
         if (DEBUG) {
-    		print("Recieved non ack, non lifesign message\n");
+    		USART_Snd_StrLn("Recieved non ack, non lifesign message");
         }
         tx_can_msg ack;
 
@@ -190,13 +190,13 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
             _rt_info->recieve_sequence_num[sender_id] = sequence_n;
             can_send_message(_rt_info, _ls_info, CANx, ack);
             if (DEBUG) {
-    			print("Sent ack for message\n");
+    			USART_Snd_StrLn("Sent ack for message");
             }
             return 1;
         }
         else if ((_rt_info->recieve_sequence_num[sender_id] + 1) > sequence_n) {
             if (DEBUG) {
-	    		print("recieved duplicate message, sending ack\n");
+	    		USART_Snd_StrLn("recieved duplicate message, sending ack");
             }
             // The message is a duplicate, ack might have been lost, send a new ack
             can_send_message(_rt_info, _ls_info, CANx, ack);
@@ -242,7 +242,7 @@ void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, t
     // check if the transmission buffer was full
     if (mailbox == CAN_TxStatus_NoMailBox) {
         if (DEBUG) {
-            print("CAN TxBuf full!\n");
+            USART_Snd_StrLn("CAN TxBuf full!");
         }
     }
 
@@ -278,7 +278,7 @@ void can_update(rt_info* _rt_info, ls_info* _ls_info) {
                 // check if the transmission buffer was full
                 if (mailbox == CAN_TxStatus_NoMailBox) {
                     if (DEBUG) {
-                        print("Can buffer full while attempting retransmit, trying again...\n");
+                        USART_Snd_StrLn("Can buffer full while attempting retransmit, trying again...");
                     }
                 }
             }

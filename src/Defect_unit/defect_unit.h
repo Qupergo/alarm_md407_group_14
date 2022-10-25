@@ -1,4 +1,7 @@
 #include "can.h"
+#include "usart1.h"
+//#include "stm32f4xx_can.h"
+#include "timer.h"
 
 #define TIME_BETWEEN_SEND_MS 10
 

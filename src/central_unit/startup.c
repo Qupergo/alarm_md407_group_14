@@ -1,7 +1,3 @@
-#include "stm32f4xx.h"
-#include "stm32f4xx_gpio.h"
-#include "stm32f4xx_rcc.h"
-#include "stm32f4xx_can.h"
 #include "can.h"
 #include "string.h"
 #include "keypad.h"
@@ -25,15 +21,15 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 
 
 void print_menu_options( void ) {
-	print("Select one option from the following");
-	print("1 Set a new password");
-	print("2 View alarm status for all units");
-	print("3 Enable door alarm");
-	print("4 Disable door alarm"); 
-	print("5 Set a time threshold for door, start 0 for global and 1 for local threshold, enter door ID, followed by threshold value");
-	print("6 Calibrate distance sensor");
-	print("7 Adjust sensitivity for distance sensor");
-	print("8 Restart alarm");
+	USART_Snd_StrLn("Select one option from the following");
+	USART_Snd_StrLn("1 Set a new password");
+	USART_Snd_StrLn("2 View alarm status for all units");
+	USART_Snd_StrLn("3 Enable door alarm");
+	USART_Snd_StrLn("4 Disable door alarm"); 
+	USART_Snd_StrLn("5 Set a time threshold for door, start 0 for global and 1 for local threshold, enter door ID, followed by threshold value");
+	USART_Snd_StrLn("6 Calibrate distance sensor");
+	USART_Snd_StrLn("7 Adjust sensitivity for distance sensor");
+	USART_Snd_StrLn("8 Restart alarm");
 }
 
 // Returns the amount of chars neeeded to execute the command.
@@ -118,6 +114,8 @@ int execute_option(int option, int chars_entered) {
 
 void main(void)
 {
+	keypad_init();
+	can_init(CAN1,1);
 	rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;
@@ -181,13 +179,13 @@ void main(void)
                         }
                     }
                     break;
-					/*
+					
 				case MSGID_START_ALARM:
 					unsigned char alarm_sender = rx_msg.sender_id;
 					unsigned char time_passed_since_alarm = timer_ms; // maybe as global variable ?
-					//usart msg
+					USART_Snd_StrLn("ALARM");
 					trigger_alarm();
-					 */
+					 
 			}
         }
     }

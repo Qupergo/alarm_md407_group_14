@@ -4,9 +4,7 @@
  */
  
  #include "defect_unit.h"
- #include "usart.h"
- #include "stm32f4xx_rcc.h"
- #include "timer.h"
+
  
 __attribute__((naked)) __attribute__((section (".start_section")) )
 void startup ( void )
@@ -22,7 +20,10 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 void main(void)
 {
 	int timestamp_of_last_send = 0;
+	
 	timer_init();
+	can_init(CAN1,0);
+	
 	while (1) {
 		if((TIME_BETWEEN_SEND_MS + timestamp_of_last_send) <= timer_ms) {
 			timestamp_of_last_send = timer_ms; // Update timestamp to current send

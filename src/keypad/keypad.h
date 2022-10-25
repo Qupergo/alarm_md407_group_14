@@ -5,8 +5,6 @@
 #define PASSWORD_LENGTH 4
 #define CHARACTER_BUFFER_LENGTH 8
 
-unsigned char latest_entered_character = 0xFF;
-
 typedef struct latest_characters_entered {
 	unsigned char current_password[PASSWORD_LENGTH];
 	unsigned char entered_characters_buffer[CHARACTER_BUFFER_LENGTH];

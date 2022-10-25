@@ -3,10 +3,6 @@
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_usart.h"
 
-char input_buffer[32];
-char buffer_index = 0;
-char send_message_flag = 0;
-char clear_buffer_flag = 0;
 
 void USART_irq_handler(void);
 void USART1_Init(void);

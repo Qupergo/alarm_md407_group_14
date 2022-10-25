@@ -4,16 +4,10 @@
  */
 #include "usart1.h"
 
-__attribute__((naked)) __attribute__((section (".start_section")) )
-void startup ( void )
-{
-__asm__ volatile(" LDR R0,=0x2001C000\n");		/* set stack */
-__asm__ volatile(" MOV SP,R0\n");
-__asm__ volatile(" BL main\n");					/* call main */
-__asm__ volatile(".L1: B .L1\n");				/* never return */
-}
-
-
+char input_buffer[32];
+char buffer_index = 0;
+char send_message_flag = 0;
+char clear_buffer_flag = 0;
 
 
 void USART_irq_handler(void) {
@@ -105,13 +99,3 @@ char* USART1_receive_data(void) {
 		return input_buffer;
 	
 }
-
-void main(void)
-{
-	USART1_Init();
-	USART_Snd_Str("welcome");
-	USART_Snd('\n');
-	USART_Snd_Int(23);
-	
-}
-
