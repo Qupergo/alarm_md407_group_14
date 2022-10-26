@@ -67,16 +67,16 @@ unsigned char keyboard(void) {
 	return 0xFF;
 }
 
-char* get_latest_chars_entered(unsigned char amount_of_chars) {
+char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars) {
 	if (amount_of_chars > CHARACTER_BUFFER_LENGTH) {
 		USART_Snd_StrLn("Invalid amount_of_chars value entered");
 		return 0;
 	}
 	char* latest_chars;
-	int index = latest_char_buffer.current_index;
+	int index = c_buffer->current_index;
 
 	for (int i = 0; i < amount_of_chars; i++) {
-		*latest_chars = latest_char_buffer.entered_characters_buffer[index];
+		*latest_chars = c_buffer->entered_characters_buffer[index];
 		latest_chars++;
 		index--;
 		if (index < 0) {
@@ -86,38 +86,38 @@ char* get_latest_chars_entered(unsigned char amount_of_chars) {
 	return latest_chars;
 }
 
-int check_password() {
+int check_password(char_buffer* c_buffer) {
 	unsigned char size;
 	char* latest_password;
-	latest_password = get_latest_chars_entered(PASSWORD_LENGTH);
+	latest_password = get_latest_chars_entered(c_buffer, PASSWORD_LENGTH);
 	for(int i = 0; i < PASSWORD_LENGTH; i++){
-		if(latest_password[i] != latest_char_buffer.current_password[i]) {
+		if(latest_password[i] != c_buffer->current_password[i]) {
 			return 0;
 		}
 	}
 	return 1;
 }
 
-void increment_index() {
-	latest_char_buffer.current_index++;
-	if (latest_char_buffer.current_index > (CHARACTER_BUFFER_LENGTH - 1)) {
-		latest_char_buffer.current_index = 0;
+void increment_index(char_buffer* c_buffer) {
+	c_buffer->current_index++;
+	if (c_buffer->current_index > (CHARACTER_BUFFER_LENGTH - 1)) {
+		c_buffer->current_index = 0;
 	}
 }
 
-void add_char_to_buffer( char new_char ) {
-	increment_index();
-	latest_char_buffer.entered_characters_buffer[latest_char_buffer.current_index] = new_char;
+void add_char_to_buffer(char_buffer* c_buffer, char new_char ) {
+	increment_index(c_buffer);
+	c_buffer->entered_characters_buffer[c_buffer->current_index] = new_char;
 }
 
-void reset_buffer( void ) {
+void reset_buffer( char_buffer* c_buffer ) {
 	for(int i = 0; i < CHARACTER_BUFFER_LENGTH; i++) {
-		latest_char_buffer.entered_characters_buffer[i] = '\0';
+		c_buffer->entered_characters_buffer[i] = '\0';
 	}
-	latest_char_buffer.current_index = 0;
+	c_buffer->current_index = 0;
 }
 
-int keypad_update() {
+int keypad_update(char_buffer* c_buffer) {
 	unsigned char new_char = keyboard();
 	// A new character has been entered, add it to the buffer if it is a new char
 	if (new_char != latest_entered_character) {
@@ -125,7 +125,7 @@ int keypad_update() {
 		// This means a character has been let go, don't add 0xFF to the buffer but update latest_entered_character
 		latest_entered_character = new_char;
 		if (new_char != 0xFF) {
-			add_char_to_buffer(new_char);
+			add_char_to_buffer(c_buffer, new_char);
 			return 1;
 		}
 	}

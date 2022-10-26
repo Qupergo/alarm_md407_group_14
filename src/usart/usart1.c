@@ -19,18 +19,18 @@ void USART_irq_handler(void) {
 	}
 
 	char input = USART_ReceiveData(USART1);
-	
-		// if enter is pressed
-		if (input == '\n' || buffer_index == (sizeof(input_buffer) / sizeof(int)) -1) {
-			send_message_flag = 1;
-			clear_buffer_flag = 1;
-		}
-		else {
-			USART_Snd(input);
-			input_buffer[buffer_index] = input;
-			buffer_index ++;
-		}
-	
+
+	// if enter is pressed
+	if (input == '\n' || buffer_index == (sizeof(input_buffer) / sizeof(int)) - 1) {
+		send_message_flag = 1;
+		clear_buffer_flag = 1;
+	}
+	else {
+		USART_Snd(input);
+		input_buffer[buffer_index] = input;
+		buffer_index++;
+	}
+
 
 
 }
@@ -49,7 +49,7 @@ void USART1_Init(void)
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
+
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 	USART_InitStructure.USART_BaudRate = 115200;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
@@ -63,27 +63,27 @@ void USART1_Init(void)
 	*((int*)0x2001C0D4) = USART_irq_handler;
 }
 
-void USART_Snd(char c){
+void USART_Snd(char c) {
 	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 	USART_SendData(USART1, c);
-	
+
 }
 
-void USART_Snd_Str(char* s){
-    while (*s != '\0'){
+void print(char* s) {
+	while (*s != '\0') {
 		USART_Snd(*(s++));
 	}
 }
-void USART_Snd_StrLn(char* s){
+void print_nl(char* s) {
 	USART_Snd('\n');
-    while (*s != '\0'){
+	while (*s != '\0') {
 		USART_Snd(*(s++));
 	}
 }
-void USART_Snd_Int(int x){
+void print_int(int x) {
 	char a[32];
-	USART_Snd_Str(itoa(x,a,10));
-	
+	print(itoa(x, a, 10));
+
 }
 
 void clear_input_buffer(void) {
@@ -94,8 +94,8 @@ void clear_input_buffer(void) {
 }
 
 char* USART1_receive_data(void) {
-		send_message_flag = 0;
-		buffer_index = 0;
-		return input_buffer;
-	
+	send_message_flag = 0;
+	buffer_index = 0;
+	return input_buffer;
+
 }

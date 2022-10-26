@@ -30,14 +30,13 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 \tableofcontents
 \newpage
 \section*{Ordlista}
-Ordlista
 \begin{description}
 
-\item[Buss] En buss är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
+\item[Buss] En \emph{buss} är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
 
-\item[CAN] Controller Area Network är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är bestyckad med två CAN bussar.
+\item[CAN] \emph{Controller Area Network} är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är försedd med två CAN bussar.
 
-\item[GPIO] General Purpose Input Output är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
+\item[GPIO] \emph{General Purpose Input/Output} är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
 
 \item[HC-SR04] En ultraljudsbaserad avståndsmätare
 
@@ -45,7 +44,7 @@ Ordlista
 
 \item[SW-18010] En fjäderbaserad vibrationssensor.
 
-\item[USART] Universal Synchronous/Asynchronous Reciever/Transmitter är kopplingen mellan MD407 och terminalen.
+\item[USART] \emph{Universal Synchronous/Asynchronous Reciever/Transmitter} är hårdvara som tillåter seriell kommunikation mellan mikrokontroller och en PC.
 
 \end{description}
  \newpage
@@ -53,17 +52,17 @@ Ordlista
 \setcounter{page}{1}
 \section{Introduktion}
 
-Under året 2021 anmäldes 72 884 inbrottsstölder i Sverige vilket pekar på att det finns ett tydligt behov av larmsystem i dagens samhälle.\cite{BRa} 
-Trots den oro som finns i allmänheten för att ens egendom ska bli stulen så tillkännager endast 13 \% av unga mellan 23 och 35 år att de äger en larminstallation.\cite{MoFor} 
-En av de största anledningarna till detta är kostnaden, 20 \% av de som saknar ett hemlarm anger att priset på installation är för högt.\cite{MoFor} 
+Under året 2021 anmäldes 72 884 inbrottsstölder i Sverige vilket pekar på att det finns ett tydligt behov av larmsystem i dagens samhälle \cite{BRa}.
+Trots den oro som finns i allmänheten för att ens egendom ska bli stulen så tillkännager endast 13 \% av unga mellan 23 och 35 år att de äger en larminstallation \cite{MoFor}.
+En av de största anledningarna till detta är kostnaden, 20 \% av de som saknar ett hemlarm anger att priset på installation är för högt \cite{MoFor}.
 Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tryggare tillvaro.
 
 %NY INTRODUKTION ADDERAD
 
 \subsection{Syfte}
 Projektet syftar till att skapa ett larmsystem som är lätt att använda och kostar lite.
-Detta då endast 29 \% av Sveriges befolkning innehar ett larmsystem.\cite{SSF} 
-Systemet är menat installeras i byggnader och institutioner, vilket kommer att sänka inbrott samt öka trygghet i framförallt låg-inkomsthushåll.
+Detta då endast 29 \% av Sveriges befolkning äger ett larmsystem \cite{SSF}.
+Systemet är menat installeras i bostäder, vilket kommer att sänka inbrott samt öka trygghet i framförallt låg-inkomsthushåll.
 För att larmsystemet ska fungera säkert och korrekt, måste mål sättas upp. 
 
 %ÄNDRA: sista meningen skum ändra från "eventuellt att kunna installeras"
@@ -72,13 +71,13 @@ För att larmsystemet ska fungera säkert och korrekt, måste mål sättas upp.
 Målet med projektet är att konstruera ett larm och låssystem med två periferienheter.
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
 Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de perifera larmenheterna.
-Målet med detta är att möjliggöra centraliserad kontroll och kalibrering av flera larmenheter i ett större larmsystem.
+Målet med detta är att möjliggöra centraliserad kontroll och kalibrering av flera larmenheter i ett larmsystem.
 Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.
 
 Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. 
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. 
 Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
-Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en längre tid. 
+Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid.
 Avståndsmätare ska larma ifall något passerar framför den inom ett visst avståndsintervall.
 Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid. 
 Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
@@ -86,7 +85,7 @@ Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dö
 %ÄNDRA: gör tydligt vad som är delmålen i projektet
 
 \subsection{Arbetsmetod}
-I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det själv tekniska genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
+I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det tekniska genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
 
 \subsubsection{Förarbete}
@@ -107,7 +106,7 @@ Efter dessa delar var klara gjordes CAN protokollet medans buggar fixades i pere
 Efter detta gjordes störenheten för att simulera en defekt enhet.
 
 \subsubsection{Testning och verifiering}
-För att säkerställa kvaliten hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar. 
+För att säkerställa kvalitén hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar. 
 Rent praktiskt var ofta olika print-statements placerade i koden för att kolla så att korrekt resultat producerades i kombination med att sätta objekt framför avståndsmätare, osv. 
 Då inget fel noterades var testet markerat som godkänt och ingen vidare åtgärd tillämpades. 
 Däremot när resultat inte blev som testet förväntat söktes felkälla upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa fungerande produkt. 
@@ -118,14 +117,10 @@ Störenheten användes också som en angreppsenhet, med hjälp av den så testad
 \newpage
 \section{Teknisk beskrivning}
 I det här kapitlet redogörs en teknisk beskrivning av systemet. 
-I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte.
-
-Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. 
+I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte. Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. 
 Delsystem förklarar hur samtliga delarna är uppbyggda.
 
 \subsection{Teknisk bakgrund}
-
-Digitala larmsystem används för att upptäcka inbrott eller obehörigt inträde i privata fastigheter, industriella anläggningar samt militära skyddsobjekt. 
 Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. 
 I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
 
@@ -133,12 +128,12 @@ I konstruktionsarbetet är MD407-kort den centrala komponenten.
 Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. 
 Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
 
-För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den bestyckad med flera olika anslutningar som kan användas för detta. 
-GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med Avståndsmätare samt Vibrationssensor. 
+För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den försedd med flera olika anslutningar som kan användas för detta. 
+GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med avståndsmätare samt Vibrationssensor. 
 Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. 
 Det finns även kontaktstift för ström samt jord som används av sensorerna.
 
-Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar, vilket möjliggör att samma kort kan skicka meddelanden till sig själv ifall protokollet för att skicka behöver testas. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
+Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
 \newpage
 \subsection{Systemöversikt}
@@ -164,14 +159,6 @@ Till sensorenheten kopplas avståndsmätare (HC-SR04) och vibrationssensor (SW-1
 Avståndsmätaren kommer att skicka en signal om det avmätta avståndet ligger inom ett visst tröskelvärde.
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer över ett tröskelvärde.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
-    \caption {Visuell framställning av Kommunikationsprotokoll}
-    \label{fig:drawing}
-\end{figure}
-
-
 \subsection{Delsystem}
 %gör beskrivning
 Här beskrivs vad de olika delsystemen har för tekniska funktioner samt arbetsroller under utförandet av systemet. 
@@ -193,8 +180,8 @@ Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsm�
 
 Dörrenheten är kopplad till flera dörrar, där varje dörr kopplas till en grön lampa, en röd lampa och ett lås. 
 Utöver det har varje dörr sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
-När tiden har gått ett tröskelvärde går det lokala larmet och det kan man se genom att den röda lampan lyser. 
-Efter två tröskelvärden kommer larmar dörrenheten till centralenheten för att sätta igång ett globalt larm. 
+När tiden som dörren har varit öppen överstiger dess specifika tröskelvärde aktiveras det lokala larmet och det kan man se genom att den röda lampan lyser.
+Efter två tröskelvärden larmar dörrenheten till centralenheten för att sätta igång ett globalt larm. 
 Om dörren är stängd lyser den gröna lampan medan det lokala och centrala larmet ska vara avstängda. 
 
 \subsubsection{Sensorenhet}
@@ -209,7 +196,7 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.05]{Projektrapport/sensor.png}
-    \caption {Hårdvaran till vänster är vibrationssensor, till höger är avståndsmätare}
+    \caption {Sensorerna som är implementerade på sensorenheten. Hårdvaran till vänster är vibrationssensor och till höger är avståndsmätare}
     \label{fig:drawing}
 \end{figure}
 \subsubsection{Systemprotkoll}
@@ -218,10 +205,22 @@ Den mest signifikanta biten är bit 10 och minst signifikanta biten är bit 0.
 Ett ställning av bit 10 innebär att detta meddelande får högsta prioritet när det tas emot på bussen ifall det skulle uppstå kö.
 Noll-ställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. 
 Bit 9 till och med bit 6 är reserverade till meddlandetypen som innehåller bland annat ifall meddelandet är en förfrågan att larma på eller av, eller information som skickas mellan enheterna regelbundet. 
-Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla avsändarens ID, och bit 2 till och med bit 0 innehålla mottagarens ID. 
+Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla avsändarens ID, och bit 2 till och med bit 0 innehålla mottagarens ID.
 
-\section{Resultat}
-Detta avsnitt redovisar resultatet av genomförd verifiering av systemet och dess olika delar
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
+    \caption {Visuell framställning av Kommunikationsprotokoll}
+    \label{fig:drawing}
+\end{figure}
+
+\section{Resultat och diskussion}
+I detta avsnitt redovisas resultatet av genomförd verifiering av systemet och dess olika delar
+
+\subsection{Periferienheter}
+\subsubsection{Dörrenhet}
+Dörrenheten implementerades enligt målet korrekt. Den kunde larma lokalt 
+\subsubsection{Sensorenhet}
 
 \subsection{Mätning av avstånd}
 Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
@@ -233,11 +232,9 @@ Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenhe
 \subsection{Mätning av vibrationer}
 Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
 
-
 \subsection{Dörrlarm}
 Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. 
 Under testningen av enheten har den uppfyllt de målen som krävdes.
-
 
 \section{Slutsats och diskussion}
 Med resultaten kan man konstatera att det går att skapa ett eget larm om man har möjlighet att införskaffa komponenterna.\\

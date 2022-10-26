@@ -11,22 +11,20 @@ typedef struct latest_characters_entered {
 	unsigned char current_index;
 } char_buffer;
 
-char_buffer latest_char_buffer;
-// Start with password 0000
+// Start with password 1111
 
-//latest_char_buffer.current_password = {'0','0','0','0'};
 
 // Add a new char to the char_buffer 
-void add_char_to_buffer(char new_char);
+void add_char_to_buffer(char_buffer* c_buffer, char new_char);
 // Should be periodically called to see if a key is being pressed and adds it to the buffer
 // Returns 1 when a new key has been entered
-int keypad_update();
+int keypad_update(char_buffer* c_buffer);
 // Increments the current index in the buffer
-void increment_index();
+void increment_index(char_buffer* c_buffer);
 // Compares the PASSWORD_LENGTH latest characters to the current password
-int check_password();
+int check_password(char_buffer* c_buffer);
 // Get the N latest chars entered
-char* get_latest_chars_entered(unsigned char amount_of_chars);
+char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars);
 // Returns a char pressed on the keypad
 unsigned char keyboard(void);
 // Internal function used for keyboard()

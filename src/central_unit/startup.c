@@ -150,6 +150,10 @@ void main(void)
 	rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;
+	u_info central_unit;
+	char_buffer _latest_char_buffer = {
+		.current_password = {'1', '1', '1', '1'},
+	};
 	
 	can_init(&_rt_info, &_ls_info, CAN1, 1);
 
@@ -214,11 +218,10 @@ void main(void)
                     }
                     break;
 					
-				case MSGID_START_ALARM:
+				case MSGID_START_ALARM: ;
 					unsigned char alarm_sender = rx_msg.sender_id;
 					unsigned char time_passed_since_alarm = timer_ms; // maybe as global variable ?
-					USART_Snd_StrLn("ALARM");
-					 
+					USART_Snd_StrLn("ALARM");	 
 			}
         }
     }
