@@ -1,9 +1,8 @@
-
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_tim.h"
-#include "usart.h"
+#include "usart1.h"
 #include "misc.h"
 #include "stm32f4xx_syscfg.h"
 #include "stm32f4xx_exti.h"
@@ -26,6 +25,6 @@ typedef struct DoorUnit {
 	uint8_t status_local_alarm;
 	uint8_t door_is_open;
 	uint32_t local_alarm_time_threshold_s;
-	uint32_t global_alarm_time_thershold_s;
+	uint32_t global_alarm_time_threshold_s;
 	uint32_t opened_door_timestamp_ms;
 } u_door;

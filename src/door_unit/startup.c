@@ -11,6 +11,8 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 #include "timer.h"
 #include "can.h"
 
+#define DEBUG 1
+
 unsigned char SELF_TYPE = TYPE_DOOR_UNIT;
 unsigned char num_sub_units = NUMBER_DOORS;
 unsigned char self_id;
@@ -44,7 +46,7 @@ void init_doors(void){
 			.status_central_alarm = 0,
 			.status_local_alarm = 0,
 			.local_alarm_time_threshold_s = DEFAULT_LOCAL_TIME_THRESHOLD,
-			.global_alarm_time_thershold_s = DEFAULT_GLOBAL_TIME_THRESHOLD,
+			.global_alarm_time_threshold_s = DEFAULT_GLOBAL_TIME_THRESHOLD,
 			.opened_door_timestamp_ms = 0,
 		};
 		doors[i] = door;
@@ -75,11 +77,13 @@ void stop_local_alarm( int door_index ) {
 	GPIO_SetBits(GPIOD, doors[door_index].is_closed_led_pin);
 	GPIO_ResetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 0;
+	print_line("local alarm stopped");
 }
 
 void start_local_alarm( int door_index ) {
 	GPIO_SetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 1;
+	print_line("local alarm started");
 }
 
 void door_update( void ) {
@@ -89,12 +93,16 @@ void door_update( void ) {
 			// When the time for the local alarm has passed start the local alarm.
 			// After global_alarm_time_threshold has gone by after the local alarm started, start the global alarm.
 			if ((doors[i].opened_door_timestamp_ms 
-				+ doors[i].local_alarm_time_threshold_s
-				+ doors[i].global_alarm_time_thershold_s * 1000) <= timer_ms) {
+				+ doors[i].local_alarm_time_threshold_s * 1000
+				+ doors[i].global_alarm_time_threshold_s * 1000) <= timer_ms) {
+					print_line("global alarm threshold reached");
 				send_alarm = 1;
 			}
 			else if ((doors[i].opened_door_timestamp_ms + doors[i].local_alarm_time_threshold_s * 1000) <= timer_ms) {
 				start_local_alarm(i);
+				print("timestamp for door timed out, starting local alarm on door ");
+				print_int(i);
+				print("\n");
 			}
 		}
 	}
@@ -104,11 +112,11 @@ void main(void) {
 	init_GPIO();
 	init_doors();
     timer_init();
-    can_init(CAN1);
     rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;
-
+    can_init(&_rt_info, &_ls_info, CAN1, 0);
+  
     for (int i = 0; i < MAX_UNITS; i++) {
         _rt_info.transmit_sequence_num[i] = 1;
         _rt_info.recieve_sequence_num[i] = 0;
@@ -123,7 +131,7 @@ void main(void) {
 	// Send initial alive message to central unit
     tx_can_msg initial_alive;
     initial_alive.priority = 1;
-    initial_alive.message_type = TYPE_NEW_ALIVE;
+    initial_alive.message_type = MSGID_NEW_ALIVE;
     initial_alive.content[0] = SELF_TYPE;
     initial_alive.content[1] = num_sub_units;
     initial_alive.reciever_id = 0;
@@ -144,7 +152,7 @@ void main(void) {
             send_alarm = 0;
 		}
 
-		can_update()
+		can_update(&_rt_info, &_ls_info);
 		if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
                 case MSGID_NEW_ALIVE_RESPONSE:
@@ -157,24 +165,27 @@ void main(void) {
                         }
                     }
 					break;
-				case MSGID_SET_DOOR_ALARM_TIME_THRESHOLD:
+				case MSGID_SET_DOOR_ALARM_TIME_THRESHOLD:;
 					char door_id = rx_msg.content[0]; 
 					char new_threshold = rx_msg.content[1];
 					char change_local_alarm = rx_msg.content[2];
 					if (change_local_alarm) {
 						doors[door_id].local_alarm_time_threshold_s = new_threshold;
+						if(DEBUG)
+							print_line("changed local alarm thresh");
 					}
 					else {
 						doors[door_id].global_alarm_time_threshold_s = new_threshold;
+						if(DEBUG)
+							print("changed global alarm thresh");
 					}
 					break;
-				case MSGID_START_ALARM:
-					char door_id = rx_msg.content[0];
-					start_local_alarm(door_id);
+					
+				case MSGID_START_ALARM:;
+					start_local_alarm(rx_msg.content[0]); // Door id
 					break;
-				case MSGID_STOP_ALARM:
-					char door_id = rx_msg.content[0];
-					stop_local_alarm(door_id);
+				case MSGID_STOP_ALARM:;
+					stop_local_alarm(rx_msg.content[0]); // Door id
 					break;
 			}
 		}

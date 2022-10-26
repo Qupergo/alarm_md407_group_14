@@ -6,9 +6,11 @@
 
 
 unsigned char latest_entered_character = 0xFF;
+unsigned char prelim_char = 0xFF;
+long entered_key_timestamp = 0;
 
 
-void keypad_init(void) {	
+void keypad_init(char_buffer* c_buffer) {	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	GPIO_InitTypeDef keypad_In;
 	GPIO_InitTypeDef keypad_Out;
@@ -30,6 +32,15 @@ void keypad_init(void) {
 	GPIO_Init(GPIOE, &keypad_In);
 	GPIO_Init(GPIOE, &keypad_Out);
 	
+	for (int i = 0; i < PASSWORD_LENGTH; i++) {
+		c_buffer->current_password[i] = 1;
+	}
+	
+	for (int i = 0; i < CHARACTER_BUFFER_LENGTH; i++) {
+		c_buffer->entered_characters_buffer[i] = 0xFF;
+	}
+	
+	c_buffer->current_index = 0;
 }
 
 void keyboardActivate(unsigned int row) {
@@ -51,10 +62,10 @@ int keyboardGetColumn(void) {
 	if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_1)) { return 2; }
 	if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_0)) { return 1; }
 	return 0;
-	}
+}
 
 unsigned char keyboard(void) {
-	unsigned const char key[] = {'1','2','3','0xA','4','5','6','0xB','7','8','9','0xC','0xE','0','0xF','0xD'};
+	unsigned const char key[] = {1, 2, 3, 'A', 4, 5, 6, 'B', 7, 8, 9, 'C', 'E', 0, 'F','D'};
 	int row, col;
 	for(row = 1; row < 5; row++){
 		keyboardActivate(row);
@@ -67,20 +78,18 @@ unsigned char keyboard(void) {
 	return 0xFF;
 }
 
-char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars) {
+char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars, char* latest_chars) {
 	if (amount_of_chars > CHARACTER_BUFFER_LENGTH) {
 		print_line("Invalid amount_of_chars value entered");
 		return 0;
 	}
-	char* latest_chars;
 	int index = c_buffer->current_index;
 
 	for (int i = 0; i < amount_of_chars; i++) {
-		*latest_chars = c_buffer->entered_characters_buffer[index];
-		latest_chars++;
+		latest_chars[i] = c_buffer->entered_characters_buffer[index];
 		index--;
 		if (index < 0) {
-			index = CHARACTER_BUFFER_LENGTH;
+			index = CHARACTER_BUFFER_LENGTH - 1;
 		}
 	}
 	return latest_chars;
@@ -88,8 +97,8 @@ char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_ch
 
 int check_password(char_buffer* c_buffer) {
 	unsigned char size;
-	char* latest_password;
-	latest_password = get_latest_chars_entered(c_buffer, PASSWORD_LENGTH);
+	char latest_password[PASSWORD_LENGTH];
+	get_latest_chars_entered(c_buffer, PASSWORD_LENGTH, latest_password);
 	for(int i = 0; i < PASSWORD_LENGTH; i++){
 		if(latest_password[i] != c_buffer->current_password[i]) {
 			return 0;
@@ -106,8 +115,8 @@ void increment_index(char_buffer* c_buffer) {
 }
 
 void add_char_to_buffer(char_buffer* c_buffer, char new_char ) {
-	increment_index(c_buffer);
 	c_buffer->entered_characters_buffer[c_buffer->current_index] = new_char;
+	increment_index(c_buffer);
 }
 
 void reset_buffer( char_buffer* c_buffer ) {
@@ -118,16 +127,42 @@ void reset_buffer( char_buffer* c_buffer ) {
 }
 
 int keypad_update(char_buffer* c_buffer) {
-	unsigned char new_char = keyboard();
+	char new_char = keyboard();
+
 	// A new character has been entered, add it to the buffer if it is a new char
 	if (new_char != latest_entered_character) {
-		// If no button is pressed, keyboard returns 0xFF
+		// If no button is pressed, keyboard() returns 0xFF
 		// This means a character has been let go, don't add 0xFF to the buffer but update latest_entered_character
+		print(" ");
+		print_int(new_char);
+		print(" ");
 		latest_entered_character = new_char;
 		if (new_char != 0xFF) {
 			add_char_to_buffer(c_buffer, new_char);
+			//print_buffer(c_buffer);
 			return 1;
 		}
 	}
 	return 0;
+}
+
+
+void print_buffer(char_buffer* c_buffer) {
+	char ordered_entered_chars[CHARACTER_BUFFER_LENGTH];
+	get_latest_chars_entered(c_buffer, CHARACTER_BUFFER_LENGTH, ordered_entered_chars);
+
+	for(int i = 0; i < CHARACTER_BUFFER_LENGTH; i++) {
+		if (ordered_entered_chars[i] == 0xFF) {
+			continue;
+		}
+		else if(ordered_entered_chars[i] >= 0 && ordered_entered_chars[i] <= 9)
+			print_int(ordered_entered_chars[i]);
+		else if (ordered_entered_chars[i] >= 9) {
+			print(ordered_entered_chars[i]);			
+		}
+		else {
+			print_line("AAAAAAAAAAAAAAA");
+		}
+	}
+	print("\n");
 }

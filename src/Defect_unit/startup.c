@@ -22,7 +22,7 @@ void main(void)
 	int timestamp_of_last_send = 0;
 	
 	timer_init();
-	can_init(CAN1,0);
+	can_init(&_rt_info, &_ls_info, CAN1,0);
 	
 	while (1) {
 		if((TIME_BETWEEN_SEND_MS + timestamp_of_last_send) <= timer_ms) {

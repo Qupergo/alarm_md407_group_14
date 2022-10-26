@@ -21,12 +21,12 @@ void increment_index(char_buffer* c_buffer);
 // Compares the PASSWORD_LENGTH latest characters to the current password
 int check_password(char_buffer* c_buffer);
 // Get the N latest chars entered
-char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars);
+char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars, char* latest_chars);
 // Returns a char pressed on the keypad
 unsigned char keyboard(void);
 // Internal function used for keyboard()
 int keyboardGetColumn(void);
 // Internal function used for keyboard()
 void keyboardActivate(unsigned int row);
-// Inits the keypad
-void keypad_init(void);
+// Inits the keypads GPIO ports and sets the c_buffer to its default values.
+void keypad_init(char_buffer* c_buffer);
