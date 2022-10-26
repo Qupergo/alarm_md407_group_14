@@ -98,16 +98,16 @@ Motivationen till detta var att CAN protokollet inte skulle behövas förrän pe
 
 \subsubsection{Tekniskt genomförande}
 När kod började skrivas delades projektet upp i tre delar som arbetades på parallellt med varandra.
-När en del var klar försökte de hjälpa de andra att komma ikapp tills alla var klara med sin del. 
+När en del var klar försökte de hjälpa de andra att komma ikapp tills alla var klara med sin del.
 Sedan gick gruppen igenom vad som var kvar och delegerade arbetet. 
-I början var gruppen inte helt bekväm med kommunikationsmediet vilket förvärrades av att alla i gruppen inte var på plats vilket ledde till att det producerades två versioner av avståndsmätaren. 
-Detta löstes genom att en ny version skapades från de bästa delarna av dem. 
-Efter dessa delar var klara gjordes CAN protokollet medans buggar fixades i pereferienheterna. Centralenheten gjordes i samband med CAN protokollet då centralenhetens jobb inte kunde utföras utan en fungerande kommunikationsmodell. 
+I början var gruppen inte helt bekväm med kommunikationsmediet vilket förvärrades av att alla i gruppen inte var på plats vilket ledde till att det producerades två versioner av avståndsmätaren.
+Detta löstes genom att en ny version skapades från de bästa delarna av dem.
+Efter dessa delar var klara gjordes CAN protokollet medans buggar fixades i pereferienheterna. Centralenheten gjordes i samband med CAN protokollet då centralenhetens jobb inte kunde utföras utan en fungerande kommunikationsmodell.
 Efter detta gjordes störenheten för att simulera en defekt enhet.
 
 \subsubsection{Testning och verifiering}
-För att säkerställa kvalitén hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar. 
-Rent praktiskt var ofta olika print-statements placerade i koden för att kolla så att korrekt resultat producerades i kombination med att sätta objekt framför avståndsmätare, osv. 
+För att säkerställa kvalitén hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar.
+Rent praktiskt var ofta olika print-statements placerade i koden för att kolla så att korrekt resultat producerades i kombination med att sätta objekt framför avståndsmätare, osv.
 Då inget fel noterades var testet markerat som godkänt och ingen vidare åtgärd tillämpades. 
 Däremot när resultat inte blev som testet förväntat söktes felkälla upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa fungerande produkt. 
 Utöver att testa kodens vanliga funktion har den testas mot olika typer av angrepp med hjälp en störenhet som skickar data för att störa centralenhetens normala funktion. 
@@ -161,7 +161,7 @@ På samma sätt kommer vibrationssensorn skicka en signal om den har känt av n�
 
 \subsection{Delsystem}
 %gör beskrivning
-Här beskrivs vad de olika delsystemen har för tekniska funktioner samt arbetsroller under utförandet av systemet. 
+Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket syfte de uppfyller i systemet.
 
 \subsubsection{Centralenhet}
 Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN-buss, denna kommunikation kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. 
@@ -191,7 +191,7 @@ Avståndsmätaren kommer att läsa av avståndet till ett objekt genom att skick
 Mätningen av avståndet kommer att ske genom att räkna skillnaden i mikrosekunder mellan ultraljudssignaler och deras eko, därefter divideras tiden med 58 för att få avståndet i centimeter. 
 Avståndet kommer att mättas kontinuerligt i intervaller av 60 millisekunder, om avståndet överstiger eller blir mindre än tröskelvärdet kommer det centrala larmet att gå.\\
 \\
-Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner av någon vibration kommer den att den skicka till centralenheten för att slå på det globala larmet.
+Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner av någon vibration kommer den att meddela centralenheten för att aktivera det globala larmet.
 
 \begin{figure}[h]
     \centering
@@ -200,11 +200,11 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
     \label{fig:drawing}
 \end{figure}
 \subsubsection{Systemprotkoll}
-Kommunikationsprotkollet är en 11 bitar långt protokoll, vilket är uppdelat i fyra segment (figur 2).
+Kommunikationsprotkollet är ett 11 bitar långt protokoll uppdelat i fyra segment (figur 2).
 Den mest signifikanta biten är bit 10 och minst signifikanta biten är bit 0. 
-Ett ställning av bit 10 innebär att detta meddelande får högsta prioritet när det tas emot på bussen ifall det skulle uppstå kö.
-Noll-ställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. 
-Bit 9 till och med bit 6 är reserverade till meddlandetypen som innehåller bland annat ifall meddelandet är en förfrågan att larma på eller av, eller information som skickas mellan enheterna regelbundet. 
+Ettställning av bit 10 innebär att meddelandet får högsta prioritet när det tas emot på bussen ifall det redan finns meddelanden i bufferten.
+Nollställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. 
+Bit 9 till och med bit 6 är reserverade för meddlandetypen som innehåller bland annat ifall meddelandet är en förfrågan att larma på eller av, eller information som skickas mellan enheterna regelbundet. 
 Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla avsändarens ID, och bit 2 till och med bit 0 innehålla mottagarens ID.
 
 \begin{figure}[h]
@@ -214,13 +214,45 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
     \label{fig:drawing}
 \end{figure}
 
+\begin{tabular}{|c|l|l|}
+    \hline
+    Bitmönster & Meddelandetyp & Innehåll \\
+    \hline
+    0000 & START ALARM & ... / DörrID \\
+    0001 & STOP ALARM & ... /DörrID \\
+    0010 & UNLOCK DOOR & DörrID \\
+    0011 & NEW ALIVE & Enhetstyp \\
+    0100 & NEW ALIVE RESPONSE & Enhetstyp hos mottagare och nytt ID \\
+    0101 & RESET UNIT & ... \\
+    0110 & SET DOOR ALARM TIME THRESHOLD & Nytt tröskelvärde \\
+    0111 & SENSOR DISTANCE THRESHOLD & Nytt tröskelvärde \\
+    1000 & RECALIBRATE & ... \\
+    1001 & LIFESIGN & ... \\
+    1010 & ACK & ... \\
+    1011 & VIEW STATUS & ... \\
+    \hline
+\end{tabular}
+\\
+\begin{center}
+\caption{Figur 5: Bitmönster för de olika meddelandetyper som används för CAN-kommunikation. Meddelandetyper med lägre nummer har högre prioritet. "..."\ betyder att innehållet är tomt.}
+\end{center}
+
+
+
 \section{Resultat och diskussion}
-I detta avsnitt redovisas resultatet av genomförd verifiering av systemet och dess olika delar
+I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet reflekterar de mål som sattes i projektets början. Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
+
+\subsection{Centralenhet}
 
 \subsection{Periferienheter}
+
 \subsubsection{Dörrenhet}
-Dörrenheten implementerades enligt målet korrekt. Den kunde larma lokalt 
+Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar, för varje dörr ska tröskelvärdet kunna justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan svara på de periodvisa \emph{ALIVE} meddelanden som den får från centralenheten samt avlarmas med ett \emph{STOP ALARM} meddelande.
+
 \subsubsection{Sensorenhet}
+Avståndsmätare är 
+
+\subsection{Kommunikation via CAN och USART}
 
 \subsection{Mätning av avstånd}
 Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
@@ -232,9 +264,9 @@ Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenhe
 \subsection{Mätning av vibrationer}
 Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
 
-\subsection{Dörrlarm}
-Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. 
-Under testningen av enheten har den uppfyllt de målen som krävdes.
+%\subsection{Dörrlarm}
+%Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. 
+%Under testningen av enheten har den uppfyllt de målen som krävdes.
 
 \section{Slutsats och diskussion}
 Med resultaten kan man konstatera att det går att skapa ett eget larm om man har möjlighet att införskaffa komponenterna.\\
