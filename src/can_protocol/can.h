@@ -4,6 +4,7 @@
 #define MAX_RT_FRAMES 30
 #define ACK_TIMEOUT_MS 1000
 #define LIFESIGN_FREQUENCY_MS 500
+#define CONTENT_LENGTH 6
 #define DEBUG 0
 
 
@@ -36,7 +37,7 @@ enum unit_type_id {
 typedef struct rx_can_message {
     unsigned char message_type;
     unsigned char sender_id;
-    unsigned char content[6];
+    unsigned char content[CONTENT_LENGTH];
 } rx_can_msg;
 
 // Transmitted messages through CAN
@@ -44,7 +45,7 @@ typedef struct tx_can_message {
     unsigned char priority;
     unsigned char message_type;
     unsigned char reciever_id;
-    unsigned char content[6];
+    unsigned char content[CONTENT_LENGTH];
 } tx_can_msg;
 
 // Saved frames for eventual retransmit

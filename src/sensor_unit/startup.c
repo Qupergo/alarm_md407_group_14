@@ -243,7 +243,7 @@ void main(void) {
                 }
                 break;
             case MSGID_SENSOR_DISTANCE_THRESHOLD:;
-                ultraSonicSensor.local_alarm_distance_threshold = rx_msg.content[0] * 100; //rx_msg.content[0] is in meters, multiply by 100 to get cm
+                ultraSonicSensor.local_alarm_distance_threshold = rx_msg.content[0]; //rx_msg.content[0] is in centimeters
                 // Divide by local alarm factor to get the total distance 
                 ultraSonicSensor.central_alarm_distance_threshold = (ultraSonicSensor.local_alarm_distance_threshold / LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD) * CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD;
                 break;
