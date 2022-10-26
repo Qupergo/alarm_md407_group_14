@@ -159,6 +159,15 @@ char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_ch
 			index = CHARACTER_BUFFER_LENGTH - 1;
 		}
 	}
+
+	// Reverse the array as we check it backwards.
+	int temp;
+	for (int i = 0; i < amount_of_chars/2; i++) {
+        temp = latest_chars[i];
+        latest_chars[i] = latest_chars[n-i-1];
+        latest_chars[n-i-1] = temp;
+    }
+
 	return latest_chars;
 }
 
