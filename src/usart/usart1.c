@@ -3,6 +3,7 @@
  *
  */
 #include "usart1.h"
+#include "misc.h"
 
 char input_buffer[32];
 char buffer_index = 0;
@@ -93,10 +94,10 @@ void print(char* s) {
 }
 
 void print_line(char* s) {
+	USART_Snd('\n');
 	while (*s != '\0') {
 		USART_Snd(*(s++));
 	}
-	USART_Snd('\n');
 }
 
 void print_int(int x) {

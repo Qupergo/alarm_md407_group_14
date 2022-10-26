@@ -64,7 +64,7 @@ void TIM_Configration(void) {
 }
 
 void ultraSonic_irq_handler(void) {
-    if (distance < ultraSonicSensor.local_alarm_distance_threshold){
+    if (distance < ultraSonicSensor.local_alarm_distance_threshold) {
         GPIO_SetBits(GPIOD, ultraSonicSensor.alarm_led);
         ultraSonicSensor.status_local_alarm = 1; // set value to 1 indicating local alarm is sat off
 
@@ -75,9 +75,10 @@ void ultraSonic_irq_handler(void) {
     else {
         // Turn off the led
         GPIO_ResetBits(GPIOD, ultraSonicSensor.alarm_led);
-         ultraSonicSensor.status_local_alarm = 0; // set value to 0 indicating no alarm is sat off
+        ultraSonicSensor.status_local_alarm = 0; // set value to 0 indicating no alarm is sat off
     }
-	EXTI_ClearFlag(EXTI_Line1);
+
+    EXTI_ClearFlag(EXTI_Line1);
 }
 
 void vibration_irq_handler(void) {
@@ -102,6 +103,7 @@ void EXTIInit(void) {
     exti_init.EXTI_LineCmd = ENABLE;
     EXTI_Init(&exti_init);
 
+
     exti_init.EXTI_Line = EXTI_Line4; //Configration of EXTI for Vibration pin
     exti_init.EXTI_Mode = EXTI_Mode_Interrupt;
     exti_init.EXTI_Trigger = EXTI_Trigger_Rising;
@@ -110,14 +112,15 @@ void EXTIInit(void) {
 
     NVIC_InitTypeDef nvic_init;
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	
-	nvic_init.NVIC_IRQChannel = EXTI1_IRQn;        //Configration of NVIC for UltraSonic_irq_handler
+
+    nvic_init.NVIC_IRQChannel = EXTI1_IRQn;        //Configration of NVIC for UltraSonic_irq_handler
     nvic_init.NVIC_IRQChannelPreemptionPriority = 0x00;
     nvic_init.NVIC_IRQChannelSubPriority = 0x00;
     nvic_init.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvic_init);
-	
-	*((void (**) (void)) 0x2001C05C) = ultraSonic_irq_handler;
+
+    *((void (**) (void)) 0x2001C05C) = ultraSonic_irq_handler;
+
 
     nvic_init.NVIC_IRQChannel = EXTI4_IRQn; //Configration of NVIC for vibration_irq_handler
     nvic_init.NVIC_IRQChannelPreemptionPriority = 0x00;
@@ -125,17 +128,17 @@ void EXTIInit(void) {
     nvic_init.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&nvic_init);
 
-    *((void( ** )(void)) 0x2001C068) = vibration_irq_handler;
+    *((void(**)(void)) 0x2001C068) = vibration_irq_handler;
 }
 
-int check_distance( void ) {
+int check_distance(void) {
     TIM_SetCounter(TIM5, 0); // 65 microseconds delay between measurments 
-    while (TIM_GetCounter(TIM5) < 65 );
+    while (TIM_GetCounter(TIM5) < 65000);
 
     GPIO_SetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin); // Set trigger pin	
 
     TIM_SetCounter(TIM5, 0); // 10 microseconds delay
-    while (TIM_GetCounter(TIM5) <  10);
+    while (TIM_GetCounter(TIM5) < 10);
 
     GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin); // Reset trigger pin
 
@@ -156,16 +159,31 @@ int check_distance( void ) {
         echo_time = (echo_end - echo_start);
     }
 
-    echo_distance = echo_time / 58;  // distance in centimeters
-	
-    return echo_distance;
+    distance = echo_time / 58;  // distance in centimeters
+    return distance;
 }
 
 void set_threshold_values(void) {
-	GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin);  // reset trig pin
-    ultraSonicSensor.initial_distance = check_distance();  // initial value for distance 
+    GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin);  // reset trig pin
+    ultraSonicSensor.initial_distance = check_distance();
     ultraSonicSensor.local_alarm_distance_threshold = LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD * ultraSonicSensor.initial_distance;  // initial value for local alaram distance 
     ultraSonicSensor.central_alarm_distance_threshold = CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD * ultraSonicSensor.initial_distance; // initial value for central alarm distance 
+
+    print_line("The alarmed zone is ");
+    print_int(ultraSonicSensor.initial_distance);
+    print("cm away");
+
+    print_line("The local alarm zone is between ");
+    print_int(ultraSonicSensor.local_alarm_distance_threshold);
+    print(" and ");
+    print_int(ultraSonicSensor.initial_distance);
+    print("cm");
+
+    print_line("The central alarm zone is between ");
+    print_int(ultraSonicSensor.central_alarm_distance_threshold);
+    print(" and ");
+    print_int(ultraSonicSensor.local_alarm_distance_threshold);
+    print("cm");
 }
 
 void main(void) {
@@ -173,7 +191,7 @@ void main(void) {
     Init_GPIO();
     TIM_Configration();
     set_threshold_values();
-    timer_init();	
+    timer_init();
     EXTIInit();
     USART1_Init();
 
@@ -181,18 +199,7 @@ void main(void) {
     rt_info _rt_info;
     ls_info _ls_info;
 
-    can_init(CAN1, 0);
-
-    for (int i = 0; i < MAX_UNITS; i++) {
-        _rt_info.transmit_sequence_num[i] = 1;
-        _rt_info.recieve_sequence_num[i] = 0;
-        _ls_info.is_connected[i] = 0;
-        _ls_info.latest_self_lifesign_timestamp = 0;
-        _ls_info.recieved_lifesigns[i] = 0;
-    }
-    for (int i = 0; i < MAX_RT_FRAMES; i++) {
-        _rt_info.rt_frames[i].is_used = 0;
-    }
+    can_init(&_rt_info, &_ls_info, CAN1, 0);
 
     // Send initial alive message to central unit
     tx_can_msg initial_alive;
@@ -205,10 +212,8 @@ void main(void) {
     unsigned char waiting_for_alive_response = 1;
 
     while (1) {
-         distance = check_distance();
-
+        check_distance();
         if (send_alarm) {
-            
             tx_can_msg msg_alarm = {
                 .priority = 0,
                 .message_type = MSGID_START_ALARM,
@@ -218,47 +223,48 @@ void main(void) {
             can_send_message(&_rt_info, CAN1, msg_alarm);
             send_alarm = 0;
         }
-		// Only start updating units after they have recieved their alive response
-		// So they have an assigned ID
-		if (!waiting_for_alive_response) {
-			can_update(&_rt_info, &_ls_info);
-		}
+        // Only start updating units after they have recieved their alive response
+        // So they have an assigned ID
+        if (!waiting_for_alive_response) {
+            can_update(&_rt_info, &_ls_info);
+        }
 
         if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
-                case MSGID_NEW_ALIVE_RESPONSE:
-                    if (waiting_for_alive_response) {
-                        if (rx_msg.content[0] == SELF_TYPE) {
-                            waiting_for_alive_response = 0;
-                            self_id = rx_msg.content[1];
+            case MSGID_NEW_ALIVE_RESPONSE:
+                if (waiting_for_alive_response) {
+                    if (rx_msg.content[0] == SELF_TYPE) {
+                        waiting_for_alive_response = 0;
+                        self_id = rx_msg.content[1];
 
-                            _rt_info.recieve_sequence_num[rx_msg.sender_id] = 0;
-                            _rt_info.transmit_sequence_num[rx_msg.sender_id] = 1;
-                        }
+                        _rt_info.recieve_sequence_num[rx_msg.sender_id] = 0;
+                        _rt_info.transmit_sequence_num[rx_msg.sender_id] = 1;
                     }
-                    break;
-                case MSGID_SENSOR_DISTANCE_THRESHOLD:
-                    char new_local_threshold_cm = rx_msg.content[0] * 100; //rx_msg.content[0] is in meters, multiply by 100 to get cm
-                    // Divide by local alarm factor to get the total distance 
-                    char new_global_threshold_cm = (LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD / new_local_threshold_cm) * CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD;
-                    break;
-
-                case MSGID_VIEW_STATUS:
-                    if(ultraSonicSensor.status_local_alarm){
-                        
-                    }
+                }
                 break;
-               
-                case MSGID_RECALIBERATE: // both messages types have the same function/purpose.
-                case MSGID_RESET_UNIT:
-                    Init_GPIO();
-                    TIM_Configration();
-                    set_threshold_values();
-                    timer_init();	
-                    EXTIInit();
-                    USART1_Init();
-                    break;      
+            case MSGID_SENSOR_DISTANCE_THRESHOLD:;
+                ultraSonicSensor.local_alarm_distance_threshold = rx_msg.content[0] * 100; //rx_msg.content[0] is in meters, multiply by 100 to get cm
+                // Divide by local alarm factor to get the total distance 
+                ultraSonicSensor.central_alarm_distance_threshold = (ultraSonicSensor.local_alarm_distance_threshold / LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD) * CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD;
+                break;
+
+            case MSGID_VIEW_STATUS:
+                if (ultraSonicSensor.status_local_alarm) {
+
+                }
+                break;
+
+            case MSGID_RECALIBERATE: // both messages types have the same function/purpose.
+            case MSGID_RESET_UNIT:
+                Init_GPIO();
+                TIM_Configration();
+                set_threshold_values();
+                timer_init();
+                EXTIInit();
+                USART1_Init();
+                break;
             }
         }
     }
 }
+

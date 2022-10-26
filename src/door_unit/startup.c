@@ -96,7 +96,8 @@ void door_update( void ) {
 				+ doors[i].local_alarm_time_threshold_s * 1000
 				+ doors[i].global_alarm_time_threshold_s * 1000) <= timer_ms) {
 					print_line("global alarm threshold reached");
-				send_alarm = 1;
+					doors[i].status_central_alarm = 1;
+					send_alarm = 1;
 			}
 			else if ((doors[i].opened_door_timestamp_ms + doors[i].local_alarm_time_threshold_s * 1000) <= timer_ms) {
 				start_local_alarm(i);
@@ -140,17 +141,23 @@ void main(void) {
 
 	while (1) {
 		door_update();
-
 		if (send_alarm) {
-			tx_can_msg msg_alarm = {
-				.priority = 0,
-				.message_type = MSGID_START_ALARM,
-				.reciever_id = 0,
-			};
+			for (int i = 0; i < NUMBER_DOORS; i++) {
+				if (doors[i].status_central_alarm) {
+					tx_can_msg msg_alarm = {
+						.priority = 0,
+						.message_type = MSGID_START_ALARM,
+						.reciever_id = 0,
+						.content = doors[i].id,
+					};
 
-			can_send_message(&_rt_info, CAN1, msg_alarm);
-            send_alarm = 0;
+					can_send_message(&_rt_info, CAN1, msg_alarm);
+
+				}
+			}
+			send_alarm = 0;
 		}
+
 
 		can_update(&_rt_info, &_ls_info);
 		if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
