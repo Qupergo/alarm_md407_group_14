@@ -17,15 +17,11 @@ int EXTI_IRQs[COLS] = {EXTI0_IRQn, EXTI1_IRQn, EXTI2_IRQn, EXTI3_IRQn};
 
 void keypadirq_handler() {
 	for (int i = 0; i < COLS; i++) {
-		print("IRQ HANDLING ");
-		print_int(i);
-		print("\n");
 		TIM_SetCounter(TIM5, 0);
 		while (TIM_GetCounter(TIM5) < 250); // Delay for 250 microseconds
 		
 		if(EXTI_GetITStatus(EXTI_Lines[i]) != RESET) {
 			keyboard_character = get_active_key(i);
-			print_int(keyboard_character);
 			new_char_available = 1;
 			
 			TIM_SetCounter(TIM5, 0);

@@ -325,8 +325,8 @@ void main(void)
 				case MSGID_START_ALARM: ;
 					unsigned char alarm_sender = rx_msg.sender_id;
 					unsigned char time_passed_since_alarm = timer_ms; // maybe as global variable ?
-					print_line("ALARM");	 
+					print_line("ALARM");
 			}
         }
-    }
+	}
 }

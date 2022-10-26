@@ -173,16 +173,14 @@ void set_threshold_values(void) {
     print_int(ultraSonicSensor.initial_distance);
     print("cm away");
 
-    print_line("The local alarm zone is between ");
+    print_line("The local alarm threshold is between ");
     print_int(ultraSonicSensor.local_alarm_distance_threshold);
-    print(" and ");
-    print_int(ultraSonicSensor.initial_distance);
+    print("cm and ");
+    print_int(ultraSonicSensor.central_alarm_distance_threshold);
     print("cm");
 
-    print_line("The central alarm zone is between ");
+    print_line("The central alarm threshold activates at ");
     print_int(ultraSonicSensor.central_alarm_distance_threshold);
-    print(" and ");
-    print_int(ultraSonicSensor.local_alarm_distance_threshold);
     print("cm");
 }
 
@@ -193,7 +191,6 @@ void main(void) {
     set_threshold_values();
     timer_init();
     EXTIInit();
-    USART1_Init();
 
     rx_can_msg rx_msg;
     rt_info _rt_info;
@@ -261,7 +258,6 @@ void main(void) {
                 set_threshold_values();
                 timer_init();
                 EXTIInit();
-                USART1_Init();
                 break;
             }
         }
