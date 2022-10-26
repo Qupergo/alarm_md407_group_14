@@ -43,21 +43,24 @@ u_info* get_unit_of_type(enum unit_type_id unit_type) {
 }
 
 // Returns the amount of chars neeeded to execute the command.
-int execute_option(rt_info* _rt_info, int option, int chars_entered) {
+int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int chars_entered) {
+	int done_with_option = 0;
 	switch (option) {
 		case 1: // Set a new password
 			if (chars_entered == PASSWORD_LENGTH) {
+				char* new_password = get_latest_chars_entered(PASSWORD_LENGTH);
 				for(int i = 0; i < PASSWORD_LENGTH; i++) {
-					latest_char_buffer.current_password[i] = get_latest_chars_entered(PASSWORD_LENGTH)[i];
+					latest_char_buffer.current_password[i] = new_password[i];
 				}
-				return 1;
+				done_with_option = 1;
 			}
 			break;
 		case 2: // View alarm status
 			for(int i = 1; i < MAX_UNITS; i++){ // antigen visa info eller skicka can.msg med förfråga om status
 				continue;
 			}
-			return 1;
+			done_with_option = 1;
+			break;
 		case 3: // Enable door alarm
 			if (chars_entered == 1) {
 				char door_id = *get_latest_chars_entered(1);
@@ -67,7 +70,7 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 				alarm_message_on.priority = 0; // priority is max
 				alarm_message_on.content[0] = door_id;
 				// send usart msg with info ?
-				return 1;
+				done_with_option = 1;
 			}
 			break;
 		case 4: // Disable door alarm
@@ -78,7 +81,7 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 				alarm_message_off.reciever_id = TYPE_DOOR_UNIT; // Set to a correct id
 				alarm_message_off.priority = 0; // priority is max
 				alarm_message_off.content[0] = door_id;
-				return 1;
+				done_with_option = 1;
 			}
 			break;
 		case 5:  // Set new time threshold
@@ -95,7 +98,7 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 						set_new_threshold.content[i] = new_threshold[i];
 						i++;
 					}
-					return 1;
+					done_with_option = 1;
 				}
 			}
 			break;
@@ -109,7 +112,8 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 					can_send_message(_rt_info, CAN1, msg_recalibrate);
 				}
 			}
-			return 1;
+			done_with_option = 1;
+			break;
 		case 7: // set sensitivity for distance sensor
 			if (chars_entered == 1) {
 				unsigned char sensitivity_value = *get_latest_chars_entered(1);
@@ -124,7 +128,7 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 						can_send_message(_rt_info, CAN1, reset_sensitivity);
 					}
 				}
-				return 1;
+				done_with_option = 1;
 			}
 			break;
 		case 8:
@@ -140,7 +144,9 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 				}
 			}
 			
-			return 1;
+			done_with_option = 1;
+			break;
+		print_line(c_buffer->entered_characters_buffer)
 	}
 }
 
@@ -151,7 +157,7 @@ void main(void)
     rt_info _rt_info;
     ls_info _ls_info;
 	u_info central_unit;
-	char_buffer _latest_char_buffer = {
+	char_buffer c_buffer = {
 		.current_password = {'1', '1', '1', '1'},
 	};
 	
@@ -177,10 +183,11 @@ void main(void)
 				option = *get_latest_chars_entered(1);
 				choosing_menu_option = 0;
 				executing_menu_option = 1;
+				execute_option(&c_buffer, &_rt_info, option, chars_entered_for_option);
 			}
 			else if (executing_menu_option) {
 				chars_entered_for_option++;
-				if (execute_option(&_rt_info, option, chars_entered_for_option)) {
+				if (execute_option(&c_buffer, &_rt_info, option, chars_entered_for_option)) {
 					executing_menu_option = 0;
 					chars_entered_for_option = 0;
 				}
@@ -188,6 +195,7 @@ void main(void)
 			else if (check_password()) {
 				reset_buffer();
 				print_menu_options();
+				// Set choosing menu option to 1 so that the next time the keypad updates
 				choosing_menu_option = 1;
 			}
 		}
@@ -217,7 +225,7 @@ void main(void)
                         }
                     }
                     break;
-					
+
 				case MSGID_START_ALARM: ;
 					unsigned char alarm_sender = rx_msg.sender_id;
 					unsigned char time_passed_since_alarm = timer_ms; // maybe as global variable ?

@@ -80,13 +80,6 @@ typedef struct lifesign_info {
     unsigned int latest_self_lifesign_timestamp;
 } ls_info;
 
-/*
-tx_can_msg MSG_STANDARD_ALARM = {
-    .priority = 0,
-    .message_type = MSGID_START_ALARM,
-    .reciever_id = 0,
-};
-*/
 
 // Configures selected CAN interface for incoming messages
 void can_init(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef * CANx, int is_central_unit);

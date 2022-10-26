@@ -208,7 +208,14 @@ void main(void) {
          distance = check_distance();
 
         if (send_alarm) {
-            can_send_message(&_rt_info, CAN1, MSG_STANDARD_ALARM);
+            
+            tx_can_msg msg_alarm = {
+                .priority = 0,
+                .message_type = MSGID_START_ALARM,
+                .reciever_id = 0,
+            };
+
+            can_send_message(&_rt_info, CAN1, msg_alarm);
             send_alarm = 0;
         }
 		// Only start updating units after they have recieved their alive response
@@ -250,7 +257,7 @@ void main(void) {
                     timer_init();	
                     EXTIInit();
                     USART1_Init();
-                break;      
+                    break;      
             }
         }
     }
