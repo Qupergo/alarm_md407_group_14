@@ -11,9 +11,6 @@ typedef struct latest_characters_entered {
 	unsigned char current_index;
 } char_buffer;
 
-// Start with password 1111
-
-
 // Add a new char to the char_buffer 
 void add_char_to_buffer(char_buffer* c_buffer, char new_char);
 // Should be periodically called to see if a key is being pressed and adds it to the buffer

@@ -21,15 +21,15 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 
 
 void print_menu_options( void ) {
-	USART_Snd_StrLn("Select one option from the following");
-	USART_Snd_StrLn("1 Set a new password");
-	USART_Snd_StrLn("2 View alarm status for all units");
-	USART_Snd_StrLn("3 Enable door alarm");
-	USART_Snd_StrLn("4 Disable door alarm"); 
-	USART_Snd_StrLn("5 Set a time threshold for door, start 0 for global and 1 for local threshold, enter door ID, followed by threshold value");
-	USART_Snd_StrLn("6 Calibrate distance sensor");
-	USART_Snd_StrLn("7 Adjust sensitivity for distance sensor");
-	USART_Snd_StrLn("8 Restart alarm");
+	print_line("Select one option from the following");
+	print_line("1 Set a new password");
+	print_line("2 View alarm status for all units");
+	print_line("3 Enable door alarm");
+	print_line("4 Disable door alarm"); 
+	print_line("5 Set a time threshold for door, start 0 for global and 1 for local threshold, enter door ID, followed by threshold value");
+	print_line("6 Calibrate distance sensor");
+	print_line("7 Adjust sensitivity for distance sensor");
+	print_line("8 Restart alarm");
 }
 
 u_info* get_unit_of_type(enum unit_type_id unit_type) {
@@ -221,7 +221,7 @@ void main(void)
 				case MSGID_START_ALARM: ;
 					unsigned char alarm_sender = rx_msg.sender_id;
 					unsigned char time_passed_since_alarm = timer_ms; // maybe as global variable ?
-					USART_Snd_StrLn("ALARM");	 
+					print_line("ALARM");	 
 			}
         }
     }

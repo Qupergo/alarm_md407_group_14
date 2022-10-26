@@ -66,7 +66,6 @@ void USART1_Init(void)
 void USART_Snd(char c) {
 	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 	USART_SendData(USART1, c);
-
 }
 
 void print(char* s) {
@@ -74,12 +73,14 @@ void print(char* s) {
 		USART_Snd(*(s++));
 	}
 }
-void print_nl(char* s) {
+
+void print_line(char* s) {
 	USART_Snd('\n');
 	while (*s != '\0') {
 		USART_Snd(*(s++));
 	}
 }
+
 void print_int(int x) {
 	char a[32];
 	print(itoa(x, a, 10));
@@ -90,7 +91,6 @@ void clear_input_buffer(void) {
 	for (int i = 0; i < (sizeof(input_buffer) / sizeof(int)); i++) {
 		input_buffer[i] = '\0';
 	}
-
 }
 
 char* USART1_receive_data(void) {

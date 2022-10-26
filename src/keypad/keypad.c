@@ -69,7 +69,7 @@ unsigned char keyboard(void) {
 
 char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars) {
 	if (amount_of_chars > CHARACTER_BUFFER_LENGTH) {
-		USART_Snd_StrLn("Invalid amount_of_chars value entered");
+		print_line("Invalid amount_of_chars value entered");
 		return 0;
 	}
 	char* latest_chars;
