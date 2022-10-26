@@ -251,6 +251,7 @@ void main(void)
 {
 	char_buffer c_buffer;
 	keypad_init(&c_buffer);
+	timer_init();
 	print_buffer(&c_buffer);
 	
 	rx_can_msg rx_msg;
