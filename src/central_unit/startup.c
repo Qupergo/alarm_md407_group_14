@@ -37,7 +37,7 @@ int execute_option(int option, int chars_entered) {
 	switch (option) {
 		case 1: ;// Set a new password
 			if (chars_entered == 4) {
-				*latest_char_buffer.current_password = get_latest_chars_entered(PASSWORD_LENGTH);
+				*_latest_char_buffer.current_password = get_latest_chars_entered(PASSWORD_LENGTH);
 				return 1;
 			}
 			break;
@@ -120,6 +120,9 @@ void main(void)
     rt_info _rt_info;
     ls_info _ls_info;
 	u_info central_unit;
+	char_buffer _latest_char_buffer = {
+	.current_password = {'1', '1', '1', '1'},
+	};
 	
 	// call a function in can.c that initialize info for recieving_transmit and life_signals
 	
@@ -135,7 +138,7 @@ void main(void)
 	int chars_entered_for_option = 0;
 
 	while (1) {
-        if(1 ) {
+        if(1) {
 			if (choosing_menu_option) {
 				option = get_latest_chars_entered(1);
 				choosing_menu_option = 0;
@@ -180,12 +183,10 @@ void main(void)
                     }
                     break;
 					
-				case MSGID_START_ALARM:
+				case MSGID_START_ALARM: ;
 					unsigned char alarm_sender = rx_msg.sender_id;
 					unsigned char time_passed_since_alarm = timer_ms; // maybe as global variable ?
 					USART_Snd_StrLn("ALARM");
-					trigger_alarm();
-					 
 			}
         }
     }
