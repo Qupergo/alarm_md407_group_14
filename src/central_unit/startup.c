@@ -30,6 +30,7 @@ void print_menu_options( void ) {
 	print_line("6 Adjust sensitivity for distance sensor");
 	print_line("7 Restart alarm");
 	print_line("0 To exit");
+	print_line("Option: ");
 }
 
 void reset_self_unit( void ) {
@@ -85,7 +86,7 @@ void print_all_doors() {
 // Executes a specified option, function should be called every time a new character is recieved
 // This is checked with keypad_update which returns 1 whenever a new character is entered
 // Returns if the command is done executing or not.
-int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, int option, int* chars_entered) {
+int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* chars_entered) {
 	int done_with_option = 0;
 	switch (option) {
 		case 1: // Set a new password
@@ -147,7 +148,7 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 				}
 				msg_alarm.reciever_id = door_unit_id; // Set to a correct id
 				msg_alarm.priority = 0; // priority is max
-				msg_alarm.content[0] = *door_id;
+				msg_alarm.content[0] = door_id;
 				// send usart msg with info ?
 				done_with_option = 1;
 			}
@@ -164,9 +165,9 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 		case 4:  // Set new time threshold
 			if (*chars_entered > 2) {
 				char latest_char[1];
-				get_latest_chars_entered(c_buffer, latest_characters_entered, latest_char);
+				get_latest_chars_entered(c_buffer, *chars_entered, latest_char);
 				if (latest_char == 0xD) {
-					char door_values[latest_characters_entered];
+					char door_values[*chars_entered];
 					get_latest_chars_entered(c_buffer, *chars_entered, door_values);
 					char door_unit_id = door_values[0];
 
@@ -188,7 +189,7 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 					set_new_threshold.reciever_id = TYPE_DOOR_UNIT;
 					set_new_threshold.priority = 1;
 					int i = 1; // Don't include the door id at pos 0.
-					while (set_new_threshold[i] <= 9) {
+					while (set_new_threshold.content[i] <= 9) {
 						if (i >= CONTENT_LENGTH) {
 							break;
 						}
@@ -230,8 +231,8 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 					break;
 				}
 
-				if (!unit_id_exists_with_type(sensor_id, TYPE_DOOR_UNIT)) {
-					print("A door unit with the id ");
+				if (!unit_id_exists_with_type(sensor_id, TYPE_SENSOR_UNIT)) {
+					print("A sensor unit with the id ");
 					print_int(sensor_id);
 					print_line(" does not exist.\nPlease try again");
 					*chars_entered = 0;
@@ -265,9 +266,9 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 			}
 			else if (*chars_entered > 2) {
 				char latest_char[1];
-				get_latest_chars_entered(c_buffer, latest_characters_entered, latest_char);
+				get_latest_chars_entered(c_buffer, *chars_entered, latest_char);
 				if (latest_char == 0xD) {
-					char sensor_values[chars_entered];
+					char sensor_values[*chars_entered];
 					get_latest_chars_entered(c_buffer, chars_entered, sensor_values);
 					char sensor_id = sensor_values[0];
 					if (sensor_id == 0) {
@@ -275,8 +276,8 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 						break;
 					}
 
-					if (!unit_id_exists_with_type(sensor_id, TYPE_DOOR_UNIT)) {
-						print("A door unit with the id ");
+					if (!unit_id_exists_with_type(sensor_id, TYPE_SENSOR_UNIT)) {
+						print("A sensor unit with the id ");
 						print_int(sensor_id);
 						print_line(" does not exist.\nPlease try again");
 						*chars_entered = 0;
@@ -292,7 +293,7 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 						if (i >= CONTENT_LENGTH) {
 							break;
 						}
-						msg_update_threshold.content[i] = door_values[i];
+						msg_update_threshold.content[i] = sensor_values[i];
 						i++;
 					}
 
@@ -304,7 +305,7 @@ int execute_option(char_buffer* c_buffer, ls_info* _ls_info, rt_info* _rt_info, 
 		case 7:
 			// Start at 1 to avoid sending to central unit
 			print_line("Reseting all units...");
-			reset_self();
+			reset_self_unit();
 			for (int i = 1; i < MAX_UNITS; i++) {
 				if (units[i].is_used) {
 					tx_can_msg msg_reset_unit = {
@@ -364,11 +365,14 @@ void main(void)
 	int choosing_menu_option = 0;
 	char option;
 	int executing_menu_option = 0;
-	int* chars_entered_for_option;
+	int chars_entered_for_option[1];
 	*chars_entered_for_option = 0;
+	
+	print_line("Enter the password to open the menu (Default password is '1111')");
 
 	while (1) {
 		if (keypad_update(&c_buffer)) {
+			print("New character");
 			if (choosing_menu_option) {
 				get_latest_chars_entered(&c_buffer, 1, &option);
 				choosing_menu_option = 0;
@@ -389,7 +393,6 @@ void main(void)
 				choosing_menu_option = 1;
 			}
 		}
-
         can_update(&_rt_info, &_ls_info);
         if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {

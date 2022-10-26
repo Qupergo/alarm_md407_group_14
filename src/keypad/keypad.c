@@ -24,6 +24,13 @@ void keypadirq_handler() {
 			keyboard_character = get_active_key(i);
 			new_char_available = 1;
 			
+			if (keyboard_character <= 9) {
+				print_int(keyboard_character);
+			}
+			else if (keyboard_character < 255) {
+				print(keyboard_character);
+			}
+			
 			TIM_SetCounter(TIM5, 0);
 			while (TIM_GetCounter(TIM5) < 250 ); // Delay another 250 microseconds
 			
@@ -164,8 +171,8 @@ char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_ch
 	int temp;
 	for (int i = 0; i < amount_of_chars/2; i++) {
         temp = latest_chars[i];
-        latest_chars[i] = latest_chars[n-i-1];
-        latest_chars[n-i-1] = temp;
+        latest_chars[i] = latest_chars[amount_of_chars-i-1];
+        latest_chars[amount_of_chars-i-1] = temp;
     }
 
 	return latest_chars;
@@ -176,6 +183,7 @@ int check_password(char_buffer* c_buffer) {
 	char latest_password[PASSWORD_LENGTH];
 	get_latest_chars_entered(c_buffer, PASSWORD_LENGTH, latest_password);
 	for(int i = 0; i < PASSWORD_LENGTH; i++){
+		print_int(latest_password[i]);
 		if(latest_password[i] != c_buffer->current_password[i]) {
 			return 0;
 		}
