@@ -9,9 +9,9 @@ char buffer_index = 0;
 char send_message_flag = 0;
 char clear_buffer_flag = 0;
 
-/*
-* every time a key is pressed the program will jump to USART_irq_handler
-*/
+
+// every time a key is pressed the program will jump to USART_irq_handler
+
 
 void USART_irq_handler(void) {
 
@@ -84,7 +84,6 @@ void USART1_Init(void)
 void USART_Snd(char c) {
 	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 	USART_SendData(USART1, c);
-
 }
 
 void print(char* s) {
@@ -92,31 +91,32 @@ void print(char* s) {
 		USART_Snd(*(s++));
 	}
 }
+
 void print_line(char* s) {
-	USART_Snd('\n');
 	while (*s != '\0') {
 		USART_Snd(*(s++));
 	}
+	USART_Snd('\n');
 }
+
 void print_int(int x) {
 	char a[32];
 	print(itoa(x, a, 10));
 
 }
 
-/*
-* terminates all the characters in the input buffer 
-*/
+
+// terminates all the characters in the input buffer 
+
 void clear_input_buffer(void) {
 	for (int i = 0; i < (sizeof(input_buffer) / sizeof(int)); i++) {
 		input_buffer[i] = '\0';
 	}
-
 }
 
-/*
-* resturns the whole buffer when enter is pressed or the buffer is full
-*/
+
+// resturns the whole buffer when enter is pressed or the buffer is full
+
 
 char* USART1_receive_data(void) {
 	send_message_flag = 0;

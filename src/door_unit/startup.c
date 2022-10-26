@@ -134,7 +134,13 @@ void main(void) {
 		door_update();
 
 		if (send_alarm) {
-			can_send_message(&_rt_info, CAN1, MSG_STANDARD_ALARM);
+			tx_can_msg msg_alarm = {
+				.priority = 0,
+				.message_type = MSGID_START_ALARM,
+				.reciever_id = 0,
+			};
+
+			can_send_message(&_rt_info, CAN1, msg_alarm);
             send_alarm = 0;
 		}
 
