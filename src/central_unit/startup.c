@@ -43,12 +43,12 @@ u_info* get_unit_of_type(enum unit_type_id unit_type) {
 }
 
 // Returns the amount of chars neeeded to execute the command.
-int execute_option(rt_info* _rt_info, int option, int chars_entered) {
+int execute_option(rt_info* _rt_info, char_buffer* c_buffer, int option, int chars_entered) {
 	switch (option) {
 		case 1: // Set a new password
 			if (chars_entered == PASSWORD_LENGTH) {
 				for(int i = 0; i < PASSWORD_LENGTH; i++) {
-					latest_char_buffer.current_password[i] = get_latest_chars_entered(PASSWORD_LENGTH)[i];
+					c_buffer->current_password[i] = get_latest_chars_entered(c_buffer, PASSWORD_LENGTH)[i];
 				}
 				return 1;
 			}
@@ -60,7 +60,7 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 			return 1;
 		case 3: // Enable door alarm
 			if (chars_entered == 1) {
-				char door_id = *get_latest_chars_entered(1);
+				char door_id = *get_latest_chars_entered(c_buffer,1);
 				tx_can_msg alarm_message_on;
 				alarm_message_on.message_type = MSGID_START_ALARM;
 				alarm_message_on.reciever_id = TYPE_DOOR_UNIT; // Set to a correct id
@@ -72,7 +72,7 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 			break;
 		case 4: // Disable door alarm
 			if (chars_entered == 1) {
-				char door_id = *get_latest_chars_entered(1);
+				char door_id = *get_latest_chars_entered(c_buffer, 1);
 				tx_can_msg alarm_message_off;
 				alarm_message_off.message_type = MSGID_STOP_ALARM;
 				alarm_message_off.reciever_id = TYPE_DOOR_UNIT; // Set to a correct id
@@ -83,9 +83,9 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 			break;
 		case 5:  // Set new time threshold
 			if (chars_entered > 1) {
-				char latest_char = *get_latest_chars_entered(1);
+				char latest_char = *get_latest_chars_entered(c_buffer, 1);
 				if (latest_char == 0xD) {
-					char* new_threshold = get_latest_chars_entered(chars_entered);
+					char* new_threshold = get_latest_chars_entered(c_buffer, chars_entered);
 					tx_can_msg set_new_threshold;
 					set_new_threshold.message_type = MSGID_SET_DOOR_ALARM_TIME_THRESHOLD;
 					set_new_threshold.reciever_id = TYPE_DOOR_UNIT;
@@ -112,7 +112,7 @@ int execute_option(rt_info* _rt_info, int option, int chars_entered) {
 			return 1;
 		case 7: // set sensitivity for distance sensor
 			if (chars_entered == 1) {
-				unsigned char sensitivity_value = *get_latest_chars_entered(1);
+				unsigned char sensitivity_value = *get_latest_chars_entered(c_buffer, 1);
 
 				for (int i = 0; i < MAX_UNITS; i++) {
 					if (units[i].type == TYPE_SENSOR_UNIT) {
@@ -151,14 +151,11 @@ void main(void)
     rt_info _rt_info;
     ls_info _ls_info;
 	u_info central_unit;
-	char_buffer _latest_char_buffer = {
+	char_buffer c_buffer = {
 		.current_password = {'1', '1', '1', '1'},
 	};
 	
 	can_init(&_rt_info, &_ls_info, CAN1, 1);
-
-	// call a function in can.c that initialize info for recieving_transmit and life_signals
-	u_info central_unit;
 
     central_unit.is_used = 1;
     central_unit.type = TYPE_CENTRAL_UNIT;
@@ -172,20 +169,20 @@ void main(void)
 	int chars_entered_for_option = 0;
 
 	while (1) {
-		if (keypad_update()) {
+		if (keypad_update(&c_buffer)) {
 			if (choosing_menu_option) {
-				option = *get_latest_chars_entered(1);
+				option = *get_latest_chars_entered(&c_buffer, 1);
 				choosing_menu_option = 0;
 				executing_menu_option = 1;
 			}
 			else if (executing_menu_option) {
 				chars_entered_for_option++;
-				if (execute_option(&_rt_info, option, chars_entered_for_option)) {
+				if (execute_option(&_rt_info, &c_buffer, option, chars_entered_for_option)) {
 					executing_menu_option = 0;
 					chars_entered_for_option = 0;
 				}
 			}
-			else if (check_password()) {
+			else if (check_password(&c_buffer)) {
 				reset_buffer();
 				print_menu_options();
 				choosing_menu_option = 1;
