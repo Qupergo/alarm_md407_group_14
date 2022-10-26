@@ -40,6 +40,7 @@ void main(void)
 			for(int i = 0; i < 8; i++){
 			outgoing.Data[i] = 0;
 			}
+			print_line("you've got mail!");
 			CAN_Transmit(CAN1, &outgoing);
 		}
 		else{
