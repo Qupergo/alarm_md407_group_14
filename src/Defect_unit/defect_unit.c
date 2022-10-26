@@ -18,7 +18,7 @@ void imitation_attack(void){
 			_tx_msg.content |= sequence_n;
 		}
 	}
-	can_send_message(&_rt_info, &_ls_info, CAN1, _tx_msg);
+	can_send_message(&_rt_info, CAN1, _tx_msg);
 }
 
 void replay_attack(void){

@@ -127,14 +127,14 @@ void main(void) {
     initial_alive.content[0] = SELF_TYPE;
     initial_alive.content[1] = num_sub_units;
     initial_alive.reciever_id = 0;
-    can_send_message(&_rt_info, &_ls_info, CAN1, initial_alive);
+    can_send_message(&_rt_info, CAN1, initial_alive);
     unsigned char waiting_for_alive_response = 1;
 
 	while (1) {
 		door_update();
 
 		if (send_alarm) {
-			can_send_message(&_rt_info, &_ls_info, CAN1, MSG_STANDARD_ALARM);
+			can_send_message(&_rt_info, CAN1, MSG_STANDARD_ALARM);
             send_alarm = 0;
 		}
 

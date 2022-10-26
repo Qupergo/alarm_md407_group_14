@@ -9,7 +9,7 @@ unsigned short self_id;
 unsigned char waiting_for_alive_response = 0;
 
 // Configures selected CAN interface for incoming messages
-void can_init(CAN_TypeDef * CANx, int is_central_unit) {
+void can_init(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef * CANx, int is_central_unit) {
     // enable clocks
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE); 
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN2, ENABLE); 
@@ -72,12 +72,23 @@ void can_init(CAN_TypeDef * CANx, int is_central_unit) {
     can_filter_init.CAN_FilterActivation = ENABLE;
     CAN_FilterInit(&can_filter_init);
 	
+
+    for (int i = 0; i < MAX_UNITS; i++) {
+        _rt_info->transmit_sequence_num[i] = 1;
+        _rt_info->recieve_sequence_num[i] = 0;
+        _ls_info->is_connected[i] = 0;
+        _ls_info->latest_self_lifesign_timestamp = 0;
+        _ls_info->recieved_lifesigns[i] = 0;
+    }
+    for (int i = 0; i < MAX_RT_FRAMES; i++) {
+        _rt_info->rt_frames[i].is_used = 0;
+    }
+
 	if (is_central_unit) {
 		self_id = 0;
 	}
 	else {
 		// 7 is the largest number available for the id, this is to prevent it from colliding with other units
-		// And most importantly to keep it from colliding with the central unit.
 		self_id = 7;
 	}
 }
@@ -110,7 +121,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
 
     // If a unit recieved a message that is supposed to be from itself
     // Then a replay attack may be happening, start the alarm
-    if (sender_id == reciever_id) {
+    if (sender_id == reciever_id && sender_id != 7) {
         // Trigger alarm
     }
 
@@ -188,7 +199,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
             // The message has the correct sequence number, update seq number and 
             // send back an ack
             _rt_info->recieve_sequence_num[sender_id] = sequence_n;
-            can_send_message(_rt_info, _ls_info, CANx, ack);
+            can_send_message(_rt_info, CANx, ack);
             if (DEBUG) {
     			USART_Snd_StrLn("Sent ack for message");
             }
@@ -199,17 +210,17 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
 	    		USART_Snd_StrLn("recieved duplicate message, sending ack");
             }
             // The message is a duplicate, ack might have been lost, send a new ack
-            can_send_message(_rt_info, _ls_info, CANx, ack);
+            can_send_message(_rt_info, CANx, ack);
         }
         return 0;        
     }
 	else {
-		// Lifesigns should be recieved
+		// Lifesigns should be recieved and handled in the central unit
 		return 1;
 	}
 }
 // Send a message over CAN and save the message in the retransmission buffer
-void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
+void can_send_message(rt_info* _rt_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
     unsigned short sequence_n = _rt_info->transmit_sequence_num[tx_msg.reciever_id];
     int length = sizeof(tx_msg.content) + sizeof(sequence_n);
 
@@ -293,7 +304,7 @@ void can_update(rt_info* _rt_info, ls_info* _ls_info) {
             lifesign.priority = 1;
             lifesign.message_type = MSGID_LIFESIGN;
             lifesign.reciever_id = 0;
-            can_send_message(_rt_info, _ls_info, CAN1, lifesign);
+            can_send_message(_rt_info, CAN1, lifesign);
         } 
     }
 	// Otherwise the unit is the central unit

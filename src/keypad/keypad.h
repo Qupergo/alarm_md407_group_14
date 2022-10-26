@@ -6,7 +6,7 @@
 #define CHARACTER_BUFFER_LENGTH 8
 
 typedef struct latest_characters_entered {
-	unsigned char current_password[PASSWORD_LENGTH];
+	char current_password[PASSWORD_LENGTH];
 	unsigned char entered_characters_buffer[CHARACTER_BUFFER_LENGTH];
 	unsigned char current_index;
 } char_buffer;
@@ -18,7 +18,8 @@ char_buffer latest_char_buffer;
 
 // Add a new char to the char_buffer 
 void add_char_to_buffer(char new_char);
-// Should be periodically called to see if a key is being pressed and adds it to the buffer 
+// Should be periodically called to see if a key is being pressed and adds it to the buffer
+// Returns 1 when a new key has been entered
 int keypad_update();
 // Increments the current index in the buffer
 void increment_index();

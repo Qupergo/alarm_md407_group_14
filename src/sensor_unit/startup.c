@@ -201,14 +201,14 @@ void main(void) {
     initial_alive.reciever_id = 0;
     initial_alive.content[0] = SELF_TYPE;
     initial_alive.content[1] = num_sub_units;
-    can_send_message(&_rt_info, &_ls_info, CAN1, initial_alive);
+    can_send_message(&_rt_info, CAN1, initial_alive);
     unsigned char waiting_for_alive_response = 1;
 
     while (1) {
          distance = check_distance();
 
         if (send_alarm) {
-            can_send_message(&_rt_info, &_ls_info, CAN1, MSG_STANDARD_ALARM);
+            can_send_message(&_rt_info, CAN1, MSG_STANDARD_ALARM);
             send_alarm = 0;
         }
 		// Only start updating units after they have recieved their alive response

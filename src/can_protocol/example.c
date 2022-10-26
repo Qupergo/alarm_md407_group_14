@@ -49,7 +49,7 @@ void main(void)
     initial_alive.content[0] = SELF_TYPE;
     initial_alive.content[1] = num_sub_units;
     initial_alive.reciever_id = 0;
-    can_send_message(&_rt_info, &_ls_info, CAN1, initial_alive);
+    can_send_message(&_rt_info, CAN1, initial_alive);
     unsigned char waiting_for_alive_response = 1;
 
     while (1) {
@@ -70,7 +70,7 @@ void main(void)
                             tx_msg.message_type = MSGID_NEW_ALIVE_RESPONSE;
                             tx_msg.content[0] = rx_msg.content[0];
                             tx_msg.content[1] = i;
-                            can_send_message(&_rt_info, &_ls_info, CAN1, tx_msg);
+                            can_send_message(&_rt_info, CAN1, tx_msg);
                         }
                     }
                     break;

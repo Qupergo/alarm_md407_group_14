@@ -89,13 +89,13 @@ tx_can_msg MSG_STANDARD_ALARM = {
 */
 
 // Configures selected CAN interface for incoming messages
-void can_init(CAN_TypeDef * CANx, int is_central_unit);
+void can_init(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef * CANx, int is_central_unit);
 // Gets a pending message from a specified can peripheral.
 // The message is then decoded and acks are sent as required.
 // Returns true if a message was read, false otherwise.
 int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, rx_can_msg* rx_msg);
 // Send a message over CAN and save the message in the retransmission buffer
-void can_send_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx, tx_can_msg tx_msg);
+void can_send_message(rt_info* _rt_info, CAN_TypeDef* CANx, tx_can_msg tx_msg);
 // Checks if timeouts have been reached for retransmissions and lifesigns and takes action accordingly.
 // Should run in the main loop of each startup.c script.
 void can_update(rt_info* _rt_info, ls_info* _ls_info);
