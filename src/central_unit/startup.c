@@ -42,6 +42,22 @@ u_info* get_unit_of_type(enum unit_type_id unit_type) {
 	}
 }
 
+void print_all_doors() {
+	print_line("Currently available door units:");
+	for (int i = 0; i < MAX_UNITS; i++) {
+		if (units[i].is_used && units[i].message_type == TYPE_DOOR_UNIT) {
+			print("Door unit ");
+			print_int(units[i].main_id);
+			print_line("has the following doors connected:")
+			for (int j = 0; j < units[i].num_sub_units; i++) {
+				print("Door connected to GPIO pin ");
+				print_int(j);
+				print("\n");
+			}
+		}
+	}
+}
+
 // Returns the amount of chars neeeded to execute the command.
 int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int chars_entered) {
 	int done_with_option = 0;
@@ -54,6 +70,9 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 				}
 				done_with_option = 1;
 			}
+			else if (chars_entered == 0) {
+				print("Enter the new password: ");
+			}
 			break;
 		case 2: // View alarm status
 			for(int i = 1; i < MAX_UNITS; i++){ // antigen visa info eller skicka can.msg med förfråga om status
@@ -63,6 +82,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 			break;
 		case 3: // Enable door alarm
 			if (chars_entered == 1) {
+				// Check that input is correct
 				char door_id = *get_latest_chars_entered(c_buffer,1);
 				tx_can_msg alarm_message_on;
 				alarm_message_on.message_type = MSGID_START_ALARM;
@@ -72,9 +92,19 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 				// send usart msg with info ?
 				done_with_option = 1;
 			}
+			else if (chars_entered == 0) {
+				print_all_doors();
+				print_line("Disable door alarm for which door?");
+				print("Enter door unit id: ")
+			}
+			else if (chars_entered == 1) {
+				print("\n");
+				print("Enter GPIO pin of connected door: ");
+			}
 			break;
 		case 4: // Disable door alarm
-			if (chars_entered == 1) {
+			if (chars_entered == 2) {
+				// Check that input is correct
 				char door_id = *get_latest_chars_entered(c_buffer, 1);
 				tx_can_msg alarm_message_off;
 				alarm_message_off.message_type = MSGID_STOP_ALARM;
@@ -83,9 +113,19 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 				alarm_message_off.content[0] = door_id;
 				done_with_option = 1;
 			}
+			else if (chars_entered == 0) {
+				print_all_doors();
+				print_line("Disable door alarm for which door?");
+				print("Enter door unit id: ")
+			}
+			else if (chars_entered == 1) {
+				print("\n");
+				print("Enter GPIO pin of connected door: ");
+			}
 			break;
 		case 5:  // Set new time threshold
-			if (chars_entered > 1) {
+			if (chars_entered > 2) {
+				// Check that input is correct
 				char latest_char = *get_latest_chars_entered(c_buffer, 1);
 				if (latest_char == 0xD) {
 					char* new_threshold = get_latest_chars_entered(c_buffer, chars_entered);
@@ -101,38 +141,79 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 					done_with_option = 1;
 				}
 			}
-			break;
-		case 6: // caliberate distance alarm
-			for (int i = 0; i < MAX_UNITS; i++) {
-				if (units[i].type == TYPE_SENSOR_UNIT) {
-					tx_can_msg msg_recalibrate = {
-						.message_type = MSGID_RECALIBERATE,
-						.reciever_id = units[i].main_id,
-					};
-					can_send_message(_rt_info, CAN1, msg_recalibrate);
-				}
+			else if (chars_entered == 0) {
+				print_all_doors();
+				print_line("Set new time threshold for which door?");
+				print("Enter door unit id: ")
 			}
-			done_with_option = 1;
-			break;
-		case 7: // set sensitivity for distance sensor
-			if (chars_entered == 1) {
-				unsigned char sensitivity_value = *get_latest_chars_entered(c_buffer, 1);
+			else if (chars_entered == 1) {
+				print("\n");
+				print("Enter GPIO pin of connected door: ");
+			}
 
+			break;
+		case 6: // Calibrate distance alarm
+
+			if (chars_entered == 0) {
+				print_line("Currently connected sensor units:");
 				for (int i = 0; i < MAX_UNITS; i++) {
 					if (units[i].type == TYPE_SENSOR_UNIT) {
-						tx_can_msg reset_sensitivity = {
-							.message_type = MSGID_SENSOR_DISTANCE_THRESHOLD,
-							.reciever_id = units[i].main_id,
-							.content[0] = sensitivity_value
-						};
-						can_send_message(_rt_info, CAN1, reset_sensitivity);
+						print("Sensor unit with ID: ");
+						print_int(units[i].main_id);
+						print("\n")
 					}
 				}
+				print_line("Recalibrate which sensor unit?");
+				print("Enter sensor unit id: ");
+			}
+			else if (chars_entered == 1) {
+				print("\n");
+				char sensor_id = *get_latest_chars_entered(c_buffer, 1);
+
+				tx_can_msg msg_recalibrate = {
+					.message_type = MSGID_RECALIBERATE,
+					.reciever_id = sensor_id,
+				};
+				can_send_message(_rt_info, CAN1, msg_recalibrate);
+				done_with_option = 1;
+			}
+			break;
+		case 7: // Set sensitivity for distance sensor
+			if (chars_entered == 0) {
+				print_line("Currently connected sensor units:");
+				for (int i = 0; i < MAX_UNITS; i++) {
+					if (units[i].type == TYPE_SENSOR_UNIT) {
+						print("Sensor unit with ID: ");
+						print_int(units[i].main_id);
+						print("\n")
+					}
+				}
+				print_line("Set sensitivty for which sensor unit's distance sensor?");
+				print("Enter sensor unit id: ");
+			}
+			else if (chars_entered == 1) {
+				print_line("What should the sensitivity be?");
+				print("Distance threshold (in meters): ")
+			}
+			else if (chars_entered == 2) {
+				print("\n");
+				char sensor_id = *get_latest_chars_entered(c_buffer, 2);
+				char sensitivity_value = *get_latest_chars_entered(c_buffer, 1);
+
+				tx_can_msg msg_update_threshold = {
+					.message_type = MSGID_SENSOR_DISTANCE_THRESHOLD,
+					.reciever_id = sensor_id,
+					.content[0] = sensitivity_value,
+				};
+
+				can_send_message(_rt_info, CAN1, msg_update_threshold);
 				done_with_option = 1;
 			}
 			break;
 		case 8:
 			// Start at 1 to avoid sending to central unit
+			print_line("Reseting all units...")
+			// Reset central unit here TODO
 			for (int i = 1; i < MAX_UNITS; i++) {
 				if (units[i].is_used) {
 					tx_can_msg msg_reset_unit = {
@@ -140,13 +221,23 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 						.message_type = MSGID_RESET_UNIT,
 						.reciever_id = units[i].main_id,
 					};
+
 					can_send_message(_rt_info, CAN1, msg_reset_unit);
+					
+					if (units[i].type == TYPE_DOOR_UNIT) {
+						print("Door unit with id ")
+					}
+					else if (units[i].type == TYPE_SENSOR_UNIT) {
+						print("Sensor unit with id ")
+					}
+					print_int(units[i].main_id)
+					print_line("has been sent a reset message")
 				}
 			}
-			
+			print_line("Reset is finished.")
 			done_with_option = 1;
 			break;
-		print_line(c_buffer->entered_characters_buffer)
+		return done_with_option;
 	}
 }
 

@@ -75,10 +75,10 @@ void print(char* s) {
 }
 
 void print_line(char* s) {
-	USART_Snd('\n');
 	while (*s != '\0') {
 		USART_Snd(*(s++));
 	}
+	USART_Snd('\n');
 }
 
 void print_int(int x) {
