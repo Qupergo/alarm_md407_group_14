@@ -50,7 +50,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 			if (chars_entered == PASSWORD_LENGTH) {
 				char* new_password = get_latest_chars_entered(PASSWORD_LENGTH);
 				for(int i = 0; i < PASSWORD_LENGTH; i++) {
-					latest_char_buffer.current_password[i] = new_password[i];
+					c_buffer->current_password[i] = new_password[i];
 				}
 				done_with_option = 1;
 			}
@@ -63,7 +63,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 			break;
 		case 3: // Enable door alarm
 			if (chars_entered == 1) {
-				char door_id = *get_latest_chars_entered(1);
+				char door_id = *get_latest_chars_entered(c_buffer,1);
 				tx_can_msg alarm_message_on;
 				alarm_message_on.message_type = MSGID_START_ALARM;
 				alarm_message_on.reciever_id = TYPE_DOOR_UNIT; // Set to a correct id
@@ -75,7 +75,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 			break;
 		case 4: // Disable door alarm
 			if (chars_entered == 1) {
-				char door_id = *get_latest_chars_entered(1);
+				char door_id = *get_latest_chars_entered(c_buffer, 1);
 				tx_can_msg alarm_message_off;
 				alarm_message_off.message_type = MSGID_STOP_ALARM;
 				alarm_message_off.reciever_id = TYPE_DOOR_UNIT; // Set to a correct id
@@ -86,9 +86,9 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 			break;
 		case 5:  // Set new time threshold
 			if (chars_entered > 1) {
-				char latest_char = *get_latest_chars_entered(1);
+				char latest_char = *get_latest_chars_entered(c_buffer, 1);
 				if (latest_char == 0xD) {
-					char* new_threshold = get_latest_chars_entered(chars_entered);
+					char* new_threshold = get_latest_chars_entered(c_buffer, chars_entered);
 					tx_can_msg set_new_threshold;
 					set_new_threshold.message_type = MSGID_SET_DOOR_ALARM_TIME_THRESHOLD;
 					set_new_threshold.reciever_id = TYPE_DOOR_UNIT;
@@ -116,7 +116,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int cha
 			break;
 		case 7: // set sensitivity for distance sensor
 			if (chars_entered == 1) {
-				unsigned char sensitivity_value = *get_latest_chars_entered(1);
+				unsigned char sensitivity_value = *get_latest_chars_entered(c_buffer, 1);
 
 				for (int i = 0; i < MAX_UNITS; i++) {
 					if (units[i].type == TYPE_SENSOR_UNIT) {
@@ -163,9 +163,6 @@ void main(void)
 	
 	can_init(&_rt_info, &_ls_info, CAN1, 1);
 
-	// call a function in can.c that initialize info for recieving_transmit and life_signals
-	u_info central_unit;
-
     central_unit.is_used = 1;
     central_unit.type = TYPE_CENTRAL_UNIT;
     central_unit.main_id = 0;
@@ -178,9 +175,9 @@ void main(void)
 	int chars_entered_for_option = 0;
 
 	while (1) {
-		if (keypad_update()) {
+		if (keypad_update(&c_buffer)) {
 			if (choosing_menu_option) {
-				option = *get_latest_chars_entered(1);
+				option = *get_latest_chars_entered(&c_buffer, 1);
 				choosing_menu_option = 0;
 				executing_menu_option = 1;
 				execute_option(&c_buffer, &_rt_info, option, chars_entered_for_option);
@@ -192,7 +189,7 @@ void main(void)
 					chars_entered_for_option = 0;
 				}
 			}
-			else if (check_password()) {
+			else if (check_password(&c_buffer)) {
 				reset_buffer();
 				print_menu_options();
 				// Set choosing menu option to 1 so that the next time the keypad updates
