@@ -42,12 +42,12 @@ void increment_index(char_buffer* c_buffer) {
 	}
 }
 
-void add_char_to_buffer(char_buffer* c_buffer, char new_char ) {
+void add_char_to_buffer(char_buffer* c_buffer, char new_char) {
 	c_buffer->entered_characters_buffer[c_buffer->current_index] = new_char;
 	increment_index(c_buffer);
 }
 
-void reset_buffer( char_buffer* c_buffer ) {
+void reset_buffer(char_buffer* c_buffer) {
 	for(int i = 0; i < CHARACTER_BUFFER_LENGTH; i++) {
 		c_buffer->entered_characters_buffer[i] = '\0';
 	}

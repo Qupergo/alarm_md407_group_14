@@ -68,13 +68,13 @@ u_info get_unit_by_id(int id) {
 }
 
 void print_all_doors() {
-	print_line("Currently available door units:");
+	print_line("\nCurrently available door units:");
 	for (int i = 0; i < MAX_UNITS; i++) {
 		if (units[i].is_used && units[i].type == TYPE_DOOR_UNIT) {
 			print("Door unit ");
 			print_int(units[i].main_id);
 			print_line("has the following doors connected:");
-			for (int j = 0; j < units[i].num_sub_units; i++) {
+			for (int j = 0; j < units[i].num_sub_units; j++) {
 				print("Door connected to GPIO pin ");
 				print_int(j);
 				print("\n");
@@ -129,7 +129,6 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				
 				if (door_unit_id == 0 || door_id == 0) {
 					print_line("0 Entered, exiting...");
-
 					done_with_option = 1;
 					break;
 				}
@@ -171,23 +170,23 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				print("Enter door unit id (or 0 to exit): ");
 			}
 			else if (*chars_entered == 1) {
-				print("\n");
-				print("Enter new time threshold value in seconds (when value is entered, write 'D'): ");
+				print("\nChange local or global alarm time threshold?\n0 for global and 1 for local\nEnter number: ");
 			}
-			if (*chars_entered > 2) {
+			else if (*chars_entered == 2) {
+				print("\nEnter new time threshold value in seconds (when value is entered, write 'D' to continue): ");
+			}
+			else if (*chars_entered > 3) {
 				char latest_char[1];
 				get_latest_chars_entered(c_buffer, *chars_entered, latest_char);
-				if (latest_char == 0xD) {
+				if (latest_char > 9) { // Any non integer character works, not just D
 					char door_values[*chars_entered];
 					get_latest_chars_entered(c_buffer, *chars_entered, door_values);
 					char door_unit_id = door_values[0];
-
 					if (door_unit_id == 0) {
-						print_line("0 Entered, time threshold change");
+						print_line("0 Entered, exiting time threshold change");
 						done_with_option = 1;
 						break;
 					}
-
 					if (!unit_id_exists_with_type(door_unit_id, TYPE_DOOR_UNIT)) {
 						print("A door unit with the id ");
 						print_int(door_unit_id);
@@ -195,11 +194,11 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 						*chars_entered = 0;
 						break;
 					}
-
 					tx_can_msg set_new_threshold;
 					set_new_threshold.message_type = MSGID_SET_DOOR_ALARM_TIME_THRESHOLD;
 					set_new_threshold.reciever_id = TYPE_DOOR_UNIT;
 					set_new_threshold.priority = 1;
+					set_new_threshold.content[0] = door_values[1]; // Local or global
 					int i = 1; // Don't include the door id at pos 0.
 					while (set_new_threshold.content[i] <= 9) {
 						if (i >= CONTENT_LENGTH) {
@@ -227,17 +226,17 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 			}
 			else if (*chars_entered == 1) {
 				print("\n");
-				char* sensor_id;
+				char sensor_id[1];
 				get_latest_chars_entered(c_buffer, 1, sensor_id);
-				if (sensor_id == 0) {
+				if (*sensor_id == 0) {
 					print_line("0 Entered, exiting calibration");
 					done_with_option = 1;
 					break;
 				}
 
-				if (!unit_id_exists_with_type(sensor_id, TYPE_SENSOR_UNIT)) {
+				if (!unit_id_exists_with_type(*sensor_id, TYPE_SENSOR_UNIT)) {
 					print("A sensor unit with the id ");
-					print_int(sensor_id);
+					print_int(*sensor_id);
 					print_line(" does not exist.\nPlease try again");
 					*chars_entered = 0;
 					break;
@@ -245,7 +244,8 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 
 				tx_can_msg msg_recalibrate = {
 					.message_type = MSGID_RECALIBERATE,
-					.reciever_id = sensor_id,
+					.reciever_id = *sensor_id,
+					.sequence_n = _rt_info->transmit_sequence_num[*sensor_id],
 				};
 				can_send_message(_rt_info, CAN1, msg_recalibrate);
 				done_with_option = 1;
@@ -272,7 +272,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 			else if (*chars_entered > 2) {
 				char latest_char[1];
 				get_latest_chars_entered(c_buffer, *chars_entered, latest_char);
-				if (latest_char == 0xD) {
+				if (*latest_char == 0xD) {
 					char sensor_values[*chars_entered];
 					get_latest_chars_entered(c_buffer, chars_entered, sensor_values);
 					char sensor_id = sensor_values[0];
@@ -293,6 +293,8 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 					tx_can_msg msg_update_threshold = {
 						.message_type = MSGID_SENSOR_DISTANCE_THRESHOLD,
 						.reciever_id = sensor_id, // Sensor id
+						.sequence_n = _rt_info->transmit_sequence_num[sensor_id],
+
 					};
 					int i = 1; // Don't include the sensor id at pos 0.
 					while (msg_update_threshold.content[i] <= 9) {
@@ -302,7 +304,6 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 						msg_update_threshold.content[i] = sensor_values[i];
 						i++;
 					}
-
 					can_send_message(_rt_info, CAN1, msg_update_threshold);
 					done_with_option = 1;
 				}
@@ -318,6 +319,8 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 						.priority = 1,
 						.message_type = MSGID_RESET_UNIT,
 						.reciever_id = units[i].main_id,
+						.sequence_n = _rt_info->transmit_sequence_num[units[i].main_id],
+
 					};
 
 					can_send_message(_rt_info, CAN1, msg_reset_unit);
@@ -392,12 +395,13 @@ void main(void) {
 				if (execute_option(&c_buffer, &_rt_info, option, chars_entered_for_option)) {
 					executing_menu_option = 0;
 					*chars_entered_for_option = 0;
+					reset_buffer(&c_buffer);
 					print("\nEnter the password to open the menu\nEnter password: ");
 
 				}
 			}
 			else if (check_password(&c_buffer)) {
-				reset_buffer();
+				reset_buffer(&c_buffer);
 				print_menu_options();
 				// Set choosing menu option to 1 so that the next time the keypad updates
 				choosing_menu_option = 1;
@@ -415,19 +419,22 @@ void main(void) {
                     break;
 
                 case MSGID_NEW_ALIVE:
-                    for (int i = 0; i < MAX_UNITS; i++) {
+                    for (int i = 1; i < MAX_UNITS; i++) {
                         if (!units[i].is_used) {
                             units[i].is_used = 1;
                             units[i].main_id = i;
                             units[i].type = rx_msg.content[0];
                             units[i].num_sub_units = rx_msg.content[1];
-                            
+
                             tx_can_msg alive_response;
                             alive_response.reciever_id = i;
                             alive_response.message_type = MSGID_NEW_ALIVE_RESPONSE;
+							alive_response.sequence_n = _rt_info.transmit_sequence_num[i];
+
                             alive_response.content[0] = rx_msg.content[0];
                             alive_response.content[1] = i;
                             can_send_message(&_rt_info, CAN1, alive_response);
+							break;
                         }
                     }
                     break;

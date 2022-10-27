@@ -136,6 +136,7 @@ void main(void) {
     initial_alive.content[0] = SELF_TYPE;
     initial_alive.content[1] = num_sub_units;
     initial_alive.reciever_id = 0;
+	initial_alive.sequence_n = _rt_info.transmit_sequence_num[0];
     can_send_message(&_rt_info, CAN1, initial_alive);
     unsigned char waiting_for_alive_response = 1;
 
@@ -149,6 +150,7 @@ void main(void) {
 						.message_type = MSGID_START_ALARM,
 						.reciever_id = 0,
 						.content = doors[i].id,
+						.sequence_n = _rt_info.transmit_sequence_num[i],
 					};
 
 					can_send_message(&_rt_info, CAN1, msg_alarm);
@@ -159,14 +161,18 @@ void main(void) {
 		}
 
 
-		can_update(&_rt_info, &_ls_info);
+        if (!waiting_for_alive_response) {
+            can_update(&_rt_info, &_ls_info);
+        }
 		if (can_receive_message(&_rt_info, &_ls_info, CAN1, &rx_msg)) {
             switch (rx_msg.message_type) {
                 case MSGID_NEW_ALIVE_RESPONSE:
                     if (waiting_for_alive_response) {
+						print_line("Door unit recieved alive response");
                         if (rx_msg.content[0] == SELF_TYPE) {
                             waiting_for_alive_response = 0;
                             self_id = rx_msg.content[1];
+							can_init_filter(self_id);
                             _rt_info.recieve_sequence_num[rx_msg.sender_id] = 0;
                             _rt_info.transmit_sequence_num[rx_msg.sender_id] = 1;
                         }

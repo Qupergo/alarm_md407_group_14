@@ -8,6 +8,29 @@
 unsigned short self_id;
 unsigned char waiting_for_alive_response = 0;
 
+void can_init_filter(int id) {
+    // The StdId field contains the following information in its 11 bits of storage
+    // Bit 10: Priority
+    // Bit 9-6: Type of message
+    // Bit 5-3: Sender id
+    // Bit 2-0: Self id?
+	CAN_FilterInitTypeDef can_filter_init;
+
+	can_filter_init.CAN_FilterNumber = 0; // 0..13 for CAN1, 14..27 for CAN2
+	can_filter_init.CAN_FilterFIFOAssignment = CAN_FIFO0;
+	can_filter_init.CAN_FilterMode = CAN_FilterMode_IdMask;
+	can_filter_init.CAN_FilterScale = CAN_FilterScale_16bit;
+	can_filter_init.CAN_FilterIdHigh = self_id << 5;
+	can_filter_init.CAN_FilterIdLow = self_id << 5;
+	can_filter_init.CAN_FilterMaskIdHigh = 0x03F << 5; // .... . . .... 000 self_id
+	can_filter_init.CAN_FilterMaskIdLow = 0x03F << 5; 	// 0000 0 0 0000 11 1111
+	can_filter_init.CAN_FilterFIFOAssignment = 0;		// 0000 0 1 1111 10 0000	
+	can_filter_init.CAN_FilterActivation = ENABLE;
+	CAN_FilterInit(&can_filter_init);
+	print("Initialized filter: ");
+	print_int(can_filter_init.CAN_FilterMaskIdHigh);
+}
+
 // Configures selected CAN interface for incoming messages
 void can_init(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef * CANx, int is_central_unit) {
     // enable clocks
@@ -121,7 +144,7 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // If a unit recieved a message that is supposed to be from itself
     // Then a replay attack may be happening, start the alarm
     if (sender_id == reciever_id && sender_id != 7) {
-        // Trigger alarm
+        print("ALARM");
     }
 
     // If the central unit recieves a message from a unit
@@ -130,7 +153,9 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     if (self_id == 0) {
         if (!units[sender_id].is_used && message_type != MSGID_NEW_ALIVE && message_type != MSGID_ACK) {
             if (DEBUG) {
-    			print_line("Unrecognised unit message recieved");
+    			print("Unrecognised unit message recieved from unit with id ");
+				print_int(sender_id);
+				print("\n");
             }
             return 0;
         }
@@ -144,6 +169,10 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
         if (sender_id != 0) {
             if (DEBUG) {
     			print_line("Non central unit recieved message from non central unit");
+				print("Sender id was: ");
+				print_int(sender_id);
+				print("\nMessage type was: ");
+				print_int(message_type);
             }
             return 0;
         }
@@ -173,28 +202,48 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     // Then we know that the retransmit frame will no longer be needed
     // Set is used for that frame to 0
     if (message_type == MSGID_ACK) {
-		
+		if (DEBUG) {
+			print("Recieved ack for sequence num: ");
+			print_int(sequence_n);
+			print("\n");
+		}
         for (int i = 0; i < MAX_RT_FRAMES; i++) {
-            if (_rt_info->rt_frames[i].sequence_n == sequence_n) {
-				
-                _rt_info->rt_frames[i].is_used = 0;
-				break;
-            }
-        }
-    }
+			if (_rt_info->rt_frames[i].is_used) {
+				if (_rt_info->rt_frames[i].sequence_n == sequence_n) {
+					_rt_info->rt_frames[i].is_used = 0;
+					print("found matching frame: ");
+					print_int(i);
+					print("\n");
+					break;
+				}
+			}
+		}
+	}
 
     // Lifesigns and acks should not be acked
     else if (!(message_type == MSGID_LIFESIGN)) {
         if (DEBUG) {
-    		print_line("Recieved non ack, non lifesign message");
+    		print("Recieved non ack, non lifesign message with id: ");
+			print_int(message_type);
+			print("\n");
         }
         tx_can_msg ack;
 
         ack.message_type = MSGID_ACK;
         ack.priority = 1;
         ack.reciever_id = sender_id;
+		ack.sequence_n = sequence_n;
 
-        if (_rt_info->recieve_sequence_num[sender_id] + 1 == sequence_n) {
+		// Dont check sequence when new alive starts
+		if (sender_id == 7 && message_type == MSGID_NEW_ALIVE) {
+			_rt_info->recieve_sequence_num[sender_id] = sequence_n;
+            can_send_message(_rt_info, CANx, ack);
+            if (DEBUG) {
+    			print_line("Sent ack for message");
+            }
+            return 1;
+		}
+        else if (_rt_info->recieve_sequence_num[sender_id] + 1 == sequence_n) {
             // The message has the correct sequence number, update seq number and 
             // send back an ack
             _rt_info->recieve_sequence_num[sender_id] = sequence_n;
@@ -211,16 +260,25 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
             // The message is a duplicate, ack might have been lost, send a new ack
             can_send_message(_rt_info, CANx, ack);
         }
+		else {
+			if (DEBUG) {
+				print_line("Recieved out of order sequence num, ignoring");
+			}
+		}
         return 0;        
     }
 	else {
 		// Lifesigns should be recieved and handled in the central unit
+		print("Recieved lifesign from id ");
+		print_int(sender_id);
+		print("\n");
 		return 1;
 	}
 }
 // Send a message over CAN and save the message in the retransmission buffer
 void can_send_message(rt_info* _rt_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
-    unsigned short sequence_n = _rt_info->transmit_sequence_num[tx_msg.reciever_id];
+    unsigned short sequence_n = tx_msg.sequence_n;
+
     int length = sizeof(tx_msg.content) + sizeof(sequence_n);
 
     // The StdId field contains the following information in its 11 bits of storage
@@ -234,6 +292,12 @@ void can_send_message(rt_info* _rt_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
         .RTR = CAN_RTR_Data,
         .IDE = CAN_ID_STD,
     };
+	
+	print("Sending message with message type: ");
+	print_int(tx_msg.message_type);
+	print("and sequence num: ");
+	print_int(sequence_n);
+	print("\n");
 
     // The first 6 bytes of data should be the content
     int content_length = sizeof(tx_msg.content);
@@ -256,11 +320,9 @@ void can_send_message(rt_info* _rt_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
         }
     }
 
-    _rt_info->transmit_sequence_num[tx_msg.reciever_id]++;
-
     // Don't ack lifesigns as they are sent repeteadly, also don't ack other acks because it creates a infinite loop.   
     if (tx_msg.message_type != MSGID_ACK && tx_msg.message_type != MSGID_LIFESIGN) {
-
+		_rt_info->transmit_sequence_num[tx_msg.reciever_id]++;
         // Save the transmitted message in the retransmission buffer
         // If the buffer is full then the message is not saved
         for (int i = 0; i < MAX_RT_FRAMES; i++) {
@@ -270,6 +332,7 @@ void can_send_message(rt_info* _rt_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
                 _rt_info->rt_frames[i].msg = outgoing;
                 _rt_info->rt_frames[i].send_timestamp = timer_ms;
                 _rt_info->rt_frames[i].sequence_n = sequence_n;
+				break;
             }
         }
     }
@@ -282,13 +345,19 @@ void can_update(rt_info* _rt_info, ls_info* _ls_info) {
     for (int i = 0; i < MAX_RT_FRAMES; i++) {
         if (_rt_info->rt_frames[i].is_used) {
             if ((_rt_info->rt_frames[i].send_timestamp + ACK_TIMEOUT_MS) <= timer_ms) {
+				print("Attempting retransmit with frame i: ");
+				print_int(i);
+				print("\n");
                 // Ack has not been recieved
                 // Retransmit the message
-                char mailbox = CAN_Transmit(_rt_info->rt_frames[i].CANx, &_rt_info->rt_frames[i].msg);
+                char mailbox = CAN_Transmit(_rt_info->rt_frames[i].CANx, &(_rt_info->rt_frames[i].msg));
                 // check if the transmission buffer was full
                 if (mailbox == CAN_TxStatus_NoMailBox) {
                     if (DEBUG) {
                         print_line("Can buffer full while attempting retransmit, trying again...");
+						print("Retransmitting message with type: ");
+						print_int((_rt_info->rt_frames[i].msg.StdId & 0b01111000000) >> 6);
+						print("\n");
                     }
                 }
             }
@@ -303,6 +372,7 @@ void can_update(rt_info* _rt_info, ls_info* _ls_info) {
             lifesign.priority = 1;
             lifesign.message_type = MSGID_LIFESIGN;
             lifesign.reciever_id = 0;
+			lifesign.sequence_n = _rt_info->transmit_sequence_num[0];
             can_send_message(_rt_info, CAN1, lifesign);
         } 
     }
@@ -314,7 +384,8 @@ void can_update(rt_info* _rt_info, ls_info* _ls_info) {
                 if ((_ls_info->recieved_lifesigns[i] + LIFESIGN_FREQUENCY_MS * 2) <= timer_ms) {
                     // A connected device is no longer sending a lifesign
                     // It might have been disconnected, to prevent unauthorized access
-                    // Start the alarm
+                    // Start the alarm TODO
+					print("ALARM");
                 }
             }
         }
