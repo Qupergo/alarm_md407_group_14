@@ -38,7 +38,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 
 \item[GPIO] \emph{General Purpose Input/Output} är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
 
-\item[HC-SR04] En ultraljudsbaserad avståndsmätare
+\item[HC-SR04] En ultraljudsbaserad avståndsmätare.
 
 \item[Knappsats] En extern periferienhet med 16 knappar som används för inmatning av data till mikrokontroller.
 
@@ -214,7 +214,7 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
     \label{fig:drawing}
 \end{figure}
 
-\begin{tabular}{|c|l|l|}
+\begin{tabular}{|c|l|c|}
     \hline
     Bitmönster & Meddelandetyp & Innehåll \\
     \hline
@@ -222,7 +222,8 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
     0001 & STOP ALARM & ... /DörrID \\
     0010 & UNLOCK DOOR & DörrID \\
     0011 & NEW ALIVE & Enhetstyp \\
-    0100 & NEW ALIVE RESPONSE & Enhetstyp hos mottagare och nytt ID \\
+    0100 & NEW ALIVE RESPONSE & Enhetstyp hos mottagare \\ 
+    &&och nytt ID \\
     0101 & RESET UNIT & ... \\
     0110 & SET DOOR ALARM TIME THRESHOLD & Nytt tröskelvärde \\
     0111 & SENSOR DISTANCE THRESHOLD & Nytt tröskelvärde \\
@@ -237,8 +238,6 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
 \caption{Figur 5: Bitmönster för de olika meddelandetyper som används för CAN-kommunikation. Meddelandetyper med lägre nummer har högre prioritet. "..."\ betyder att innehållet är tomt.}
 \end{center}
 
-
-
 \section{Resultat och diskussion}
 I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet reflekterar de mål som sattes i projektets början. Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
 
@@ -247,7 +246,7 @@ I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet ref
 \subsection{Periferienheter}
 
 \subsubsection{Dörrenhet}
-Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar, för varje dörr ska tröskelvärdet kunna justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan svara på de periodvisa \emph{ALIVE} meddelanden som den får från centralenheten samt avlarmas med ett \emph{STOP ALARM} meddelande.
+Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar, för varje dörr ska tröskelvärdet kunna justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
 
 \subsubsection{Sensorenhet}
 Avståndsmätare är 
