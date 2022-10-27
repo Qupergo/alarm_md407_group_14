@@ -24,6 +24,7 @@ typedef struct DoorUnit {
 	uint8_t status_central_alarm;
 	uint8_t status_local_alarm;
 	uint8_t door_is_open;
+	uint8_t door_is_locked;
 	uint32_t local_alarm_time_threshold_s;
 	uint32_t global_alarm_time_threshold_s;
 	uint32_t opened_door_timestamp_ms;

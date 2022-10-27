@@ -45,6 +45,7 @@ void init_doors(void){
 			.is_locked_led_pin = 1 << ((4 * i )+ 3),
 			.status_central_alarm = 0,
 			.status_local_alarm = 0,
+			.door_is_locked = 0,
 			.local_alarm_time_threshold_s = DEFAULT_LOCAL_TIME_THRESHOLD,
 			.global_alarm_time_threshold_s = DEFAULT_GLOBAL_TIME_THRESHOLD,
 			.opened_door_timestamp_ms = 0,
@@ -84,6 +85,18 @@ void start_local_alarm( int door_index ) {
 	GPIO_SetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 1;
 	print_line("local alarm started");
+}
+
+void lock_unlock_door(int door_index) {
+	if (door[door_index].door_is_locked) {
+		GPIO_ResetBits(GPIOD, doors[door_index].is_locked_led_pin);
+		door[door_index].door_is_locked = 0;
+	}
+	else {
+		GPIO_SetBits(GPIOD, doors[door_index].is_locked_led_pin);
+		door[door_index].door_is_locked = 1;
+
+	}
 }
 
 void door_update( void ) {
