@@ -71,12 +71,13 @@ void print_all_doors() {
 	print_line("\nCurrently available door units:");
 	for (int i = 0; i < MAX_UNITS; i++) {
 		if (units[i].is_used && units[i].type == TYPE_DOOR_UNIT) {
-			print("Door unit ");
+			print("Door unit with ID: ");
 			print_int(units[i].main_id);
+			print("\n");
 			print_line("has the following doors connected:");
 			for (int j = 0; j < units[i].num_sub_units; j++) {
 				print("Door connected to GPIO pin ");
-				print_int(j);
+				print_int(j + 1);
 				print("\n");
 			}
 		}
@@ -114,25 +115,14 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 		case 3: // Disable door alarm
 			if (*chars_entered == 0) {
 				print_all_doors();
-				if (option == 2) {
-					print_line("Enable door alarm for which door?");
-				}
-				else if (option == 3) {
-					print_line("Disable door alarm for which door?");	
-				}
+				print_line("Enable/disable door alarm for which door?");
 				print("Enter door unit id (or 0 to exit): ");
 			}
 			else if (*chars_entered == 1) {
-				print("\n");
-				print("Enter GPIO pin of connected door (or 0 to exit): ");
-			}
-			else if (*chars_entered == 2) {
-				char door_values[2];
-				get_latest_chars_entered(c_buffer, 2, door_values);
-				char door_id = door_values[1];
-				char door_unit_id = door_values[0];
-				
-				if (door_unit_id == 0 || door_id == 0) {
+				char door_id[1];
+				get_latest_chars_entered(c_buffer, 1, door_id);
+				char door_unit_id = *door_id;
+				if (door_unit_id == 0) {
 					print_line("0 Entered, exiting...");
 					done_with_option = 1;
 					break;
@@ -141,16 +131,8 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 					print("A door unit with the id ");
 					print_int(door_unit_id);
 					print_line(" does not exist.\nPlease try again");
+					print("Enter door unit id (or 0 to exit): ");
 					*chars_entered = 0;
-					break;
-				}
-				else if (door_unit_id > get_unit_by_id(door_unit_id).num_sub_units) {
-					print("A door with id ");
-					print_int(door_id);
-					print(" connected to door unit with id ");
-					print_int(door_unit_id);
-					print_line(" does not exist.\nPlease try again");
-					*chars_entered = 1;
 					break;
 				}
 
@@ -163,7 +145,6 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				}
 				msg_alarm.reciever_id = door_unit_id; // Set to a correct id
 				msg_alarm.priority = 0; // priority is max
-				msg_alarm.content[0] = door_id;
 				// send usart msg with info ?
 				done_with_option = 1;
 			}
@@ -171,7 +152,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 		case 4:  // Set new time threshold
 			if (*chars_entered == 0) {
 				print_all_doors();
-				print_line("Set new time threshold for which door?");
+				print_line("\nSet new time threshold for which door?");
 				print("Enter door unit id (or 0 to exit): ");
 			}
 			else if (*chars_entered == 1) {
@@ -196,6 +177,8 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 						print("A door unit with the id ");
 						print_int(door_unit_id);
 						print_line(" does not exist.\nPlease try again");
+						print("Enter door unit id (or 0 to exit): ");
+
 						*chars_entered = 0;
 						break;
 					}
@@ -218,7 +201,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 			break;
 		case 5: // Calibrate distance alarm
 			if (*chars_entered == 0) {
-				print_line("Currently connected sensor units:");
+				print_line("\nCurrently connected sensor units:");
 				for (int i = 0; i < MAX_UNITS; i++) {
 					if (units[i].type == TYPE_SENSOR_UNIT) {
 						print("Sensor unit with ID: ");
@@ -258,7 +241,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 			break;
 		case 6: // Set sensitivity for distance sensor
 			if (*chars_entered == 0) {
-				print_line("Currently connected sensor units:");
+				print_line("\nCurrently connected sensor units:");
 				for (int i = 0; i < MAX_UNITS; i++) {
 					if (units[i].type == TYPE_SENSOR_UNIT) {
 						print("Sensor unit with ID: ");

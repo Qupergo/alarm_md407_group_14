@@ -78,23 +78,33 @@ void stop_local_alarm( int door_index ) {
 	GPIO_SetBits(GPIOD, doors[door_index].is_closed_led_pin);
 	GPIO_ResetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 0;
-	print_line("local alarm stopped");
 }
 
 void start_local_alarm( int door_index ) {
 	GPIO_SetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 1;
-	print_line("local alarm started");
+}
+
+void stop_global_alarm() {
+	for (int i = 0; i < NUMBER_DOORS; i++) {
+		doors[i].status_central_alarm = 0;
+	}
+}
+
+void start_global_alarm() {
+	for (int i = 0; i < NUMBER_DOORS; i++) {
+		doors[i].status_central_alarm = 1;
+	}
 }
 
 void lock_unlock_door(int door_index) {
-	if (door[door_index].door_is_locked) {
+	if (doors[door_index].door_is_locked) {
 		GPIO_ResetBits(GPIOD, doors[door_index].is_locked_led_pin);
-		door[door_index].door_is_locked = 0;
+		doors[door_index].door_is_locked = 0;
 	}
 	else {
 		GPIO_SetBits(GPIOD, doors[door_index].is_locked_led_pin);
-		door[door_index].door_is_locked = 1;
+		doors[door_index].door_is_locked = 1;
 
 	}
 }
@@ -196,22 +206,22 @@ void main(void) {
 					char new_threshold = rx_msg.content[1];
 					char change_local_alarm = rx_msg.content[2];
 					if (change_local_alarm) {
-						doors[door_id].local_alarm_time_threshold_s = new_threshold;
+						doors[door_id - 1].local_alarm_time_threshold_s = new_threshold;
 						if(DEBUG)
 							print_line("changed local alarm thresh");
 					}
 					else {
-						doors[door_id].global_alarm_time_threshold_s = new_threshold;
+						doors[door_id - 1].global_alarm_time_threshold_s = new_threshold;
 						if(DEBUG)
 							print("changed global alarm thresh");
 					}
 					break;
 					
 				case MSGID_START_ALARM:;
-					start_local_alarm(rx_msg.content[0]); // Door id
+					start_global_alarm();
 					break;
 				case MSGID_STOP_ALARM:;
-					stop_local_alarm(rx_msg.content[0]); // Door id
+					stop_global_alarm();
 					break;
 			}
 		}

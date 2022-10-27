@@ -269,9 +269,11 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     }
 	else {
 		// Lifesigns should be recieved and handled in the central unit
-		print("Recieved lifesign from id ");
-		print_int(sender_id);
-		print("\n");
+		if (DEBUG) {
+			print("Recieved lifesign from id ");
+			print_int(sender_id);
+			print("\n");			
+		}
 		return 1;
 	}
 }
@@ -292,12 +294,13 @@ void can_send_message(rt_info* _rt_info, CAN_TypeDef* CANx, tx_can_msg tx_msg) {
         .RTR = CAN_RTR_Data,
         .IDE = CAN_ID_STD,
     };
-	
-	print("Sending message with message type: ");
-	print_int(tx_msg.message_type);
-	print("and sequence num: ");
-	print_int(sequence_n);
-	print("\n");
+	if (DEBUG) {
+		print("Sending message with message type: ");
+		print_int(tx_msg.message_type);
+		print("and sequence num: ");
+		print_int(sequence_n);
+		print("\n");		
+	}
 
     // The first 6 bytes of data should be the content
     int content_length = sizeof(tx_msg.content);
