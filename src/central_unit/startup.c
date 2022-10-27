@@ -74,7 +74,7 @@ void print_all_doors() {
 			print("Door unit ");
 			print_int(units[i].main_id);
 			print_line("has the following doors connected:");
-			for (int j = 0; j < units[i].num_sub_units; i++) {
+			for (int j = 0; j < units[i].num_sub_units; j++) {
 				print("Door connected to GPIO pin ");
 				print_int(j);
 				print("\n");
@@ -114,7 +114,12 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 		case 3: // Disable door alarm
 			if (*chars_entered == 0) {
 				print_all_doors();
-				print_line("Disable door alarm for which door?");
+				if (option == 2) {
+					print_line("Enable door alarm for which door?");
+				}
+				else if (option == 3) {
+					print_line("Disable door alarm for which door?");	
+				}
 				print("Enter door unit id (or 0 to exit): ");
 			}
 			else if (*chars_entered == 1) {
