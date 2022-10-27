@@ -17,7 +17,7 @@
 \hspace{10cm}
 Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407 mikrodator}
     
-\author{\\Alamin Alreda\\Sebastian Danckwardt\\Isac Holm\\Zaid Haj Ibrahim\\Edvin Svahn}
+\author{\\Alamin Alreda\\Sebastian Danckwardt\\Zaid Haj Ibrahim\\Isac Holm\\Edvin Svahn}
 
 \date{\today}
     
@@ -123,16 +123,19 @@ Delsystem förklarar hur samtliga delarna är uppbyggda.
 \subsection{Teknisk bakgrund}
 Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. 
 I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
-
+\\
+\\
 I konstruktionsarbetet är MD407-kort den centrala komponenten. 
 Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. 
 Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
-
+\\
+\\
 För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den försedd med flera olika anslutningar som kan användas för detta. 
 GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med avståndsmätare samt Vibrationssensor. 
 Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. 
 Det finns även kontaktstift för ström samt jord som används av sensorerna.
-
+\\
+\\
 Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
 \newpage
@@ -143,18 +146,17 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
     \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrarna/sensorerna till kortet. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
     \label{fig:drawing}
 \end{figure}
-
-Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. 
-Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. 
-Ett exempel på det kan vara knappsatsen.
-Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1).
-Kommunikation mellan samtliga MD407-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
-
-\newpage
-
+\\
+\\ dsafsda
+\\
+\\
+Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. Ett exempel på det kan vara knappsatsen.Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1). Kommunikation mellan samtliga MD407-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
+\\
+\\
 Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lysdioder och möjlighet till att läsa av i fall dörren är öppen respektive stängd.
 Lysdioderna kommer lysa rött när dörrenheten larmar lokalt eller grönt om inget larm har gått.
-
+\\
+\\
 Till sensorenheten kopplas avståndsmätare (HC-SR04) och vibrationssensor (SW-18010P).
 Avståndsmätaren kommer att skicka en signal om det avmätta avståndet ligger inom ett visst tröskelvärde.
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer över ett tröskelvärde.
