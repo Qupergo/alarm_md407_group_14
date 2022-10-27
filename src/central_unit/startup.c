@@ -2,12 +2,12 @@
 #include "string.h"
 #include "keypad.h"
 #include "timer.h"
+#include "usart1.h"
 
 
 unsigned char SELF_TYPE = TYPE_CENTRAL_UNIT;
 unsigned char num_sub_units = 0;
 unsigned char self_id;
-
 
 __attribute__((naked)) __attribute__((section (".start_section")) )
 void startup ( void )
@@ -21,7 +21,7 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 
 
 void print_menu_options( void ) {
-	print_line("Select one option from the following");
+	print_line("\nSelect one option from the following");
 	print_line("1 Set a new password");
 	print_line("2 Enable door alarm");
 	print_line("3 Disable door alarm"); 
@@ -30,7 +30,7 @@ void print_menu_options( void ) {
 	print_line("6 Adjust sensitivity for distance sensor");
 	print_line("7 Restart alarm");
 	print_line("0 To exit");
-	print_line("Option: ");
+	print("Option: ");
 }
 
 void reset_self_unit( void ) {
@@ -84,7 +84,7 @@ void print_all_doors() {
 }
 
 // Executes a specified option, function should be called every time a new character is recieved
-// This is checked with keypad_update which returns 1 whenever a new character is entered
+// This is checked with buffer_update which returns 1 whenever a new character is entered
 // Returns if the command is done executing or not.
 int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* chars_entered) {
 	int done_with_option = 0;
@@ -97,14 +97,14 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 					c_buffer->current_password[i] = new_password[i];
 				}
 				done_with_option = 1;
-				print("Successfully updated password to ");
+				print("\nSuccessfully updated password to ");
 				for (int i = 0; i < PASSWORD_LENGTH; i++) {
 					print_int(c_buffer->current_password[i]);
 				}
 				print("\n");
 			}
 			else if (*chars_entered == 0) {
-				print("Enter the new password (");
+				print("\nEnter the new password (");
 				print_int(PASSWORD_LENGTH);
 				print(" characters): ");
 			}
@@ -119,6 +119,8 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				char door_unit_id = door_values[0];
 				
 				if (door_unit_id == 0 || door_id == 0) {
+					print_line("0 Entered, exiting...");
+
 					done_with_option = 1;
 					break;
 				}
@@ -172,6 +174,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 					char door_unit_id = door_values[0];
 
 					if (door_unit_id == 0) {
+						print_line("0 Entered, time threshold change");
 						done_with_option = 1;
 						break;
 					}
@@ -208,7 +211,6 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				print("\n");
 				print("Enter new time threshold value in seconds (when value is entered, write 'D'): ");
 			}
-
 			break;
 		case 5: // Calibrate distance alarm
 			if (*chars_entered == 0) {
@@ -227,6 +229,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				char* sensor_id;
 				get_latest_chars_entered(c_buffer, 1, sensor_id);
 				if (sensor_id == 0) {
+					print_line("0 Entered, exiting calibration");
 					done_with_option = 1;
 					break;
 				}
@@ -272,6 +275,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 					get_latest_chars_entered(c_buffer, chars_entered, sensor_values);
 					char sensor_id = sensor_values[0];
 					if (sensor_id == 0) {
+						print_line("0 Entered, exiting sensitivity change");
 						done_with_option = 1;
 						break;
 					}
@@ -330,6 +334,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 			done_with_option = 1;
 			break;
 		case 0:
+			print_line("Option 0 entered, exiting menu...");
 			done_with_option = 1;
 			break;
 		default:
@@ -338,16 +343,15 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 			print(" is invalid. Please enter the password again\nThen enter a valid option.");
 			done_with_option = 1;
 			break;
-		return done_with_option;
 	}
+	return done_with_option;
 }
 
-void main(void)
-{
+void main(void) {
 	char_buffer c_buffer;
 	keypad_init(&c_buffer);
 	timer_init();
-	print_buffer(&c_buffer);
+	USART1_Init();
 	
 	rx_can_msg rx_msg;
     rt_info _rt_info;
@@ -367,12 +371,14 @@ void main(void)
 	int executing_menu_option = 0;
 	int chars_entered_for_option[1];
 	*chars_entered_for_option = 0;
-	
-	print_line("Enter the password to open the menu (Default password is '1111')");
+
+	new_buffer_char = 0xFF;
+	new_char_available = 0;
+
+	print("\nEnter the password to open the menu (Default password is '1111'): ");
 
 	while (1) {
-		if (keypad_update(&c_buffer)) {
-			print("New character");
+		if (buffer_update(&c_buffer)) {
 			if (choosing_menu_option) {
 				get_latest_chars_entered(&c_buffer, 1, &option);
 				choosing_menu_option = 0;
@@ -384,6 +390,8 @@ void main(void)
 				if (execute_option(&c_buffer, &_rt_info, option, chars_entered_for_option)) {
 					executing_menu_option = 0;
 					*chars_entered_for_option = 0;
+					print("\nEnter the password to open the menu\nEnter password: ");
+
 				}
 			}
 			else if (check_password(&c_buffer)) {
@@ -391,6 +399,9 @@ void main(void)
 				print_menu_options();
 				// Set choosing menu option to 1 so that the next time the keypad updates
 				choosing_menu_option = 1;
+			}
+			else {
+				
 			}
 		}
         can_update(&_rt_info, &_ls_info);

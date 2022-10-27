@@ -1,15 +1,8 @@
 //#include "stm32f4xx.h"
 //#include "stm32f4xx_gpio.h"
 //#include "stm32f4xx_rcc.h"
-#include "timer.h"
 #include "keypad.h"
 
-
-unsigned char latest_entered_character = 0xFF;
-unsigned char prelim_char = 0xFF;
-unsigned char keyboard_character;
-long entered_key_timestamp = 0;
-int new_char_available = 0;
 
 int EXTI_Lines[COLS] = {EXTI_Line0, EXTI_Line1, EXTI_Line2, EXTI_Line3};
 int EXTI_PinSources[COLS] = {EXTI_PinSource0, EXTI_PinSource1, EXTI_PinSource2, EXTI_PinSource3};
@@ -21,14 +14,14 @@ void keypadirq_handler() {
 		while (TIM_GetCounter(TIM5) < 250); // Delay for 250 microseconds
 		
 		if(EXTI_GetITStatus(EXTI_Lines[i]) != RESET) {
-			keyboard_character = get_active_key(i);
+			new_buffer_char = get_active_key(i);
 			new_char_available = 1;
 			
-			if (keyboard_character <= 9) {
-				print_int(keyboard_character);
+			if (new_buffer_char <= 9) {
+				print_int(new_buffer_char);
 			}
-			else if (keyboard_character < 255) {
-				print(keyboard_character);
+			else if (new_buffer_char < 255) {
+				print(new_buffer_char);
 			}
 			
 			TIM_SetCounter(TIM5, 0);
@@ -150,88 +143,4 @@ unsigned char get_active_key(int col) {
 		keyboardActivate(row);
 	}
 	return return_key;
-}
-
-char* get_latest_chars_entered(char_buffer* c_buffer, unsigned char amount_of_chars, char* latest_chars) {
-	if (amount_of_chars > CHARACTER_BUFFER_LENGTH) {
-		print_line("Invalid amount_of_chars value entered");
-		return 0;
-	}
-	int index = c_buffer->current_index;
-
-	for (int i = 0; i < amount_of_chars; i++) {
-		latest_chars[i] = c_buffer->entered_characters_buffer[index];
-		index--;
-		if (index < 0) {
-			index = CHARACTER_BUFFER_LENGTH - 1;
-		}
-	}
-
-	// Reverse the array as we check it backwards.
-	int temp;
-	for (int i = 0; i < amount_of_chars/2; i++) {
-        temp = latest_chars[i];
-        latest_chars[i] = latest_chars[amount_of_chars-i-1];
-        latest_chars[amount_of_chars-i-1] = temp;
-    }
-
-	return latest_chars;
-}
-
-int check_password(char_buffer* c_buffer) {
-	unsigned char size;
-	char latest_password[PASSWORD_LENGTH];
-	get_latest_chars_entered(c_buffer, PASSWORD_LENGTH, latest_password);
-	for(int i = 0; i < PASSWORD_LENGTH; i++){
-		print_int(latest_password[i]);
-		if(latest_password[i] != c_buffer->current_password[i]) {
-			return 0;
-		}
-	}
-	return 1;
-}
-
-void increment_index(char_buffer* c_buffer) {
-	c_buffer->current_index++;
-	if (c_buffer->current_index > (CHARACTER_BUFFER_LENGTH - 1)) {
-		c_buffer->current_index = 0;
-	}
-}
-
-void add_char_to_buffer(char_buffer* c_buffer, char new_char ) {
-	c_buffer->entered_characters_buffer[c_buffer->current_index] = new_char;
-	increment_index(c_buffer);
-}
-
-void reset_buffer( char_buffer* c_buffer ) {
-	for(int i = 0; i < CHARACTER_BUFFER_LENGTH; i++) {
-		c_buffer->entered_characters_buffer[i] = '\0';
-	}
-	c_buffer->current_index = 0;
-}
-
-
-void print_buffer(char_buffer* c_buffer) {
-	char ordered_entered_chars[CHARACTER_BUFFER_LENGTH];
-	get_latest_chars_entered(c_buffer, CHARACTER_BUFFER_LENGTH, ordered_entered_chars);
-
-	for(int i = 0; i < CHARACTER_BUFFER_LENGTH; i++) {
-		if(ordered_entered_chars[i] >= 0 && ordered_entered_chars[i] <= 9)
-			print_int(ordered_entered_chars[i]);
-		else if (ordered_entered_chars[i] >= 9 && ordered_entered_chars[i] < 0xFF) {
-			print(ordered_entered_chars[i]);			
-		}
-	}
-	print("\n");
-}
-
-int keypad_update(char_buffer* c_buffer) {
-	if (new_char_available) {
-		new_char_available = 0;
-		if (keyboard_character != 0xFF) {
-			add_char_to_buffer(c_buffer, keyboard_character);
-			return 1;
-		}
-	}
-	return 0;
 }

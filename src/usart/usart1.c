@@ -4,39 +4,18 @@
  */
 #include "usart1.h"
 #include "misc.h"
+#include "buffer.h"
 
-char input_buffer[32];
-char buffer_index = 0;
-char send_message_flag = 0;
-char clear_buffer_flag = 0;
 
 
 // every time a key is pressed the program will jump to USART_irq_handler
-
-
 void USART_irq_handler(void) {
-
 	USART_ClearITPendingBit(USART1, USART_IT_RXNE); 
-	if (clear_buffer_flag) {
-		clear_buffer_flag = 0;
-		clear_input_buffer();
-	}
-
 	char input = USART_ReceiveData(USART1);
-
-	// if enter is pressed or the buffer is full
-	if (input == '\n' || buffer_index == (sizeof(input_buffer) / sizeof(int)) - 1) {
-		send_message_flag = 1;
-		clear_buffer_flag = 1; // sets the clear_buffer_flag to 1 in order to clear the buffer the next time a key is pressed
-	}
-	else {
-		USART_Snd(input);
-		input_buffer[buffer_index] = input;
-		buffer_index++;
-	}
-
-
-
+	new_buffer_char = input - 48; // Offset by 48 to give actual integer value when writing numbers instead of ascii character value
+	new_char_available = 1;
+	
+	USART_Snd(input);
 }
 
 
@@ -94,34 +73,14 @@ void print(char* s) {
 }
 
 void print_line(char* s) {
-	USART_Snd('\n');
 	while (*s != '\0') {
 		USART_Snd(*(s++));
 	}
+	USART_Snd('\n');
 }
 
 void print_int(int x) {
 	char a[32];
 	print(itoa(x, a, 10));
-
-}
-
-
-// terminates all the characters in the input buffer 
-
-void clear_input_buffer(void) {
-	for (int i = 0; i < (sizeof(input_buffer) / sizeof(int)); i++) {
-		input_buffer[i] = '\0';
-	}
-}
-
-
-// resturns the whole buffer when enter is pressed or the buffer is full
-
-
-char* USART1_receive_data(void) {
-	send_message_flag = 0;
-	buffer_index = 0;
-	return input_buffer;
 
 }
