@@ -20,23 +20,39 @@ __asm__ volatile(".L1: B .L1\n");				/* never return */
 }
 
 
+void init_central_unit(char_buffer* c_buffer, rt_info _rt_info, ls_info _ls_info) {
+	keypad_init(&c_buffer);
+	timer_init();
+	USART1_Init();
+	
+	can_init(&_rt_info, &_ls_info, CAN1, 1);
+	
+    central_unit.is_used = 1;
+    central_unit.type = TYPE_CENTRAL_UNIT;
+    central_unit.main_id = 0;
+    central_unit.num_sub_units = 0;
+    units[0] = central_unit;
+	new_buffer_char = 0xFF;
+	new_char_available = 0;
+	reset_buffer(&c_buffer);
+
+}
+
 void print_menu_options( void ) {
 	print_line("\nSelect one option from the following");
 	print_line("1 Set a new password");
 	print_line("2 Enable door alarm");
 	print_line("3 Disable door alarm"); 
 	print_line("4 Set a time threshold for door");
-	print_line("5 Calibrate distance sensor");
-	print_line("6 Adjust sensitivity for distance sensor");
-	print_line("7 Restart alarm");
+	print_line("5 Unlock a door");
+	print_line("6 Lock a door");
+	print_line("7 Calibrate distance sensor");
+	print_line("8 Adjust sensitivity for distance sensor");
+	print_line("9 Restart alarm");
 	print_line("0 To exit");
 	print("Option: ");
 }
 
-void reset_self_unit( void ) {
-	self_id = 0;
-
-}
 
 int unit_id_exists_with_type(int id, enum unit_type_id unit_type) {
 	for (int i = 0; i < MAX_UNITS; i++)	{
@@ -87,7 +103,7 @@ void print_all_doors() {
 // Executes a specified option, function should be called every time a new character is recieved
 // This is checked with buffer_update which returns 1 whenever a new character is entered
 // Returns if the command is done executing or not.
-int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* chars_entered) {
+int execute_option(char_buffer* c_buffer, rt_info* _rt_info, ls_info* _ls_info, int option, int* chars_entered) {
 	int done_with_option = 0;
 	switch (option) {
 		case 1: // Set a new password
@@ -119,14 +135,21 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				print("Enter door unit id (or 0 to exit): ");
 			}
 			else if (*chars_entered == 1) {
-				char door_id[1];
-				get_latest_chars_entered(c_buffer, 1, door_id);
-				char door_unit_id = *door_id;
-				if (door_unit_id == 0) {
+				print("\n");
+				print("Enter GPIO pin of connected door (or 0 to exit): ");
+			}
+			else if (*chars_entered == 2) {
+				char door_values[2];
+				get_latest_chars_entered(c_buffer, 2, door_values);
+				char door_id = door_values[0];
+				char door_unit_id = door_values[1];
+
+				if (door_unit_id == 0 || door_id == 0) {
 					print_line("0 Entered, exiting...");
 					done_with_option = 1;
 					break;
 				}
+
 				if (!unit_id_exists_with_type(door_unit_id, TYPE_DOOR_UNIT)) {
 					print("A door unit with the id ");
 					print_int(door_unit_id);
@@ -143,10 +166,11 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				else if (option == 3) {
 					msg_alarm.message_type = MSGID_STOP_ALARM;
 				}
-				msg_alarm.reciever_id = door_unit_id; // Set to a correct id
-				msg_alarm.priority = 0; // priority is max
-				// send usart msg with info ?
+				msg_alarm.reciever_id = door_unit_id;
+				msg_alarm.priority = 0; // priority is max for alarms
+				msg_alarm.content[0] = door_id;
 				done_with_option = 1;
+				print_line("\nSuccessfully sent message!")
 			}
 			break;
 		case 4:  // Set new time threshold
@@ -199,7 +223,53 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				}
 			}
 			break;
-		case 5: // Calibrate distance alarm
+		case 5:
+		case 6:
+			if (*chars_entered == 0) {
+				print_all_doors();
+				print_line("Enable/disable door alarm for which door?");
+				print("Enter door unit id (or 0 to exit): ");
+			}
+			else if (*chars_entered == 1) {
+				print("\n");
+				print("Enter GPIO pin of connected door (or 0 to exit): ");
+			}
+			else if (*chars_entered == 2) {
+				char door_values[2];
+				get_latest_chars_entered(c_buffer, 2, door_values);
+				char door_id = door_values[0];
+				char door_unit_id = door_values[1];
+
+				if (door_unit_id == 0 || door_id == 0) {
+					print_line("0 Entered, exiting...");
+					done_with_option = 1;
+					break;
+				}
+
+				if (!unit_id_exists_with_type(door_unit_id, TYPE_DOOR_UNIT)) {
+					print("A door unit with the id ");
+					print_int(door_unit_id);
+					print_line(" does not exist.\nPlease try again");
+					print("Enter door unit id (or 0 to exit): ");
+					*chars_entered = 0;
+					break;
+				}
+				
+				tx_can_msg msg_unlock_lock;
+				if (option == 5) {
+					msg_alarm.message_type = MSGID_UNLOCK_DOOR;
+				}
+				else if (option == 6) {
+					msg_alarm.message_type = MSGID_LOCK_DOOR;
+				}
+				msg_alarm.reciever_id = door_unit_id;
+				msg_alarm.priority = 1; 
+				msg_alarm.content[0] = door_id;
+				done_with_option = 1;
+				print_line("\nSuccessfully sent lock/unlock message!")
+			}
+
+		case 7: // Calibrate distance alarm
 			if (*chars_entered == 0) {
 				print_line("\nCurrently connected sensor units:");
 				for (int i = 0; i < MAX_UNITS; i++) {
@@ -239,7 +309,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				done_with_option = 1;
 			}
 			break;
-		case 6: // Set sensitivity for distance sensor
+		case 8: // Set sensitivity for distance sensor
 			if (*chars_entered == 0) {
 				print_line("\nCurrently connected sensor units:");
 				for (int i = 0; i < MAX_UNITS; i++) {
@@ -297,9 +367,9 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 				}
 			}
 			break;
-		case 7:
+		case 9:
 			print_line("Reseting all units...");
-			reset_self_unit();
+			init_central_unit(c_buffer, _rt_info, _ls_info);
 			// Start at 1 to avoid sending to central unit
 			for (int i = 1; i < MAX_UNITS; i++) {
 				if (units[i].is_used) {
@@ -340,24 +410,15 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, int option, int* ch
 	return done_with_option;
 }
 
+
 void main(void) {
 	char_buffer c_buffer;
-	keypad_init(&c_buffer);
-	timer_init();
-	USART1_Init();
-	
 	rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;
 	u_info central_unit;
 	
-	can_init(&_rt_info, &_ls_info, CAN1, 1);
-
-    central_unit.is_used = 1;
-    central_unit.type = TYPE_CENTRAL_UNIT;
-    central_unit.main_id = 0;
-    central_unit.num_sub_units = 0;
-    units[0] = central_unit;
+	init_central_unit(&c_buffer, &_rt_info, &_ls_info);
 
 	int choosing_menu_option = 0;
 	char option;
@@ -365,8 +426,6 @@ void main(void) {
 	int chars_entered_for_option[1];
 	*chars_entered_for_option = 0;
 
-	new_buffer_char = 0xFF;
-	new_char_available = 0;
 
 	print("\nEnter the password to open the menu (Default password is '1111'): ");
 
@@ -376,11 +435,11 @@ void main(void) {
 				get_latest_chars_entered(&c_buffer, 1, &option);
 				choosing_menu_option = 0;
 				executing_menu_option = 1;
-				execute_option(&c_buffer, &_rt_info, option, chars_entered_for_option);
+				execute_option(&c_buffer, &_rt_info, &_ls_info, option, chars_entered_for_option);
 			}
 			else if (executing_menu_option) {
 				*chars_entered_for_option += 1;
-				if (execute_option(&c_buffer, &_rt_info, option, chars_entered_for_option)) {
+				if (execute_option(&c_buffer, &_rt_info, &_ls_info, option, chars_entered_for_option)) {
 					executing_menu_option = 0;
 					*chars_entered_for_option = 0;
 					reset_buffer(&c_buffer);

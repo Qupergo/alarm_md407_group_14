@@ -247,13 +247,9 @@ void main(void) {
                 ultraSonicSensor.central_alarm_distance_threshold = (ultraSonicSensor.local_alarm_distance_threshold / LOCAL_ALARM_DISTANCE_FACTOR_THRESHOLD) * CENTRAL_ALARM_DISTANCE_FACTOR_THRESHOLD;
                 break;
 
-            case MSGID_VIEW_STATUS:
-                if (ultraSonicSensor.status_local_alarm) {
-
-                }
+            case MSGID_RECALIBERATE:
+                set_threshold_values();
                 break;
-
-            case MSGID_RECALIBERATE: // both messages types have the same function/purpose.
             case MSGID_RESET_UNIT:
                 Init_GPIO();
                 TIM_Configration();

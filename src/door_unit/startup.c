@@ -35,7 +35,7 @@ void init_GPIO( void ) {
 	GPIO_Init(GPIOD,&GPIOConfig);	
 }
 
-void init_doors(void){
+void init_doors( void ) {
 	for (int i = 0; i < NUMBER_DOORS; i++){
 		u_door door = {
 			.id = i + 1,
@@ -56,7 +56,7 @@ void init_doors(void){
 
 // Checks if a door has been opened and sets the timestamp of the opening and
 // Turns on the is_closed_led_pin
-void check_if_door_opened(int door_index){
+void check_if_door_opened(int door_index) {
 	if (!(GPIO_ReadInputDataBit(GPIOD, doors[door_index].connected_switch))) {
 		if (!doors[door_index].door_is_open) {
 			doors[door_index].door_is_open = 1;
@@ -73,40 +73,35 @@ void check_if_door_opened(int door_index){
 	}	
 }
 
-
-void stop_local_alarm( int door_index ) {
+void stop_local_alarm(int door_index) {
 	GPIO_SetBits(GPIOD, doors[door_index].is_closed_led_pin);
 	GPIO_ResetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 0;
 }
 
-void start_local_alarm( int door_index ) {
+void start_local_alarm(int door_index) {
 	GPIO_SetBits(GPIOD, doors[door_index].local_alarm_led_pin);
 	doors[door_index].status_local_alarm = 1;
 }
 
-void stop_global_alarm() {
-	for (int i = 0; i < NUMBER_DOORS; i++) {
-		doors[i].status_central_alarm = 0;
-	}
+void stop_global_alarm(int index) {
+	doors[index].status_central_alarm = 0;
+	send_alarm = 0;
 }
 
-void start_global_alarm() {
-	for (int i = 0; i < NUMBER_DOORS; i++) {
-		doors[i].status_central_alarm = 1;
-	}
+void start_global_alarm(int index) {
+	doors[index].status_central_alarm = 1;
+	send_alarm = 1;
 }
 
-void lock_unlock_door(int door_index) {
-	if (doors[door_index].door_is_locked) {
+void lock_door(int door_index) {
+	GPIO_SetBits(GPIOD, doors[door_index].is_locked_led_pin);
+	doors[door_index].door_is_locked = 1;
+}
+
+void unlock_door(int door_index) {
 		GPIO_ResetBits(GPIOD, doors[door_index].is_locked_led_pin);
 		doors[door_index].door_is_locked = 0;
-	}
-	else {
-		GPIO_SetBits(GPIOD, doors[door_index].is_locked_led_pin);
-		doors[door_index].door_is_locked = 1;
-
-	}
 }
 
 void door_update( void ) {
@@ -175,12 +170,10 @@ void main(void) {
 						.content = doors[i].id,
 						.sequence_n = _rt_info.transmit_sequence_num[i],
 					};
-
 					can_send_message(&_rt_info, CAN1, msg_alarm);
-
 				}
 			}
-			send_alarm = 0;
+			send_alarm = 0; // Reset send alarm
 		}
 
 
@@ -201,6 +194,15 @@ void main(void) {
                         }
                     }
 					break;
+				case MSGID_UNLOCK_DOOR:
+					char door_id = rx_msg.content[0]
+					unlock_door(door_id);
+					break;
+				case MSGID_LOCK_DOOR:
+					char door_id = rx_msg.content[0]
+					lock_door(door_id);
+					break;
+
 				case MSGID_SET_DOOR_ALARM_TIME_THRESHOLD:;
 					char door_id = rx_msg.content[0]; 
 					char new_threshold = rx_msg.content[1];
@@ -218,10 +220,12 @@ void main(void) {
 					break;
 					
 				case MSGID_START_ALARM:;
-					start_global_alarm();
+					char door_id = rx_msg.content[0]
+					start_global_alarm(door_id);
 					break;
 				case MSGID_STOP_ALARM:;
-					stop_global_alarm();
+					char door_id = rx_msg.content[0]
+					stop_global_alarm(door_id);
 					break;
 			}
 		}

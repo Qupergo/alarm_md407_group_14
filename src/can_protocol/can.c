@@ -27,8 +27,6 @@ void can_init_filter(int id) {
 	can_filter_init.CAN_FilterFIFOAssignment = 0;		// 0000 0 1 1111 10 0000	
 	can_filter_init.CAN_FilterActivation = ENABLE;
 	CAN_FilterInit(&can_filter_init);
-	print("Initialized filter: ");
-	print_int(can_filter_init.CAN_FilterMaskIdHigh);
 }
 
 // Configures selected CAN interface for incoming messages
@@ -142,7 +140,8 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
     }
 
     // If a unit recieved a message that is supposed to be from itself
-    // Then a replay attack may be happening, start the alarm
+    // Then a replay attack or someone may be impersonating an existing unit
+    // Start the alarm
     if (sender_id == reciever_id && sender_id != 7) {
         print("ALARM");
     }
@@ -211,9 +210,6 @@ int can_receive_message(rt_info* _rt_info, ls_info* _ls_info, CAN_TypeDef* CANx,
 			if (_rt_info->rt_frames[i].is_used) {
 				if (_rt_info->rt_frames[i].sequence_n == sequence_n) {
 					_rt_info->rt_frames[i].is_used = 0;
-					print("found matching frame: ");
-					print_int(i);
-					print("\n");
 					break;
 				}
 			}

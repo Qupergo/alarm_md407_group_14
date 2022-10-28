@@ -29,3 +29,29 @@ typedef struct DoorUnit {
 	uint32_t global_alarm_time_threshold_s;
 	uint32_t opened_door_timestamp_ms;
 } u_door;
+
+// Sets gpio pins correctly for doors
+void init_GPIO( void );
+// Initialises the door structs with initial values
+void init_doors( void );
+// Checks if a door has been opened
+// If it has, then it records a timestamp for the event
+// Which is later used in door_update to start alarms
+void check_if_door_opened(int door_index);
+// Stops a local alarm in a door
+void stop_local_alarm(int door_index);
+// Starts a local alarm in a door
+void start_local_alarm(int door_index);
+// Sets the global alarm status to 0
+void stop_global_alarm();
+// Sets the global alarm status to 1
+void start_global_alarm();
+// Used to lock a door, sets its status to locked
+// And turns on a led to show that it is locked
+void lock_door(int door_index);
+// Unlocks a door, sets its locked status to 0
+// And turns off the led to show it is unlocked if it is on
+void unlock_door(int door_index);
+// Checks if an alarm needs to be called by comparing the timestamp
+// From check_if_door_opened to the alarm threshold times
+void door_update( void );
