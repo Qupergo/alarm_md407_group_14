@@ -56,7 +56,7 @@ void TIM_Configration(void) {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
     TIM_TimeBaseInitTypeDef TIM_timer;
     TIM_timer.TIM_Prescaler = (84 - 1); // set prescaler 83 to get one tick each micro second
-    TIM_timer.TIM_Period = 0xFFFFFFFF; // maximum value of prescaler
+    TIM_timer.TIM_Period = 0xFFFFFFFF; // maximum value of period
     TIM_timer.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_timer.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInit(TIM5, &TIM_timer);
@@ -106,7 +106,7 @@ void EXTIInit(void) {
 
     exti_init.EXTI_Line = EXTI_Line4; //Configration of EXTI for Vibration pin
     exti_init.EXTI_Mode = EXTI_Mode_Interrupt;
-    exti_init.EXTI_Trigger = EXTI_Trigger_Rising;
+    exti_init.EXTI_Trigger = EXTI_Trigger_Falling;
     exti_init.EXTI_LineCmd = ENABLE;
     EXTI_Init(&exti_init);
 
@@ -163,6 +163,7 @@ int check_distance(void) {
     return distance;
 }
 
+// sets initial values for local alarm distance and central alarm distance 
 void set_threshold_values(void) {
     GPIO_ResetBits(ultraSonicSensor.GPIO_unit, ultraSonicSensor.trig_pin);  // reset trig pin
     ultraSonicSensor.initial_distance = check_distance();
@@ -254,6 +255,8 @@ void main(void) {
                 break;
 
             case MSGID_RECALIBERATE: // both messages types have the same function/purpose.
+                set_threshold_values();
+                break;
             case MSGID_RESET_UNIT:
                 Init_GPIO();
                 TIM_Configration();
