@@ -175,8 +175,6 @@ void main(void) {
 			}
 			send_alarm = 0; // Reset send alarm
 		}
-
-
         if (!waiting_for_alive_response) {
             can_update(&_rt_info, &_ls_info);
         }
@@ -223,9 +221,27 @@ void main(void) {
 					char door_id_start = rx_msg.content[0];
 					start_global_alarm(door_id_start - 1);
 					break;
+
 				case MSGID_STOP_ALARM:;
 					char door_id_stop = rx_msg.content[0];
 					stop_global_alarm(door_id_stop - 1);
+					break;
+
+				case MSGID_VIEW_STATUS:
+					print_line("DOOR UNIT STATUS ")
+					print_line("\nNumber of doors connected are");
+					print_int(NUMBER_DOORS);
+					for (int i = 0; i < NUMBER_DOORS; i++) {
+						print("Central alarm status is ");
+						print_int(doors[i].status_central_alarm);
+						print("\nLocal alarm status is ");
+						print_int(doors[i].status_local_alarm);
+						print("\nOn door with id ");
+						print_int(doors[i].id);
+						if(doors[i].door_is_open) print_line(" Door is open");
+						else print_line("Door is locked ");
+						print("\n");
+					}
 					break;
 			}
 		}

@@ -47,7 +47,7 @@ typedef struct tx_can_message {
     unsigned char message_type;
     unsigned char reciever_id;
     unsigned char content[CONTENT_LENGTH];
-	unsigned short sequence_n
+	unsigned short sequence_n;
 } tx_can_msg;
 
 // Saved frames for eventual retransmit

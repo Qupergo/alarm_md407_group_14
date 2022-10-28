@@ -85,6 +85,22 @@ u_info get_unit_by_id(int id) {
 	}
 }
 
+/*
+u_info* get_unit_alarm_status(){
+	for(int i = 0; i < MAX_UNITS; i++){
+		return (units[i]);
+	}
+}
+
+void changed_status (int alarm_status) {
+    static int old_value = xx;
+    if(alarm_status != old_value)
+       printf("changed");
+    old_value = alarm_status;
+}
+
+*/
+
 void print_all_doors() {
 	print_line("\nCurrently available door units:");
 	for (int i = 0; i < MAX_UNITS; i++) {
@@ -397,6 +413,29 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, ls_info* _ls_info, 
 			}
 			print_line("Reset is finished.");
 			done_with_option = 1;
+			break;
+		case 8:
+			print_line("CENTRAL UNIT STATUS");
+			print_line("Connected units: ");
+			for (int i = 1; i < MAX_UNITS; i++) { // Start at 1 to not include central unit
+				if (units[i].is_used) {
+					print("Unit with id ");
+					print_int(units[i].main_id);
+					print(" and unit type: ");
+					print_int(units[i].type);
+					print(" this unit has ");
+					print_int(units[i].num_sub_units);
+					print_line(" sub units connected");
+					tx_can_msg msg_view_status = {
+						.priority = 1,
+						.message_type = MSGID_VIEW_STATUS,
+						.reciever_id = units[i].main_id,
+						.sequence_n = transmit_sequence_num[units[i].main_id],
+					};
+					can_send_message(_rt_info, CAN1, msg_view_status);
+				}
+			}
+			print_line("Printing messages on other windows...")
 			break;
 		case 0:
 			print_line("Option 0 entered, exiting menu...");

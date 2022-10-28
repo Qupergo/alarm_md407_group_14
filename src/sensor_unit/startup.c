@@ -258,6 +258,25 @@ void main(void) {
                 timer_init();
                 EXTIInit();
                 break;
+
+            case MSGID_VIEW_STATUS:
+                print_line("SENSOR UNIT SATUS: ");
+
+                if (send_alarm) {
+                    print_line("Currently sending alarm messages");
+                }
+                else {
+                    print_line("No alarm messages are being sent currently");
+                }
+                print("Local alarm status for distance sensor ");
+                print_int(ultraSonicSensor.status_local_alarm);
+                print("\nCentral alarm status for distance sensor ");
+                print_int(ultraSonicSensor.status_central_alarm);
+                print_line("\nThreshold distance for Central alarm: ");
+                print_int(ultraSonicSensor.central_alarm_distance_threshold)
+                print_line("\nThreshold distance for local alarm: ");
+                print_int(ultraSonicSensor.local_alarm_distance_threshold)
+                print("\n");
             }
         }
     }
