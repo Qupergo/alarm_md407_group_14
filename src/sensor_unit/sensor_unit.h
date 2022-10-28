@@ -32,4 +32,12 @@ typedef struct {
 } u_ultrasonic_sensor;
 
 
-int echo_start, echo_end, echo_time, echo_distance, distance;
+int echo_start, echo_end, echo_time, distance;
+
+void Init_GPIO(void);
+void TIM_Configration(void);
+void ultraSonic_irq_handler(void);
+void vibration_irq_handler(void);
+void EXTIInit(void);
+int check_distance(void);
+void set_threshold_values(void);
