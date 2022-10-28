@@ -27,6 +27,8 @@ void init_central_unit(char_buffer* c_buffer, rt_info _rt_info, ls_info _ls_info
 	
 	can_init(&_rt_info, &_ls_info, CAN1, 1);
 	
+	u_info central_unit;
+
     central_unit.is_used = 1;
     central_unit.type = TYPE_CENTRAL_UNIT;
     central_unit.main_id = 0;
@@ -170,7 +172,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, ls_info* _ls_info, 
 				msg_alarm.priority = 0; // priority is max for alarms
 				msg_alarm.content[0] = door_id;
 				done_with_option = 1;
-				print_line("\nSuccessfully sent message!")
+				print_line("\nSuccessfully sent message!");
 			}
 			break;
 		case 4:  // Set new time threshold
@@ -257,16 +259,16 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, ls_info* _ls_info, 
 				
 				tx_can_msg msg_unlock_lock;
 				if (option == 5) {
-					msg_alarm.message_type = MSGID_UNLOCK_DOOR;
+					msg_unlock_lock.message_type = MSGID_UNLOCK_DOOR;
 				}
 				else if (option == 6) {
-					msg_alarm.message_type = MSGID_LOCK_DOOR;
+					msg_unlock_lock.message_type = MSGID_LOCK_DOOR;
 				}
-				msg_alarm.reciever_id = door_unit_id;
-				msg_alarm.priority = 1; 
-				msg_alarm.content[0] = door_id;
+				msg_unlock_lock.reciever_id = door_unit_id;
+				msg_unlock_lock.priority = 1; 
+				msg_unlock_lock.content[0] = door_id;
 				done_with_option = 1;
-				print_line("\nSuccessfully sent lock/unlock message!")
+				print_line("\nSuccessfully sent lock/unlock message!");
 			}
 
 		case 7: // Calibrate distance alarm
@@ -369,7 +371,7 @@ int execute_option(char_buffer* c_buffer, rt_info* _rt_info, ls_info* _ls_info, 
 			break;
 		case 9:
 			print_line("Reseting all units...");
-			init_central_unit(c_buffer, _rt_info, _ls_info);
+			init_central_unit(c_buffer, *_rt_info, *_ls_info);
 			// Start at 1 to avoid sending to central unit
 			for (int i = 1; i < MAX_UNITS; i++) {
 				if (units[i].is_used) {
@@ -416,9 +418,9 @@ void main(void) {
 	rx_can_msg rx_msg;
     rt_info _rt_info;
     ls_info _ls_info;
-	u_info central_unit;
+
 	
-	init_central_unit(&c_buffer, &_rt_info, &_ls_info);
+	init_central_unit(&c_buffer, _rt_info, _ls_info);
 
 	int choosing_menu_option = 0;
 	char option;

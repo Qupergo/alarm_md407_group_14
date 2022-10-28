@@ -194,38 +194,38 @@ void main(void) {
                         }
                     }
 					break;
-				case MSGID_UNLOCK_DOOR:
-					char door_id = rx_msg.content[0]
-					unlock_door(door_id);
+				case MSGID_UNLOCK_DOOR:;
+					char door_id_unlock = rx_msg.content[0];
+					unlock_door(door_id_unlock - 1);
 					break;
-				case MSGID_LOCK_DOOR:
-					char door_id = rx_msg.content[0]
-					lock_door(door_id);
+				case MSGID_LOCK_DOOR:;
+					char door_id_lock = rx_msg.content[0];
+					lock_door(door_id_lock - 1);
 					break;
 
 				case MSGID_SET_DOOR_ALARM_TIME_THRESHOLD:;
-					char door_id = rx_msg.content[0]; 
+					char door_id_threshold = rx_msg.content[0]; 
 					char new_threshold = rx_msg.content[1];
 					char change_local_alarm = rx_msg.content[2];
 					if (change_local_alarm) {
-						doors[door_id - 1].local_alarm_time_threshold_s = new_threshold;
+						doors[door_id_threshold - 1].local_alarm_time_threshold_s = new_threshold;
 						if(DEBUG)
 							print_line("changed local alarm thresh");
 					}
 					else {
-						doors[door_id - 1].global_alarm_time_threshold_s = new_threshold;
+						doors[door_id_threshold - 1].global_alarm_time_threshold_s = new_threshold;
 						if(DEBUG)
 							print("changed global alarm thresh");
 					}
 					break;
 					
 				case MSGID_START_ALARM:;
-					char door_id = rx_msg.content[0]
-					start_global_alarm(door_id);
+					char door_id_start = rx_msg.content[0];
+					start_global_alarm(door_id_start - 1);
 					break;
 				case MSGID_STOP_ALARM:;
-					char door_id = rx_msg.content[0]
-					stop_global_alarm(door_id);
+					char door_id_stop = rx_msg.content[0];
+					stop_global_alarm(door_id_stop - 1);
 					break;
 			}
 		}
