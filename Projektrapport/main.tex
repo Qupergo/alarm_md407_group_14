@@ -32,6 +32,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 \section*{Ordlista}
 \begin{description}
 
+\item[ACK-meddelande] \emph{acknowledgement message} är ett meddelande eller signal som skickas mellan två enheter som betecknar bekräfftelse eller mottagande av meddelande. 
 \item[Buss] En \emph{buss} är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
 
 \item[CAN] \emph{Controller Area Network} är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är försedd med två CAN bussar.
@@ -79,7 +80,7 @@ Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna 
 Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. 
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. 
 Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
-Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid.
+Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan sättas av användaren. Till exempel 4 sekunder till lokala larmet att slås på och 8 sekunder till centrala larmet.
 Avståndsmätare ska larma ifall något passerar framför den inom ett visst avståndsintervall.
 Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid. 
 Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
@@ -168,7 +169,7 @@ På samma sätt kommer vibrationssensorn skicka en signal om den har känt av n�
 Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket syfte de uppfyller i systemet.
 
 \subsubsection{Centralenhet}
-Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN-buss, denna kommunikation kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. 
+Centralenheten är häjrnan av systemet. Enhetens huvudsakliga uppgiften är att hålla en ständigt kommunikation mellan centralenheten och inkopplade enheterna. Kommunikationen kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. Ack meddelanden är ett sätt att se till att kopplade enheterna verkligen mottagar meddelande från centralenheten och vice versa. Detta innebär att vid kommunikation av två enheterna, enhet A och B, förväntas då ack-meddelande från enhet B, vilket signilerar att meddelanden har nått destinationen. Dessutom inte alla typer av meddelande skickar ack, exempelvis meddelandtyp ``LIFESIGN'' och ``ack'' kräver ingen ack-respons när de skickas till andra enheterna, detta för att undvicka skapa oändlig loop (Figur 5). En ständig kommunikation innebär att centralenheten förvänta sig att inkopplade enheterna skickar meddelande med typ "Life Sign" kontineurligt i en förbestämd tid intervall av 50ms. 
 Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska det korrekta lösenordet skrivas in. 
 Därefter ska användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
 Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren.
