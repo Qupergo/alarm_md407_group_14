@@ -74,6 +74,8 @@ Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsyste
 Målet med detta är att möjliggöra centraliserad kontroll och kalibrering av flera larmenheter i ett larmsystem.
 Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.
 
+\noindent
+\\
 Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. 
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. 
 Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
@@ -114,7 +116,6 @@ Utöver att testa kodens vanliga funktion har den testas mot olika typer av angr
 Detta genom att  skicka stora volymer data. 
 Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens motstånd mot återuppspelningsattacker samt imitationsattacker.
 
-\newpage
 \section{Teknisk beskrivning}
 I det här kapitlet redogörs en teknisk beskrivning av systemet. 
 I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte. Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. 
@@ -147,12 +148,13 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
     \label{fig:drawing}
 \end{figure}
 \\
-\\ dsafsda
 \\
-\\
+\noindent
 Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. Ett exempel på det kan vara knappsatsen.Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1). Kommunikation mellan samtliga MD407-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
 \\
+\newpage
 \\
+\noindent
 Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lysdioder och möjlighet till att läsa av i fall dörren är öppen respektive stängd.
 Lysdioderna kommer lysa rött när dörrenheten larmar lokalt eller grönt om inget larm har gått.
 \\
@@ -272,10 +274,12 @@ Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration h
 \section{Slutsats och diskussion}
 Med resultaten kan man konstatera att det går att skapa ett eget larm om man har möjlighet att införskaffa komponenterna.\\
 
+\noindent
 Tyvärr så kan mycket problem uppstå ifall man väljer att skapa systemet själv.
 För det första så måste man räkna med att få spendera mer tid för att programmera de olika delsystemen samt för att koppla ihop allting, för att inte tala om att bygga ett protokoll från grunden.
 I fallet med kortet MD407 kan det bli begränsande vilka utvecklingsmiljöer som fungerar att använda felfritt då det inte finns så mycket dokumentation på just det kortet jämfört med kanske lite vanligare kort såsom en Arduino eller ett Raspberry Pi.\\
 
+\noindent
 Fördelarna väger fortfarande tungt då det både är billigare att köpa in de diverse komponenterna och koppla själv än att köpa en prenumeration där installation ingår, samt ger en större valmöjlighet när det kommer till egenskaper. 
 Man kan till exempel använda sig av en motor som man kopplar en avståndsmätare på för att kunna få den att snurra runt sin axel och på så sätt kunna få en kamera som kan se runt sig och få en bild av omgivningen i form av avstånd.\\
 
