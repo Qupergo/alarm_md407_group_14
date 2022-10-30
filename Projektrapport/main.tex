@@ -73,8 +73,16 @@ För att larmsystemet ska fungera säkert och korrekt, måste krav ställas på 
 Målet med projektet är att konstruera ett larm och låssystem med två periferienheter.
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
 Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de perifera larmenheterna, den ska även kunna upptäcka ifall en periferienhet har kopplats bort från systemet.
-Målet med detta är att möjliggöra centraliserad översikt och kalibrering av flera larmenheter i ett larmsystem.
-Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.\\
+Målet med detta är att möjliggöra centraliserad översikt och kalibrering av flera larmenheter i ett larmsystem.\\
+\\
+För att systemet ska kunna kommunicera med varandra så måste ett protokoll användas.
+Målet är att använda ett CAN-protokoll för att kommunicera mellan varje delenhet. Protokollet ska även kunna hålla koll på när systemet utsätts för attack eller överbelastas och ska kunna klara av det med hjälp av ett filter.\\
+\\
+Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.
+Denna enhet ska kunna skicka en mängd data med möjlighet att ändra intervallet.\\
+\\
+För kommunikation mellan PC och centralenhet krävs ett annat system och projektet ämnar att skapa funktioner som kan använda USART för att den typen av kommunikation.
+Målet är att kunna skicka data i form av \emph{print}-funktioner där både klartext och variablers värde ska kunna skrivas ut. Det ska även gå att läsa data som skrivs från PC till centralenheten.\\
 \\
 Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfrågan skickas till de anslutna periferienheterna.
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID.
@@ -316,9 +324,7 @@ Knappsatsen är kopplad till centralenheten via GPIO portar och används för at
 
 
 \section{Resultat}
-I detta avsnitt redovisas resultatet för delsystemen som baseras på de mål som sattes i projektets början.
-
-Målet med projektet var att bygga ett centraliserat larmsystem.
+I detta avsnitt redovisas resultatet för delsystemen som baseras på de mål som sattes i projektets början.\\
 \subsection{Centralenhet}
 Centralenheten kan konfigurera och kalibrera samtliga kopplade och på nytt anslutna periferienheter.
 Utöver detta kan centralenheten kontrollera status samt antigen slå på eller av larmet. 
@@ -353,7 +359,11 @@ Ett annat mål med sensorenheten är att den detekterar vibrationer genom luft e
 
 \subsection{Kommunikation via CAN och USART}
 
-\subsection{Testning av system}
+\subsection{störenhet}
+Med störenheten ämnas att testa systemets gränser när det kommer till dataöverföring. 
+Målet för störenheten är att den skickar meddelanden bara för att fylla bussen. 
+Vid testning skickade störenheten data med det intervall som vi valt och det finns även möjlighet att ändra hur ofta datan skickas.
+Dock påverkas systemet inte märkbart av all data och bedöms klara kravet för störenheten.
 %simulering av defekt enhet överflöd idk
 
 \section{Slutsats och diskussion}
