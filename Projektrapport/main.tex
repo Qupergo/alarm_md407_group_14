@@ -269,7 +269,6 @@ Installationen av systemet bildar en hierarki där centralenheten och dörr- och
 I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet reflekterar de mål som sattes i projektets början. Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
 
 \subsection{Centralenhet}
-Centralenheten skulle ha i uppgift att 
 
 \subsection{Periferienheter}
 Ett centralt mål med projektet var periferienhetern som skulle ingå i systemet. Dörrenheten skulle upptäcka ifall en dörr står öppen och sensorenheten skulle upptäcka ifall något passerar framför den inom ett visst avståndsintervall samt rörelse i form av vibrationer.
@@ -278,7 +277,7 @@ Ett centralt mål med projektet var periferienhetern som skulle ingå i systemet
 Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar och för varje enskilda dörr kan tidsintervallet för aktivering av larm justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
 
 \subsubsection{Sensorenhet}
-Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren ger korrekta och konsekventa avstånd. Även om sensorn täcktes så att ingen signal returnerades kunde den larma vilket ökar säkerheten i systemet. Ett krav på sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt. Avståndsintervallen kan konfigureras för att aktivera larmen på olika avstånd via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. Dock är intervallen inte individuellt justerbara utan det är det lokala tidsintervallet som korrigeras medans det globala intervallet bestäms av en lokal faktor.
+Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av avstånd. Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt. Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. Dock är intervallen inte individuellt justerbara utan det är det lokala tidsintervallet som korrigeras medans det globala intervallet bestäms som en faktor av det lokala.
 \\
 \\
 Sedan skulle enheten även 
