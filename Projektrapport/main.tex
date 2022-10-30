@@ -322,12 +322,11 @@ Målet med projektet var att bygga ett centraliserat larmsystem.
 \subsection{Centralenhet}
 Centralenheten kan konfigurera och kalibrera samtliga kopplade och på nytt anslutna periferienheter.
 Utöver detta kan centralenheten kontrollera status samt antigen slå på eller av larmet. 
-Centralenheten är självlärande, exempelvis när en enhet startar så skickar den ett "NEW ALIVE" meddelande med sin typ. 
+Centralenheten är självlärande när en pereferienhet startar så skickar den ett "NEW ALIVE" meddelande med sin typ till centralenheten. 
 Därefter blir den tilldelad ett ID-nummer av centralenheten. 
 Centralenheten utför en kontinuerlig kontroll över befintliga periferienheter så att ingen blir bortkopplad eller hamnar utan ström. 
 Detta sker med hjälp av "LIFESIGN" meddelanden som skickas från periferienheten. 
-Centralenheten kan, efter att användaren har angett lösenordet, uppdatera tröskelvärdet för varje dörr- och sensorenhet samt ändra tröskelvärdet för avståndsmätaren. 
-Den kan dessutom visa status och information på alla anslutna periferienheter.
+Centralenheten kan, efter att användaren har angett lösenordet, uppdatera tröskelvärdet för varje dörr- och sensorenhet. 
 
 \subsection{Periferienheter}
 Ett centralt mål med projektet är periferienheterna som ingår i systemet. 
@@ -352,6 +351,9 @@ Avståndsintervallen för dessa går att justera via ett CAN-meddelande \emph{SE
 Ett annat mål med sensorenheten är att den detekterar vibrationer genom luft eller materialet vibrationssensorn fästs i. Sensorn plockar enkelt upp vibrationer i materialet den är fäst i och larmar globalt, men den är mindre känslig för vibrationer som färdas genom luften och missar ibland viktiga tecken på att den ska larma.
 
 \subsection{Kommunikation via CAN och USART}
+Målet med CAN-protokollet är att kommunicera mellan varje enhet på ett säkert och tillförlitligt sätt. Protokollet ska också kunna hålla reda på när systemet är under attack eller överbelastat och ska kunna hantera detta genom att bland annat använda ett filter. Båda kommunikationssystemen fungerade som förväntat under normala förhållanden. CAN-bussens meddelande togs emot korrekt och både Content och StdId var oförändrade. På samma sätt skickades och mottogs data korrekt över USART. 
+\\
+Om den centrala enheten imiterades upptäcktes detta av den centrala enheten och ett larm utlöstes, däremot om en pereferienhet imiterades märktes det inte utan meddelandet gick bara förlorat. Det enda meddelandet som skulle kunna komma fram från en imiterande enhet är ett "START ALARM"-meddelande dock ansågs detta som att systemet var skyddat nog då systemets reaktion på en imiterande enhet hade varit att starta ett larm. Utöver detta är det omöjligt att imitera en enhets livstecken och koppla bort den pågrund av sekvensnummrena, dock om en enhet plockar upp sekvensnummrena som skickas, inkrementerar sekvensen och skickar dem skulle det vara möjligt att koppla bort en pereferienhet under en kort period. Oavsett så uppfyller systemet de uppsatta målen.
 
 \subsection{Testning av system}
 %simulering av defekt enhet överflöd idk
