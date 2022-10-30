@@ -184,7 +184,7 @@ Dessutom sköter centralenheten all kommunikation mellan användaren och systeme
 \subsubsection{Dörrenhet}
 En dörrenhet ansluts till flera dörrar, och dessa dörrar ansluts till ett lås och två lysdioder (en grön och en röd). Lysdioderna tänds beroende på den aktuella larmstatusen för varje dörr. Den gröna lampan tänds om det globala larmet är aktiverat, medans den röda lampan tänds om det lokala larmet är aktiverat. En ytterligare lysdiod är ansluten till dörren, som tänds eller släcks om dörren är låst eller olåst. Användaren kan välja att låsa en dörr genom att skicka ett meddelande från centralenheten. 
 
-Om en dörr öppnas startas en timer som utlöser ett larm när ett tidströskelvärde har uppnåtts. Denna tid beror på de tröskelvärden som ställs in av centralenheten. Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
+
 
 \subsubsection{Sensorenhet}
 
@@ -264,6 +264,36 @@ Installationen av systemet bildar en hierarki där centralenheten och dörr- och
 \caption{Figur 5: Bitmönster för de olika meddelandetyper som används för CAN-kommunikation. Meddelandetyper med lägre nummer har högre prioritet. "..."\ betyder att innehållet är tomt.}
 \end{center}
 
+\section{Metod}
+
+\subsection{Centralenhet}
+
+\subsection{Dörrenhet}
+
+Varje dörr har två tröskelvärden som bestämmer hur länge kan dörren vara öppnad innan ett lokalt respektive centralt larm slås på. Totalt definierades åtta dörrar för dörrenheten, till varje dörr delades fyra GPIO-pinnar. Första pinnen är en strömbrytare som kopplas direkt till 3,3 volt ström. Strömbrytaren kommer att anta värdet ett om dörren är stängd respektive värdet noll om dörren är öppen. Andra pinnen kopplas till en grön lampa som lyser när dörren är stängd eller släcks när dörren öppnas. Tredje pinnen kopplas till en röd lampa för att indikera ett lokalt larm. Lampan ska lysa när dörren har varit öppen för en bestämd tid, tiden bestäms genom centralenheten, och ska släckas när dörren är stängd. Sista pinnen kopplas till ett lås för att antigen låsa eller låsa upp dörren, vilket också görs genom centralenheten. Alla lampor kopplas upp på en kopplingsplatta enligt figur 7.
+\\
+\\Om en dörr öppnas startas en timer som utlöser ett larm när ett tidströskelvärde har uppnåtts. Denna tid beror på de tröskelvärden som ställs in av centralenheten. Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{Projektrapport/LED.png}
+    \caption {Figuren visar hur en LED-lampa kopplas på en kopplingsplatta}
+    \label{fig:drawing}
+\end{figure}
+
+\subsection{Sensorenhet}
+
+Sensorenheten har två olika sensorer: en avståndsmätare och en vibrationssensor. Till avståndsmätaren delades två GPIO-pinnar. Första pinnen är trig-pinnen och ansvarar för att skicka ultravågspulser. Andra pinnen är eko-pinnen som antar värdet ett när ett eko kommer tillbaka och returnerar värdet noll om ingen läsning av eko sker. Skillnaden i tiden mellan när ultravågspulsen skickades och när ekot har kommit tillbaka ges i microsekunder. Mätningen av avståndet sker enligt figur 8. Avståndsmätaren kopplas upp på en kopplingsplatta tillsammans med en röd lampa för att indikera att ett lokalt larm har inträffat. Trig-pinnen sätts på för tio mikrosekunder innan den börjar vänta på eko-signaler. Hela mätningscykel sker i en intervall av 65 millisekunder. Sensorenheten kalibreras genom att en mätning utförs när det larmade området är tomt, för att få ett referensvärde. Referensvärdet används för att bestämma i vilka avstånds intervall ska enheten larma centralt respektive lokalt. Lokala larmet sker genom att tända den röda lampan medan centrala larmet skickar ett larm meddelande till centralenheten. Referensvärdet, intervallet för lokalt larm och intervallet för centralt larm kan ändras genom centralenheten.
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{Projektrapport/ekvation.png}
+    \caption {Ekvationen ger avståndet i centimeter }
+    \label{fig:drawing}
+\end{figure}
+\\
+Vibrationssensorn har fyra pinnar: en ström-pinne, en jord-pinne, en digital output-pinne och en analog output-pinne. Under detta projekt har det bestämts att bara använda den digitala output-pinnen eftersom det finns bara behov av att läsa om en vibration har inträffats eller inte. Känsligheten för vibrationssensorn justeras med en komparator på själva sensorn. Sensorenheten skickar direkt ett alarm meddelande till centralenheten om en vibration har inträffats.
+
+\subsection{Systemprotokoll}
 
 \section{Resultat}
 I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet reflekterar de mål som sattes i projektets början. Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
