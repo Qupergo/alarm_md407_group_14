@@ -284,8 +284,8 @@ Avståndsmätare gav förväntade resultat, genom testning och kalibrering med l
 Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. 
 Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt med avståndsmätaren. 
 Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. 
-Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. 
-Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd. Målet med sensorenheten var även att kunna detektera vibrationer genom luft eller materialet vibrationssensorn var fäst i. Sensorn kan lätt plocka upp vibrationer i materialet den är fäst i och larma globalt, men den är mindre känslig för vibrationer som färdas genom luften och kan missa viktiga tecken på att den ska larma.
+Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd. 
+Målet med sensorenheten var även att kunna detektera vibrationer genom luft eller materialet vibrationssensorn var fäst i. Sensorn kan lätt plocka upp vibrationer i materialet den är fäst i och larma globalt, men den är mindre känslig för vibrationer som färdas genom luften och kan missa viktiga tecken på att den ska larma.
 
 \subsection{Kommunikation via CAN och USART}
 
