@@ -37,7 +37,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 
 \item[Buss] En \emph{buss} är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
 
-\item[CAN] \emph{Controller Area Network} är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är försedd med två CAN bussar.
+\item[CAN] \emph{Controller Area Network} är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är försedd med två CAN-bussar.
 
 \item[GPIO] \emph{General Purpose Input/Output} är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
 
@@ -78,47 +78,42 @@ Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna 
 \noindent
 \\
 Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna.
-Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. 
-<<<<<<< Updated upstream
+Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID.
 Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
 Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan justeras av användaren. Exempelvis kan tidsperioden innan larmet aktiveras vara 4 sekunder för det lokala och 8 sekunder för det globala.
-=======
-Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 	
-Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan sättas av användaren. Till exempel 4 sekunder till lokala larmet att slås på och 8 sekunder till centrala larmet.
->>>>>>> Stashed changes
 Avståndsmätare ska larma centralt ifall något passerar framför den inom ett visst avståndsintervall, ett delmål med lägre prioritet är att även implementera ett lokalt larm för avståndsmätaren.
 Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid.
 Ett centralt mål är att det ska vara möjligt att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
 
 \subsection{Arbetsmetod}
-I arbetsmetod beskrivs gruppens arbetsprocess. Denna är indelad i 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Tekniskt genomförande ger en tydligare uppfattning av utvecklingsprocessen och avslutningsvis redgör testning och verifiering för hur testning tillämpades för att upptäcka buggar och svagheter i systemet.
+I arbetsmetod beskrivs gruppens arbetsprocess. Denna är indelad i 3 delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Tekniskt genomförande ger en tydligare uppfattning av utvecklingsprocessen och avslutningsvis redgör testning och verifiering för hur testning tillämpades för att upptäcka buggar och svagheter i systemet.
 
 \subsubsection{Förarbete}
 Innan kod skrevs krävdes en plan för genomförandet av projektet.
-Detta inkluderar bestämning av versionshanteringssystem, kommunikationsplatform, testning av produkten samt i vilken ordning larmsystemets olika delar skulle implementeras.
-Versionshanteringssystemet som valdes var Github, kommunikationsplatform valdes Discord.
+Detta inkluderar fastställande av versionshanteringssystem, kommunikationsplatform, testning av produkten samt i vilken ordning larmsystemets olika delar skulle implementeras.
+Versionshanteringssystemet som valdes var Github som kommunikationsplatform valdes Discord.
 För att testa systemet gjordes en testmall för hur ett test skulle genomföras. 
-Ordningen som projektets olika delar skulle utföras i bestämdes en planering av olika milstolpar. Först lades stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN protokollet för att kommunicera mellan dem. 
-Motivationen till detta var att CAN protokollet inte skulle behövas förrän pereferienheterna var klara och att jobba på de enheterna skulle ge en klarare bild över hur CAN protokollet skulle fungera som effektivast.
+Ordningen som projektets olika delar skulle utföras i bestämdes med milstolpar. Först lades stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN-protokollet för att kommunicera mellan dem. 
+Motivationen till detta var att CAN-protokollet inte skulle behövas förrän pereferienheterna var klara, och att jobba på de enheterna skulle ge en klarare bild över hur CAN-protokollet skulle fungera som effektivast.
 
 \subsubsection{Tekniskt genomförande}
-När förberedelserna var klara delades projektgruppen upp i tre delar och arbetade med olika delar parallellt. När en del var klar försökte gruppmedlemmarna hjälpa de andra att komma ikapp tills alla var klara med sin del. Därefter gick gruppen igenom det som var kvar och delegerade arbetet. I början var gruppen inte helt bekväm med kommunikationsmedlet, vilket förvärrades av att endast några i gruppen var närvarande på plats, vilket ledde till att två versioner av avståndsmätaren producerades. Detta löstes genom att skapa en ny version av deras bästa delar.
-
-Efter att dessa delar var färdiga gjordes CAN-protokollet samtidigt som buggar rättades i periferienheterna. Centralenheten tillverkades i samband med CAN-protokollet, eftersom centralenhetens endast krävdes med en fungerande kommunikationsmodell. Efter detta gjordes störenheten för att simulera en defekt enhet.
+När förberedelserna var klara delades projektgruppen upp i tre delar som arbetade med olika delar parallellt. När en del var klar försökte gruppmedlemmarna hjälpa de andra att komma ikapp tills alla var klara med sin del. Därefter gick gruppen igenom det som var kvar och delegerade arbetet. I början var gruppen inte helt bekväm med kommunikationsmedlet, vilket förvärrades av att endast några i gruppen var närvarande på plats, vilket ledde till att två versioner av avståndsmätaren producerades. Detta löstes genom att skapa en ny version av deras bästa delar.
+\\
+\\
+Efter att dessa delar var färdiga gjordes CAN-protokollet samtidigt som buggar rättades i periferienheterna. Centralenheten tillverkades i samband med CAN-protokollet eftersom centralenhetens krävde en fungerande kommunikationsmodell. Efter detta utvecklades störenheten för att simulera en defekt enhet.
 
 \subsubsection{Testning och verifiering}
-För att säkerställa kvalitén hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar.
-Rent praktiskt var ofta olika print-statements placerade i koden för att kolla så att korrekt resultat producerades i kombination med att sätta objekt framför avståndsmätare, osv.
+För att säkerställa kvalitén testades färdig kod kontinuerligt under arbetsprocessen med testmallar.
+Rent praktiskt placerades ofta \emph{print-statements} på viktiga positioner i koden för att kontrollera att korrekt resultat producerades.
 Då inget fel noterades var testet markerat som godkänt och ingen vidare åtgärd tillämpades. 
-Däremot när resultat inte blev som testet förväntat söktes felkälla upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa fungerande produkt. 
-Utöver att testa kodens vanliga funktion har den testas mot olika typer av angrepp med hjälp en störenhet som skickar data för att störa centralenhetens normala funktion. 
-Detta genom att  skicka stora volymer data. 
-Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens motstånd mot återuppspelningsattacker samt imitationsattacker.
+Däremot när resultat inte blev som testet förväntat söktes orsaken till felet upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa att inget nytt fel uppstod.
+Utöver att testa kodens vanliga funktion har den testas mot olika typer av angrepp med hjälp en störenhet som skickar stora volymer data för att störa centralenhetens normala funktion. 
+Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens kapacitet att hantera återuppspelningsattacker samt imitationsattacker.
 
 \section{Teknisk beskrivning}
 I det här kapitlet redogörs en teknisk beskrivning av systemet. 
 I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte. Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. 
-Delsystem förklarar hur samtliga delarna är uppbyggda.
+Delsystem förklarar hur samtliga delar är uppbyggda.
 
 \subsection{Teknisk bakgrund}
 Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga system tillämpar flertal olika sensorer för att upptäcka inbrott. 
@@ -136,7 +131,7 @@ Det finns 5 GPIO portar benämnda A-E. portarna har 16 kontaktstift vardera som 
 Det finns även kontaktstift för ström samt jord som används av sensorerna.
 \\
 \\
-Då åtskilliga MD407-mikrodator behöver kommunicera med varandra är de försedda med två CAN portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
+Då åtskilliga MD407-mikrodator behöver kommunicera med varandra är de försedda med två CAN-portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
 \newpage
 \subsection{Systemöversikt}
@@ -175,12 +170,14 @@ Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket 
 
 \subsubsection{Centralenhet}
 Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
-
-
+\\
+\\
 Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin enhetstyp till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
-
+\\
+\\
 Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
-
+\\
+\\
 \noindent Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
 
 \subsubsection{Dörrenhet}
