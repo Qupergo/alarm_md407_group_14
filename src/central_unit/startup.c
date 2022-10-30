@@ -85,22 +85,6 @@ u_info get_unit_by_id(int id) {
 	}
 }
 
-/*
-u_info* get_unit_alarm_status(){
-	for(int i = 0; i < MAX_UNITS; i++){
-		return (units[i]);
-	}
-}
-
-void changed_status (int alarm_status) {
-    static int old_value = xx;
-    if(alarm_status != old_value)
-       printf("changed");
-    old_value = alarm_status;
-}
-
-*/
-
 void print_all_doors() {
 	print_line("\nCurrently available door units:");
 	for (int i = 0; i < MAX_UNITS; i++) {
