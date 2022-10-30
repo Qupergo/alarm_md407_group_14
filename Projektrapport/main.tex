@@ -16,7 +16,7 @@
 \hspace{10cm}
 \hrule
 \hspace{10cm}
-Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407 mikrodator}
+Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407-mikrodator}
     
 \author{\\Alamin Alreda\\Sebastian Danckwardt\\Zaid Haj Ibrahim\\Isac Holm\\Edvin Svahn}
 
@@ -47,7 +47,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 
 \item[SW-18010] En fjäderbaserad vibrationssensor.
 
-\item[USART] \emph{Universal Synchronous/Asynchronous Reciever/Transmitter} är hårdvara som tillåter seriell kommunikation mellan mikrokontroller och en PC.
+\item[USART] \emph{Universal Synchronous/Asynchronous Reciever/Transmitter} är hårdvara som tillåter seriell kommunikation mellan mikrokontroller och PC.
 
 \end{description}
  \newpage
@@ -63,7 +63,7 @@ Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tr
 %NY INTRODUKTION ADDERAD
 
 \subsection{Syfte}
-Projektet syftar till att skapa ett larmsystem som är lätt att använda och kostar lite.
+Projektet syftar till att skapa ett kostnadseffektivt larmsystem som är lätt att använda.
 Detta då endast 29 \% av Sveriges befolkning äger ett larmsystem \cite{SSF}.
 Systemet är menat installeras i bostäder, vilket kommer att sänka inbrott samt öka trygghet i framförallt låg-inkomsthushåll.
 För att larmsystemet ska fungera säkert och korrekt, måste mål sättas upp. 
@@ -73,7 +73,7 @@ För att larmsystemet ska fungera säkert och korrekt, måste mål sättas upp.
 \subsection{Mål}
 Målet med projektet är att konstruera ett larm och låssystem med två periferienheter.
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
-Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de perifera larmenheterna, den ska även kunna upptäcka ifall en periferienhet har kopplas bort från systemet.
+Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de perifera larmenheterna, den ska även kunna upptäcka ifall en periferienhet har kopplats bort från systemet.
 Målet med detta är att möjliggöra centraliserad kontroll och kalibrering av flera larmenheter i ett larmsystem.
 Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.
 
@@ -128,18 +128,18 @@ Larmsystem kan ha olika konstruktion beroende på säkerhetsbehov men samtliga s
 I fall en avvikelse upptäcks av en sensor ska larmet aktiverats och användare underrättas.
 \\
 \\
-I konstruktionsarbetet är MD407-kort den centrala komponenten. 
+I konstruktionsarbetet är MD407-mikrodator den centrala komponenten. 
 Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildningssyfte. 
 Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
 \\
 \\
-För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den försedd med flera olika anslutningar som kan användas för detta. 
+För att MD407-mikrodator ska kunna skicka och ta emot data från externa perifierienheter är den försedd med flera olika anslutningar som kan användas för detta. 
 GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med avståndsmätare samt Vibrationssensor. 
 Det finns 5 GPIO portar benämnda A-E. portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. 
 Det finns även kontaktstift för ström samt jord som används av sensorerna.
 \\
 \\
-Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda med två CAN portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
+Då åtskilliga MD407-mikrodator behöver kommunicera med varandra är de försedda med två CAN portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
 \newpage
 \subsection{Systemöversikt}
@@ -147,7 +147,7 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
 \\
 \\
 \noindent
-Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. Ett exempel på det kan vara knappsatsen.Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1). Kommunikation mellan samtliga MD407-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
+Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. Ett exempel på det kan vara knappsatsen.Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1). Kommunikation mellan samtliga MD407-mikrodator sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
 \\
 \begin{figure}[h]
     \centering
@@ -290,7 +290,7 @@ Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha g
 \subsection{Centralenhet}
 
 \subsection{Periferienheter}
-Ett centralt mål med projektet var periferienhetern som skulle ingå i systemet. 
+Ett centralt mål med projektet var periferienheterna som skulle ingå i systemet. 
 Dörrenheten skulle upptäcka ifall en dörr står öppen och sensorenheten skulle upptäcka ifall något passerar framför den inom ett visst avståndsintervall samt rörelse i form av vibrationer.
 
 \subsubsection{Dörrenhet}
@@ -300,7 +300,7 @@ Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess stan
 Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
 
 \subsubsection{Sensorenhet}
-Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av avstånd. ¨
+Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av distans i cm.
 Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. 
 Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt med avståndsmätaren. 
 Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. 
@@ -308,22 +308,12 @@ Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsin
 Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd.
 \\
 \\
+%Vibrationssensor, deaktivering av globalt larm
 
 \subsection{Kommunikation via CAN och USART}
 
-%\subsection{Mätning av avstånd}
-%Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
-%Testet genomfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. 
-%Resultatet visade att avståndsmätaren kunde räkna precisa värden i centimeter. 
-%Ett ytterligare test genomfördes för att kontrollera att sensorenheten kunde skicka ett larm när avståndet hade passerat tröskelvärdet. 
-%Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
-
-%\subsection{Mätning av vibrationer}
-%Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
-
-%\subsection{Dörrlarm}
-%Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. 
-%Under testningen av enheten har den uppfyllt de målen som krävdes.
+\subsection{Testning av system}
+%simulering av defekt enhet överflöd idk
 
 \section{Slutsats och diskussion}
 Med resultaten kan man konstatera att det går att skapa ett eget larm som kan användas för bruk i bostäder.\\
