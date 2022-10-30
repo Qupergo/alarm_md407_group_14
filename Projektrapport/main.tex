@@ -77,10 +77,15 @@ Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna 
 
 \noindent
 \\
-Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. 
+Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna.
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. 
+<<<<<<< Updated upstream
 Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
 Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan justeras av användaren. Exempelvis kan tidsperioden innan larmet aktiveras vara 4 sekunder för det lokala och 8 sekunder för det globala.
+=======
+Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 	
+Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan sättas av användaren. Till exempel 4 sekunder till lokala larmet att slås på och 8 sekunder till centrala larmet.
+>>>>>>> Stashed changes
 Avståndsmätare ska larma centralt ifall något passerar framför den inom ett visst avståndsintervall, ett delmål med lägre prioritet är att även implementera ett lokalt larm för avståndsmätaren.
 Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid.
 Ett centralt mål är att det ska vara möjligt att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
@@ -262,6 +267,8 @@ I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet ref
 Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
 
 \subsection{Centralenhet}
+Målet med projektet var att bygga ett centraliserad larmsystem. Centralenheten kan konfigurera och kalibrera samtilga kopplade och ny anslutna periferienheterna. Utöver det kan centralenheten kontrollera status på larmet, att slå på eller av. Centralenheten är självlärande på sätt när enheten startat skickar den en förfåga till varje periferienhet. Därefter om 
+periferienheten svara med dess typ blir den tilldelad ett ID-nummer av centralenheten, annars slås på larmet. Detta är ett förhindra attack från anonyma enheter. Centralenheten utföra en kontineurlig kontroll över beffintilga periferienheter så att ingen blir bortkopplad eller utan ström. Centralenheten kan, efter inmattning av lösenordet, uppdatera tröskelvärdet för varje dörr- och sensorenhet, ändra tröskelvärdet för avståndsmätaren. Den dessutom kan visa status och information på alla anslutna periferienheterna.
 
 \subsection{Periferienheter}
 Ett centralt mål med projektet var periferienheterna som skulle ingå i systemet. 
