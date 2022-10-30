@@ -90,7 +90,6 @@ Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dö
 \subsection{Arbetsmetod}
 I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Hur tekniska genomförandet gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
-
 \subsubsection{Förarbete}
 Innan kod skrevs behövdes genomförandet av projektet planeras. 
 Detta inkluderar bestämning av versionskontroll system, kommunikationsplatform, testning av produkten samt ordning av larmsystemets olika delar. 
@@ -180,7 +179,6 @@ Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. Nä
 
 Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
 
-
 \subsubsection{Dörrenhet}
 En dörrenhet ansluts till flera dörrar, och dessa dörrar ansluts till ett lås och två lysdioder (en grön och en röd). Lysdioderna tänds beroende på den aktuella larmstatusen för varje dörr. Den gröna lampan tänds om det globala larmet är aktiverat, medans den röda lampan tänds om det lokala larmet är aktiverat. En ytterligare lysdiod är ansluten till dörren, som tänds eller släcks om dörren är låst eller olåst. Användaren kan välja att låsa en dörr genom att skicka ett meddelande från centralenheten. 
 
@@ -256,15 +254,19 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
 I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet reflekterar de mål som sattes i projektets början. Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
 
 \subsection{Centralenhet}
-
+Centralenheten skulle ha i uppgift att 
 
 \subsection{Periferienheter}
+Ett centralt mål med projektet var periferienhetern som skulle ingå i systemet. Dörrenheten skulle upptäcka ifall en dörr står öppen och sensorenheten skulle upptäcka ifall något passerar framför den inom ett visst avståndsintervall samt rörelse i form av vibrationer.
 
 \subsubsection{Dörrenhet}
-Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar och för varje dörr kan tröskelvärdet justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
+Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar och för varje enskilda dörr kan tidsintervallet för aktivering av larm justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
 
 \subsubsection{Sensorenhet}
-Sensorenheten 
+Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren ger korrekta och konsekventa avstånd. Även om sensorn täcktes så att ingen signal returnerades kunde den larma vilket ökar säkerheten i systemet. Ett krav på sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt. Avståndsintervallen kan konfigureras för att aktivera larmen på olika avstånd via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. Dock är intervallen inte individuellt justerbara utan det är det lokala tidsintervallet som korrigeras medans det globala intervallet bestäms av en lokal faktor.
+\\
+\\
+Sedan skulle enheten även 
 
 \subsection{Kommunikation via CAN och USART}
 
