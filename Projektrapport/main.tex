@@ -56,7 +56,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 \section{Introduktion}
 
 Under året 2021 anmäldes 72 884 inbrottsstölder i Sverige vilket pekar på att det finns ett tydligt behov av larmsystem i dagens samhälle \cite{BRa}.
-Trots den oro som finns i allmänheten för att ens egendom ska bli stulen så tillkännager endast 13 \% av unga mellan 23 och 35 år att de äger en larminstallation \cite{MoFor}.
+Trots den oro att ens egendom ska bli stulen som finns i allmänheten, så tillkännager endast 13 \% av unga mellan 23 och 35 år att de äger ett huslarm \cite{MoFor}.
 En av de största anledningarna till detta är kostnaden, 20 \% av de som saknar ett hemlarm anger att priset på installation är för högt \cite{MoFor}.
 Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tryggare tillvaro.
 
@@ -66,47 +66,49 @@ Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tr
 Projektet syftar till att skapa ett kostnadseffektivt larmsystem som är lätt att använda.
 Detta då endast 29 \% av Sveriges befolkning äger ett larmsystem \cite{SSF}.
 Systemet är menat att installeras i bostäder, vilket kommer att sänka inbrott samt öka trygghet i framförallt låg-inkomsthushåll.
-För att larmsystemet ska fungera säkert och korrekt, måste mål för systemet sättas upp.
+För att larmsystemet ska fungera säkert och korrekt, måste krav ställas på systemet.
 
 \subsection{Mål}
 Målet med projektet är att konstruera ett larm och låssystem med två periferienheter.
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
 Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de perifera larmenheterna, den ska även kunna upptäcka ifall en periferienhet har kopplats bort från systemet.
 Målet med detta är att möjliggöra centraliserad översikt och kalibrering av flera larmenheter i ett larmsystem.
-Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.
-
-\noindent
+Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.\\
 \\
-Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna.
+Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfrågan skickas till de anslutna periferienheterna.
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID.
-Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
-Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan justeras av användaren. Exempelvis kan tidsperioden innan larmet aktiveras vara 4 sekunder för det lokala och 8 sekunder för det globala.
+Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod när en larmad dörr öppnas. 
+Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan justeras av användaren. 
+Exempelvis kan tidsperioden innan larmet aktiveras vara 4 sekunder för det lokala och 8 sekunder för det globala.\\
+\\
 Avståndsmätare ska larma centralt ifall något passerar framför den inom ett visst avståndsintervall, ett delmål med lägre prioritet är att även implementera ett lokalt larm för avståndsmätaren.
 Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid.
 Ett centralt mål är att det ska vara möjligt att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
 
 \subsection{Arbetsmetod}
-I arbetsmetod beskrivs gruppens arbetsprocess. Denna är indelad i 3 delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Tekniskt genomförande ger en tydligare uppfattning av utvecklingsprocessen och avslutningsvis redgör testning och verifiering för hur testning tillämpades för att upptäcka buggar och svagheter i systemet.
+I arbetsmetod beskrivs gruppens arbetsprocess. Denna är indelad i 3 delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Tekniskt genomförande ger en tydligare uppfattning av utvecklingsprocessen och avslutningsvis redogör testning och verifiering för hur testning tillämpades för att upptäcka buggar och svagheter i systemet.
 
 \subsubsection{Förarbete}
 Innan kod skrevs krävdes en plan för genomförandet av projektet.
-Detta inkluderar fastställande av versionshanteringssystem, kommunikationsplatform, testning av produkten samt i vilken ordning larmsystemets olika delar skulle implementeras.
-Versionshanteringssystemet som valdes var Github som kommunikationsplatform valdes Discord.
+Detta inkluderade fastställande av versionshanteringssystem, kommunikationsplatform, testning av produkten samt i vilken ordning larmsystemets olika delar skulle implementeras.
+Versionshanteringssystemet som valdes var Github och som kommunikationsplatform valdes Discord.
 För att testa systemet gjordes en testmall för hur ett test skulle genomföras. 
-Ordningen som projektets olika delar skulle utföras i bestämdes med milstolpar. Först lades stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN-protokollet för att kommunicera mellan dem. 
+Ordningen som projektets olika delar skulle utföras i bestämdes med milstolpar. Först lades stort fokus på pereferienheterna. 
+Endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN-protokollet för att kommunicera mellan dem. 
 Motivationen till detta var att CAN-protokollet inte skulle behövas förrän pereferienheterna var klara, och att jobba på de enheterna skulle ge en klarare bild över hur CAN-protokollet skulle fungera som effektivast.
 
 \subsubsection{Tekniskt genomförande}
-När förberedelserna var klara delades projektgruppen upp i tre delar som arbetade med olika delar parallellt. När en del var klar försökte gruppmedlemmarna hjälpa de andra att komma ikapp tills alla var klara med sin del. Därefter gick gruppen igenom det som var kvar och delegerade arbetet. I början var gruppen inte helt bekväm med kommunikationsmedlet, vilket förvärrades av att endast några i gruppen var närvarande på plats, vilket ledde till att två versioner av avståndsmätaren producerades. Detta löstes genom att skapa en ny version av deras bästa delar.
+När förberedelserna var klara delades projektet upp i tre delar som arbetades på parallellt. När en del var klar väntade man på att de andra delarna också skulle bli klara. 
+Därefter gick gruppen igenom det som var kvar och delegerade arbetet.
 \\
 \\
-Efter att dessa delar var färdiga gjordes CAN-protokollet samtidigt som buggar rättades i periferienheterna. Centralenheten tillverkades i samband med CAN-protokollet eftersom centralenhetens krävde en fungerande kommunikationsmodell. Efter detta utvecklades störenheten för att simulera en defekt enhet.
+Efter att dessa delar var färdiga gjordes CAN-protokollet samtidigt som buggar rättades i periferienheterna. Centralenheten tillverkades i samband med CAN-protokollet eftersom centralenheten krävde en fungerande kommunikationsmodell. Efter detta utvecklades störenheten för att simulera en defekt enhet.
 
 \subsubsection{Testning och verifiering}
 För att säkerställa kvalitén testades färdig kod kontinuerligt under arbetsprocessen med testmallar.
 Rent praktiskt placerades ofta \emph{print-statements} på viktiga positioner i koden för att kontrollera att korrekt resultat producerades.
 Då inget fel noterades var testet markerat som godkänt och ingen vidare åtgärd tillämpades. 
-Däremot när resultat inte blev som testet förväntat söktes orsaken till felet upp och fixades omgående, sedan gjordes ett nytt test för att säkerställa att inget nytt fel uppstod.
+Däremot när resultat inte blev som testet förväntat söktes orsaken till felet upp och fixades omgående.
 Utöver att testa kodens vanliga funktion har den testas mot olika typer av angrepp med hjälp en störenhet som skickar stora volymer data för att störa centralenhetens normala funktion. 
 Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens kapacitet att hantera återuppspelningsattacker samt imitationsattacker.
 
@@ -125,13 +127,12 @@ Detta är en laborationsdator med stabil hårdvara som har utvecklats i utbildni
 Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska urladdningar, felkopplingar och mekaniska påfrestningar vilket gör den lämpad för utveckling av prototypsystem.
 \\
 \\
-För att MD407-mikrodator ska kunna skicka och ta emot data från externa perifierienheter är den försedd med flera olika anslutningar som kan användas för detta. 
-GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med avståndsmätare samt Vibrationssensor. 
+För att MD407-mikrodatorn ska kunna skicka och ta emot data från externa perifierienheter är den försedd med flera olika anslutningar som kan användas för detta. 
+GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med avståndsmätare samt vibrationssensor. 
 Det finns 5 GPIO portar benämnda A-E. portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. 
-Det finns även kontaktstift för ström samt jord som används av sensorerna.
+Det finns även kontaktstift för ström samt jord som används av sensorerna.\\
 \\
-\\
-Då åtskilliga MD407-mikrodator behöver kommunicera med varandra är de försedda med två CAN-portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
+Då åtskilliga MD407-mikrodatorer behöver kommunicera med varandra är de försedda med två CAN-portar. Den sista anslutningen som används är USART, den används för att upprätthålla seriell kommunikation mellan en mikrodator och en PC.
 
 \newpage
 \subsection{Systemöversikt}
@@ -139,18 +140,22 @@ Då åtskilliga MD407-mikrodator behöver kommunicera med varandra är de förse
 \\
 \\
 \noindent
-Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. Ett exempel på det kan vara knappsatsen.Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1). Kommunikation mellan samtliga MD407-mikrodator sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
+Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. 
+Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. 
+Ett exempel på det är vara knappsatsen.
+Ett av korten används som centralenhet vilken de övriga korten samt komponenterna kopplas till (figur 1). 
+Kommunikation mellan samtliga MD407-mikrodatorer sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
 \\
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.6]{Projektrapport/diagram.png}
-     \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrarna/sensorerna till kortet. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
+    \includegraphics[scale=0.6]{Projektrapport/diagram (1).png}
+     \caption {Blockschema av larmsystemet. Enkelpilarna visar en koppling över GPIO medans dubbelpilarna visar på koppling mellan dörrar.}
     \label{fig:drawing}
 \end{figure}
 \newpage
 \\
 \noindent
-Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lysdioder och möjlighet till att läsa av i fall dörren är öppen respektive stängd.
+Dörrenheten ska vara ansluten till en kopplingsplatta och på plattan ska det finnas lysdioder.
 Lysdioderna kommer lysa rött när dörrenheten larmar lokalt eller grönt om inget larm har gått.
 \\
 \\
