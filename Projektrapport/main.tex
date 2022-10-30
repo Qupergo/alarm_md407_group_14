@@ -88,7 +88,7 @@ Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dö
 %ÄNDRA: gör tydligt vad som är delmålen i projektet
 
 \subsection{Arbetsmetod}
-I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det tekniska genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
+I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Hur tekniska genomförandet gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
 
 \subsubsection{Förarbete}
@@ -134,7 +134,7 @@ Då datorn är utvecklad för utbildning finns det skydd mot elektrostatiska url
 \\
 För att MD407-kort ska kunna skicka och ta emot data från externa perifierienheter är den försedd med flera olika anslutningar som kan användas för detta. 
 GPIO lämpar sig för koppling med enklare periferienheter och är den anslutningen som används för kommunikation med avståndsmätare samt Vibrationssensor. 
-Det finns 5 GPIO portar A-E, portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. 
+Det finns 5 GPIO portar benämnda A-E. portarna har 16 kontaktstift vardera som kan konfigureras till att hantera indata eller utdata. 
 Det finns även kontaktstift för ström samt jord som används av sensorerna.
 \\
 \\
@@ -164,20 +164,27 @@ Avståndsmätaren kommer att skicka en signal om det avmätta avståndet ligger 
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer över ett tröskelvärde.
 
 \subsection{Delsystem}
-%gör beskrivning
 Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket syfte de uppfyller i systemet.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.05]{Projektrapport/central.png}
+    \caption {Hårdvaran som har funktionen som centralenhet}
+    \label{fig:drawing}
+\end{figure}
+
 \subsubsection{Centralenhet}
-Centralenheten är häjrnan av systemet. Enhetens huvudsakliga uppgiften är att hålla en ständigt kommunikation mellan centralenheten och inkopplade enheterna. Kommunikationen kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. Ack meddelanden är ett sätt att se till att kopplade enheterna verkligen mottagar meddelande från centralenheten och vice versa. Detta innebär att vid kommunikation av två enheterna, enhet A skickar till B, förväntas då ack-meddelande från enhet B, vilket signilerar i sin tur att meddelanden har nått destinationen. Däremot inte alla typer av meddelande skickar ack, exempelvis meddelandtyp ``LIFESIGN'' och ``ack'' kräver ingen ack-respons när de skickas till andra enheterna, detta för att undvicka skapa oändlig loop (Figur 5). En ständig kommunikation innebär att centralenheten förvänta sig att samtiliga inkopplade enheterna skickar kontineurligt ifrån sig meddelande med typ "Life Sign" i en förbestämd tid intervall av 500ms. Skulle en enhet inte skicka en "Life Sign" meddelande inom 500 ms då får den en ytterliggare 500 ms att skicka, annars slås på alarm av centralenheten. 
-Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska det korrekta lösenordet skrivas in. Användaren får en lista med 9 val att välja på. Till exempel ska användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren och ser status på alla enheterna som är kopplade till centralenheten.
+Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
+
+Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin typ till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
+
+Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
+
 
 \subsubsection{Dörrenhet}
+En dörrenhet ansluts till flera dörrar, och dessa dörrar ansluts till ett lås och två lysdioder (en grön och en röd). Lysdioderna tänds beroende på den aktuella larmstatusen för varje dörr. Den gröna lampan tänds om det globala larmet är aktiverat, medans den röda lampan tänds om det lokala larmet är aktiverat. En ytterligare lysdiod är ansluten till dörren, som tänds eller släcks om dörren är låst eller olåst. Användaren kan välja att låsa en dörr genom att skicka ett meddelande från centralenheten. 
 
-Dörrenheten är kopplad till flera dörrar, där varje dörr kopplas till en grön lampa, en röd lampa och ett lås. 
-Utöver det har varje dörr sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
-När tiden som dörren har varit öppen överstiger dess specifika tröskelvärde aktiveras det lokala larmet och det kan man se genom att den röda lampan lyser.
-Efter två tröskelvärden larmar dörrenheten till centralenheten för att sätta igång ett globalt larm. 
-Om dörren är stängd lyser den gröna lampan medan det lokala och centrala larmet ska vara avstängda. 
+Om en dörr öppnas startas en timer som utlöser ett larm när ett tidströskelvärde har uppnåtts. Denna tid beror på de tröskelvärden som ställs in av centralenheten. Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
 
 \subsubsection{Sensorenhet}
 
@@ -245,7 +252,7 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
 \caption{Figur 5: Bitmönster för de olika meddelandetyper som används för CAN-kommunikation. Meddelandetyper med lägre nummer har högre prioritet. "..."\ betyder att innehållet är tomt.}
 \end{center}
 
-\section{Resultat och diskussion}
+\section{Resultat}
 I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet reflekterar de mål som sattes i projektets början. Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
 
 \subsection{Centralenhet}
@@ -253,7 +260,7 @@ I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet ref
 \subsection{Periferienheter}
 
 \subsubsection{Dörrenhet}
-Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar, för varje dörr ska tröskelvärdet kunna justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
+Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar och för varje dörr kan tröskelvärdet justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
 
 \subsubsection{Sensorenhet}
 Avståndsmätare är 

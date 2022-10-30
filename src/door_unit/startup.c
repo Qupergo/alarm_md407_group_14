@@ -228,7 +228,7 @@ void main(void) {
 					break;
 
 				case MSGID_VIEW_STATUS:
-					print_line("DOOR UNIT STATUS ")
+					print_line("DOOR UNIT STATUS")
 					print_line("\nNumber of doors connected are");
 					print_int(NUMBER_DOORS);
 					for (int i = 0; i < NUMBER_DOORS; i++) {
