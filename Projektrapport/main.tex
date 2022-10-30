@@ -18,7 +18,8 @@
 \hspace{10cm}
 Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407-mikrodator}
     
-\author{\\Alamin Alreda, Epost: amin.reda@hotmail.com, Sektion: Datateknologi \\Sebastian Danckwardt, Epost: , Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: zaidh@chalmers.se, Sektion: Datateknolog \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: edvinsvahn01@gmail.com, Sektion: Datateknologi\\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
+\author{\\Alamin Alreda, Epost: amin.reda@hotmail.com, Sektion: Datateknologi \\Sebastian Danckwardt, Epost: swesebbe3336@gmail.com, Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: zaidh@chalmers.se, Sektion: Datateknolog \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: edvinsvahn01@gmail.com, Sektion: Datateknologi\\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
+
 
 \date{\today}
     
@@ -164,7 +165,7 @@ Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.05]{Projektrapport/central.png}
-    \caption {Hårdvaran som har funktionen som centralenhet}
+    \caption {Hårdvaran för centralenheten}
     \label{fig:drawing}
 \end{figure}
 
@@ -172,16 +173,13 @@ Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket 
 Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
 \\
 \\
-Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin enhetstyp till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
+Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin enhetstyp till centralenheten. Centralenheten tar emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
 \\
 \\
 Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
-\\
-\\
-\noindent Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
 
 \subsubsection{Dörrenhet}
-Varje dörr har två tröskelvärden som bestämmer hur länge kan dörren vara öppnad innan ett lokalt respektive centralt larm slås på. Totalt definierades åtta dörrar för dörrenheten, till varje dörr delades fyra GPIO-pinnar. Första pinnen är en strömbrytare som kopplas direkt till 3,3 volt ström. Strömbrytaren kommer att anta värdet ett om dörren är stängd respektive värdet noll om dörren är öppen. Andra pinnen kopplas till en grön lampa som lyser när dörren är stängd eller släcks när dörren öppnas. Tredje pinnen kopplas till en röd lampa för att indikera ett lokalt larm. Lampan ska lysa när dörren har varit öppen för en bestämd tid, tiden bestäms genom centralenheten, och ska släckas när dörren är stängd. Sista pinnen kopplas till ett lås för att antigen låsa eller låsa upp dörren, vilket också görs genom centralenheten. Alla lampor kopplas upp på en kopplingsplatta enligt figur 3.
+Varje dörr har två tröskelvärden som bestämmer hur länge kan dörren vara öppnad innan ett lokalt respektive centralt larm slås på. Totalt definierades åtta dörrar för dörrenheten, till varje dörr delades fyra GPIO-pinnar. Första pinnen är en strömbrytare som kopplas direkt till 3,3 volt ström. Strömbrytaren kommer att anta värdet 1 om dörren är stängd respektive värdet 0 om dörren är öppen. Andra pinnen kopplas till en grön lampa som lyser när dörren är stängd eller släcks när dörren öppnas. Tredje pinnen kopplas till en röd lampa för att indikera ett lokalt larm. Lampan ska lysa när dörren har varit öppen för en bestämd tid, tiden bestäms genom centralenheten, och ska släckas när dörren är stängd. Sista pinnen kopplas till ett lås för att antigen låsa eller låsa upp dörren, vilket också görs genom centralenheten. Alla lampor kopplas upp på en kopplingsplatta enligt figur 3.
 \\
 \\Om en dörr öppnas startas en timer som utlöser ett larm när ett tidströskelvärde har uppnåtts. Denna tid beror på de tröskelvärden som ställs in av centralenheten. Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
 
@@ -214,14 +212,8 @@ Vibrationssensorn har fyra pinnar: en ström-pinne, en jord-pinne, en digital ou
 \end{figure}
 
 
-\subsubsection{Systemprotkoll}
-Kommunikationsprotkollet är ett 11 bitar långt protokoll uppdelat i fyra segment (figur 2).
-Den mest signifikanta biten är bit 10 och minst signifikanta biten är bit 0. 
-Ettställning av bit 10 innebär att meddelandet får högsta prioritet när det tas emot på bussen ifall det redan finns meddelanden i bufferten.
-Nollställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. 
-Bit 9 till och med bit 6 är reserverade för meddlandetypen som innehåller bland annat ifall meddelandet är en förfrågan att larma på eller av, eller information som skickas mellan enheterna regelbundet. 
-Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla avsändarens ID, och bit 2 till och med bit 0 innehålla mottagarens ID.
-
+\subsubsection{Systemprotokoll}
+CAN användes för att överföra meddelanden mellan enheterna i larmsystemet. Ett protokoll byggdes på toppen av CAN för att göra det lättare att använda, säkrare och mer pålitligt. CAN-meddelandet har två fält som används av det utökade protokollet: id-fältet och innehållsfältet. Id-fältet kan innehålla 11 bitar data som är uppdelade i fyra delar. Den mest signifikanta biten, bit 10, är inställd som en prioritetsbit. När den är satt till noll prioriterar protokollet ankomsten av meddelandet. Bits 9-6 är reserverade för meddelandetypen (se figur 6). Bits 5-3 är för sändar-id och de sista tre bitarna, 2-0, är för mottagar-id. Ett filter gjordes sedan baserat på detta id-fält och aktiverades i periferienheterna efter att de tilldelats sina id:n. Detta filter gör så att de endast accepterar meddelanden från centralenheten samt måste meddelandenas mottagare id vara deras id. Däremot tar centralenheten fortfarande emot meddelanden från alla enheter, delvis för att förhindra att någon imiterar centralenheten. Detta då centralenheten granskar om ett meddelande skickas från någon med samma id och utlöser ett larm. "content"-fältet fylls i beroende på vilken typ av meddelande som skickats, vilket framgår av figur 6. Efter att ett meddelande har skickats sparas en kopia i en återutsändningsbuffert och en tidsstämpel sparas. Efter att en viss tid har gått utan att en ack har mottagits skickas meddelandet igen. Det antas då att meddelandet inte nådde sin destination. Livstecken får dock inte någon bekräftelse eftersom de inte är livsviktiga och sänds upprepade gånger med korta intervaller. Livstecknets timeout uppnås också före ack timeout.
 
 \begin{tabular}{|c|l|c|}
     \hline
@@ -244,7 +236,7 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
 \end{tabular}
 \\
 \begin{center}
-\caption{Figur 5: Bitmönster för de olika meddelandetyper som används för CAN-kommunikation. Meddelandetyper med lägre nummer har högre prioritet. "..."\ betyder att innehållet är tomt.}
+\caption{Figur 6: Bitmönster för de olika meddelandetyper som används för CAN-kommunikation. Meddelandetyper med lägre nummer har högre prioritet. "..."\ betyder att innehållet är tomt.}
 \end{center}
 
 \subsubsection{Installering av larmsystem}
@@ -295,14 +287,14 @@ Målet med sensorenheten var även att kunna detektera vibrationer genom luft el
 I detta kapitlet konstateras de olika resultaten utifrån målen som sattes.
 Dessutom diskuteras vad som hade kunnat göras bättre och potentiella förbättringar och idéer för vidarearbete av projektet.\\
 
-\subsection{centralenhet}
+
 Centralenheten var den mest vitala delen av systemet och det var viktigt att den fungerade som den skulle.
 Eftersom den behövde ha koll på att alla enheter var anslutna hela tiden så var det viktigt för oss att livsteckensystemet fungerade och att centralenheten kunde avgöra när en enhet ställdes om eller när sladden till den enheten drogs ut.
 En sårbarhet i systemet är ifall själva centralenheten skulle dras ut för då finns det plötsligt inte något som kan starta ett centralt larm. 
 Därför skulle det i framtiden vara bra om man kunde jobba på integrationen med den ihopkopplade datorn så att om centralenheten tas ur bruk, planerat eller oplanerat, att datorn då märker det och kan larma till ett moln eller en typ av webb-baserad server där man kopplat sina telefoner och kan få notiser ifall hela larmet skulle stängas av.
 
 
-\subsection{periferienheter}
+\subsection{Periferienheter}
 \noindent
 Dörrenheten uppnådde de mål som vi satte på enheten. 
 Dörrarna fungerade bra och inga speciella problem framträdde under de gånger som vi testade systemet som helhet. 
