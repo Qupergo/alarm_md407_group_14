@@ -18,7 +18,7 @@
 \hspace{10cm}
 Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407-mikrodator}
     
-\author{\\Alamin Alreda, Epost: , Sektion: \\Sebastian Danckwardt, Epost: , Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: , Sektion: \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: , Sektion: \\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
+\author{\\Alamin Alreda, Epost: , Sektion: \\Sebastian Danckwardt, Epost: , Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: , Sektion: \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: edvinsvahn01@gmail.com, Sektion: Datateknologi\\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
 
 \date{\today}
     
@@ -89,10 +89,12 @@ Ett centralt mål är att det ska vara möjligt att låsa eller låsa upp dörre
 I arbetsmetod beskrivs gruppens arbetsprocess. Denna är indelad i 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Tekniskt genomförande ger en tydligare uppfattning av utvecklingsprocessen och avslutningsvis redgör testning och verifiering för hur testning tillämpades för att upptäcka buggar och svagheter i systemet.
 
 \subsubsection{Förarbete}
-Innan koden skrevs behövde genomförandet av projektet planeras. Detta inkluderade fastställande av versionskontrollsystem och kommunikationsplattform, testning av produkten och milstolpar för de olika delarna av larmsystemet. Det versionskontrollsystem som valdes var Github och kommunikationsplattformen blev Discord. För att testa systemet gjordes en testmall för hur ett test skulle genomföras.
-
-Först lades stort fokus på periferienheterna. Endast när dessa närmade en slutpunkt skulle fokus flyttas till CAN-protokollet för att kommunicera mellan dem och centralenheten. Anledningen var att CAN-protokollet och centralenheten skulle behövas först när periferienheterna var färdiga. Dessutom skulle arbetet med dessa enheter ge en tydligare bild av hur CAN-protokollet skulle fungera mest effektivt.
-
+Innan kod skrevs krävdes en plan för genomförandet av projektet.
+Detta inkluderar bestämning av versionshanteringssystem, kommunikationsplatform, testning av produkten samt i vilken ordning larmsystemets olika delar skulle implementeras.
+Versionshanteringssystemet som valdes var Github, kommunikationsplatform valdes Discord.
+För att testa systemet gjordes en testmall för hur ett test skulle genomföras. 
+Ordningen som projektets olika delar skulle utföras i bestämdes en planering av olika milstolpar. Först lades stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN protokollet för att kommunicera mellan dem. 
+Motivationen till detta var att CAN protokollet inte skulle behövas förrän pereferienheterna var klara och att jobba på de enheterna skulle ge en klarare bild över hur CAN protokollet skulle fungera som effektivast.
 
 \subsubsection{Tekniskt genomförande}
 När förberedelserna var klara delades projektgruppen upp i tre delar och arbetade med olika delar parallellt. När en del var klar försökte gruppmedlemmarna hjälpa de andra att komma ikapp tills alla var klara med sin del. Därefter gick gruppen igenom det som var kvar och delegerade arbetet. I början var gruppen inte helt bekväm med kommunikationsmedlet, vilket förvärrades av att endast några i gruppen var närvarande på plats, vilket ledde till att två versioner av avståndsmätaren producerades. Detta löstes genom att skapa en ny version av deras bästa delar.
