@@ -33,7 +33,8 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 \section*{Ordlista}
 \begin{description}
 
-\item[ACK-meddelande] \emph{acknowledgement message} är ett meddelande eller signal som skickas mellan två enheter som betecknar bekräfftelse eller mottagande av meddelande. 
+\item[ACK-meddelande] \emph{acknowledgement message} är ett meddelande som skickas i respons till att ett meddelande har tagits emot väl.
+
 \item[Buss] En \emph{buss} är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
 
 \item[CAN] \emph{Controller Area Network} är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är försedd med två CAN bussar.
@@ -272,28 +273,27 @@ I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet ref
 \subsection{Centralenhet}
 
 \subsection{Periferienheter}
-Ett centralt mål med projektet var periferienhetern som skulle ingå i systemet. Dörrenheten skulle upptäcka ifall en dörr står öppen och sensorenheten skulle upptäcka ifall något passerar framför den inom ett visst avståndsintervall samt rörelse i form av vibrationer.
+Ett centralt mål med projektet var periferienheterna som skulle ingå i systemet. Dörrenheten skulle upptäcka ifall en dörr står öppen och sensorenheten skulle upptäcka ifall något passerar framför den inom ett visst avståndsintervall samt rörelse i form av vibrationer.
 
 \subsubsection{Dörrenhet}
 Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar, för varje enskild dörr kan tidsintervallen för aktivering av globalt respektive lokalt larm justeras individuellt med ett CAN-meddelande \emph{SET DOOR ALARM TIME THRESHOLD}. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande \emph{START ALARM} till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
 
 \subsubsection{Sensorenhet}
-Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av avstånd. Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt med avståndsmätaren. Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd.
-\\
-\\
-%Vibrationssensor
+Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av avstånd. Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt med avståndsmätaren. Avståndsintervallen kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd.
+
+
 
 \subsection{Kommunikation via CAN och USART}
 
-\subsection{Mätning av avstånd}
-Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
-Testet genomfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. 
-Resultatet visade att avståndsmätaren kunde räkna precisa värden i centimeter. 
-Ett ytterligare test genomfördes för att kontrollera att sensorenheten kunde skicka ett larm när avståndet hade passerat tröskelvärdet. 
-Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
+%\subsection{Mätning av avstånd}
+%Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
+%Testet genomfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. 
+%Resultatet visade att avståndsmätaren kunde räkna precisa värden i centimeter. 
+%Ett ytterligare test genomfördes för att kontrollera att sensorenheten kunde skicka ett larm när avståndet hade passerat tröskelvärdet. 
+%Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
 
-\subsection{Mätning av vibrationer}
-Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
+%\subsection{Mätning av vibrationer}
+%Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
 
 %\subsection{Dörrlarm}
 %Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. 
