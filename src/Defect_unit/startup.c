@@ -40,7 +40,7 @@ void main(void)
 			for(int i = 0; i < 8; i++){
 			outgoing.Data[i] = 0;
 			}
-			print_line("you've got mail!");
+			// Here the jumbled mess is sent out through the CAN port using CAN_Transmit
 			CAN_Transmit(CAN1, &outgoing);
 		}
 		else{
