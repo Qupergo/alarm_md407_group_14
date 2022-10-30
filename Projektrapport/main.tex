@@ -88,7 +88,7 @@ Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dö
 %ÄNDRA: gör tydligt vad som är delmålen i projektet
 
 \subsection{Arbetsmetod}
-I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det tekniska genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
+I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Hur tekniska genomförandet gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
 
 \subsubsection{Förarbete}
@@ -165,11 +165,7 @@ Avståndsmätaren kommer att skicka en signal om det avmätta avståndet ligger 
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer över ett tröskelvärde.
 
 \subsection{Delsystem}
-%gör beskrivning
 Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket syfte de uppfyller i systemet.
-
-\subsubsection{Centralenhet}
-Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet. Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin typ till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation. Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
 
 \begin{figure}[h]
     \centering
@@ -178,13 +174,18 @@ Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla e
     \label{fig:drawing}
 \end{figure}
 
-\subsubsection{Dörrenhet}
+\subsubsection{Centralenhet}
+Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
 
-Dörrenheten är kopplad till flera dörrar, där varje dörr kopplas till en grön lampa, en röd lampa och ett lås. 
-Utöver det har varje dörr sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
-När tiden som dörren har varit öppen överstiger dess specifika tröskelvärde aktiveras det lokala larmet och det kan man se genom att den röda lampan lyser.
-Efter två tröskelvärden larmar dörrenheten till centralenheten för att sätta igång ett globalt larm. 
-Om dörren är stängd lyser den gröna lampan medan det lokala och centrala larmet ska vara avstängda. 
+Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin typ till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
+
+Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
+
+
+\subsubsection{Dörrenhet}
+En dörrenhet ansluts till flera dörrar, och dessa dörrar ansluts till ett lås och två lysdioder (en grön och en röd). Lysdioderna tänds beroende på den aktuella larmstatusen för varje dörr. Den gröna lampan tänds om det globala larmet är aktiverat, medans den röda lampan tänds om det lokala larmet är aktiverat. En ytterligare lysdiod är ansluten till dörren, som tänds eller släcks om dörren är låst eller olåst. Användaren kan välja att låsa en dörr genom att skicka ett meddelande från centralenheten. 
+
+Om en dörr öppnas startas en timer som utlöser ett larm när ett tidströskelvärde har uppnåtts. Denna tid beror på de tröskelvärden som ställs in av centralenheten. Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
 
 \subsubsection{Sensorenhet}
 
