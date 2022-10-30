@@ -225,7 +225,19 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
     \label{fig:drawing}
 \end{figure}
 
-\subsubsection{CAN och USART}
+\subsubsection{Installering av system}
+Installationen av systemet bildar en hierarki där centralenheten och dörr- och sensorenhet är basenheter. Basenheterna består av olika delsystem. Centralenheten är hjärnan för hela sytemet. Dess huvudsaklig uppgift är att leda en kollektivt samarbete mellan alla enheterna. Detta innebär att utan centralenheten skulle larmsystemet inte fullgöra sitt syfte. 
+
+\noindent Centralenheten kommunicerar med periferienheterna via CAN-protokoll som skickas över en RJ11 Telefonkabel som i sin tur är kopplade till CAN-porten i periferienhetens MD-kort. Därmed delsystem för CAN ska inkluderas i alla basenheterna. USB-koppling mellan OC och basenheterna är essentiellt för attt hålla USART-kommunikation och försörja enheterna med ström. Detta dessutom möjliggöra att ladda enhetensmjuksystem till sammanhörande MD-kort. Delsystemet för timer genererar en avbrott och används för tidställning i övrgia funktioner, och för att se till att livstecken på kopplade periferienhetern inte överskrider tidgränsen. Centralenheten använder sig av en delenhet som abstraherar funkionalitet av knappsatsen. (TO BE CONTINUED)
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{Projektrapport/hierarki.png}
+    \caption {Visuell framställning av bildning av hierarki av larmsystemet}
+    \label{fig:drawing}
+\end{figure}
 
 
 \begin{tabular}{|c|l|c|}
