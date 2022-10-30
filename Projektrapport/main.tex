@@ -32,6 +32,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 \section*{Ordlista}
 \begin{description}
 
+\item[ACK-meddelande] \emph{acknowledgement message} är ett meddelande eller signal som skickas mellan två enheter som betecknar bekräfftelse eller mottagande av meddelande. 
 \item[Buss] En \emph{buss} är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
 
 \item[CAN] \emph{Controller Area Network} är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är försedd med två CAN bussar.
@@ -74,10 +75,12 @@ Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsyste
 Målet med detta är att möjliggöra centraliserad kontroll och kalibrering av flera larmenheter i ett larmsystem.
 Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.
 
+\noindent
+\\
 Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. 
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. 
 Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
-Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid.
+Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan sättas av användaren. Till exempel 4 sekunder till lokala larmet att slås på och 8 sekunder till centrala larmet.
 Avståndsmätare ska larma ifall något passerar framför den inom ett visst avståndsintervall.
 Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid. 
 Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
@@ -85,7 +88,7 @@ Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dö
 %ÄNDRA: gör tydligt vad som är delmålen i projektet
 
 \subsection{Arbetsmetod}
-I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Det tekniska genomförandet och hur det gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
+I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Hur tekniska genomförandet gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
 
 \subsubsection{Förarbete}
@@ -114,7 +117,6 @@ Utöver att testa kodens vanliga funktion har den testas mot olika typer av angr
 Detta genom att  skicka stora volymer data. 
 Störenheten användes också som en angreppsenhet, med hjälp av den så testades centralenhetens motstånd mot återuppspelningsattacker samt imitationsattacker.
 
-\newpage
 \section{Teknisk beskrivning}
 I det här kapitlet redogörs en teknisk beskrivning av systemet. 
 I den tekniska bakgrunden beskrivs vad samtliga komponenter har för syfte. Därefter ger Systemöversikt en övergripande förståelse för hur systemet är uppbyggt. 
@@ -142,13 +144,17 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
 \subsection{Systemöversikt}
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.6]{Projektrapport/diagram.png}
-    \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrarna/sensorerna till kortet. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
+
     \label{fig:drawing}
 \end{figure}
 \\
+\\
+\noindent
 Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. Ett exempel på det kan vara knappsatsen.Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1). Kommunikation mellan samtliga MD407-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
 \\
+\newpage
+\\
+\noindent
 Dörrenhet ska vara ansluten till en kopplingsplatta, på plattan ska det finnas lysdioder och möjlighet till att läsa av i fall dörren är öppen respektive stängd.
 Lysdioderna kommer lysa rött när dörrenheten larmar lokalt eller grönt om inget larm har gått.
 \\
@@ -158,14 +164,7 @@ Avståndsmätaren kommer att skicka en signal om det avmätta avståndet ligger 
 På samma sätt kommer vibrationssensorn skicka en signal om den har känt av några vibrationer över ett tröskelvärde.
 
 \subsection{Delsystem}
-%gör beskrivning
 Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket syfte de uppfyller i systemet.
-
-\subsubsection{Centralenhet}
-Centralenheten kommunicerar ständigt med dörrenheten och sensorenheten över en CAN-buss, denna kommunikation kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. 
-Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska det korrekta lösenordet skrivas in. 
-Därefter ska användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
-Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren.
 
 \begin{figure}[h]
     \centering
@@ -174,13 +173,18 @@ Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsm�
     \label{fig:drawing}
 \end{figure}
 
-\subsubsection{Dörrenhet}
+\subsubsection{Centralenhet}
+Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
 
-Dörrenheten är kopplad till flera dörrar, där varje dörr kopplas till en grön lampa, en röd lampa och ett lås. 
-Utöver det har varje dörr sitt eget tröskelvärde som bestämmer när larmet ska gå av. 
-När tiden som dörren har varit öppen överstiger dess specifika tröskelvärde aktiveras det lokala larmet och det kan man se genom att den röda lampan lyser.
-Efter två tröskelvärden larmar dörrenheten till centralenheten för att sätta igång ett globalt larm. 
-Om dörren är stängd lyser den gröna lampan medan det lokala och centrala larmet ska vara avstängda. 
+Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin typ till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
+
+Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
+
+
+\subsubsection{Dörrenhet}
+En dörrenhet ansluts till flera dörrar, och dessa dörrar ansluts till ett lås och två lysdioder (en grön och en röd). Lysdioderna tänds beroende på den aktuella larmstatusen för varje dörr. Den gröna lampan tänds om det globala larmet är aktiverat, medans den röda lampan tänds om det lokala larmet är aktiverat. En ytterligare lysdiod är ansluten till dörren, som tänds eller släcks om dörren är låst eller olåst. Användaren kan välja att låsa en dörr genom att skicka ett meddelande från centralenheten. 
+
+Om en dörr öppnas startas en timer som utlöser ett larm när ett tidströskelvärde har uppnåtts. Denna tid beror på de tröskelvärden som ställs in av centralenheten. Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
 
 \subsubsection{Sensorenhet}
 
@@ -191,12 +195,21 @@ Avståndet kommer att mättas kontinuerligt i intervaller av 60 millisekunder, o
 \\
 Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner av någon vibration kommer den att meddela centralenheten för att aktivera det globala larmet.
 
-\begin{figure}[h]
+\begin{figure}[!tbp]
     \centering
-    \includegraphics[scale=0.05]{Projektrapport/sensor.png}
+     \begin{minipage}[b]{0.3\textwidth}
+    \includegraphics[scale=0.05]{Projektrapport/central.png}
+    \caption {Hårdvaran som har funktionen som centralenhet}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.5\textwidth}
+    \includegraphics[scale=0.04]{Projektrapport/sensor.png}
     \caption {Sensorerna som är implementerade på sensorenheten. Hårdvaran till vänster är vibrationssensor och till höger är avståndsmätare}
+    \end{minipage}
     \label{fig:drawing}
 \end{figure}
+
+
 \subsubsection{Systemprotkoll}
 Kommunikationsprotkollet är ett 11 bitar långt protokoll uppdelat i fyra segment (figur 2).
 Den mest signifikanta biten är bit 10 och minst signifikanta biten är bit 0. 
@@ -211,6 +224,9 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
     \caption {Visuell framställning av Kommunikationsprotokoll}
     \label{fig:drawing}
 \end{figure}
+
+\subsubsection{CAN och USART}
+
 
 \begin{tabular}{|c|l|c|}
     \hline
@@ -241,13 +257,14 @@ I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet ref
 
 \subsection{Centralenhet}
 
+
 \subsection{Periferienheter}
 
 \subsubsection{Dörrenhet}
-Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar, för varje dörr ska tröskelvärdet kunna justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
+Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. Enheten kan hantera ett flertal dörrar och för varje dörr kan tröskelvärdet justeras via ett CAN-meddelande från centralenheten. Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande till centralenheten. Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande.
 
 \subsubsection{Sensorenhet}
-Avståndsmätare är 
+Sensorenheten 
 
 \subsection{Kommunikation via CAN och USART}
 
@@ -268,10 +285,12 @@ Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration h
 \section{Slutsats och diskussion}
 Med resultaten kan man konstatera att det går att skapa ett eget larm om man har möjlighet att införskaffa komponenterna.\\
 
+\noindent
 Tyvärr så kan mycket problem uppstå ifall man väljer att skapa systemet själv.
 För det första så måste man räkna med att få spendera mer tid för att programmera de olika delsystemen samt för att koppla ihop allting, för att inte tala om att bygga ett protokoll från grunden.
 I fallet med kortet MD407 kan det bli begränsande vilka utvecklingsmiljöer som fungerar att använda felfritt då det inte finns så mycket dokumentation på just det kortet jämfört med kanske lite vanligare kort såsom en Arduino eller ett Raspberry Pi.\\
 
+\noindent
 Fördelarna väger fortfarande tungt då det både är billigare att köpa in de diverse komponenterna och koppla själv än att köpa en prenumeration där installation ingår, samt ger en större valmöjlighet när det kommer till egenskaper. 
 Man kan till exempel använda sig av en motor som man kopplar en avståndsmätare på för att kunna få den att snurra runt sin axel och på så sätt kunna få en kamera som kan se runt sig och få en bild av omgivningen i form av avstånd.\\
 
