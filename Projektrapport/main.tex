@@ -65,16 +65,14 @@ Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tr
 \subsection{Syfte}
 Projektet syftar till att skapa ett kostnadseffektivt larmsystem som är lätt att använda.
 Detta då endast 29 \% av Sveriges befolkning äger ett larmsystem \cite{SSF}.
-Systemet är menat installeras i bostäder, vilket kommer att sänka inbrott samt öka trygghet i framförallt låg-inkomsthushåll.
-För att larmsystemet ska fungera säkert och korrekt, måste mål sättas upp. 
-
-%ÄNDRA: sista meningen skum ändra från "eventuellt att kunna installeras"
+Systemet är menat att installeras i bostäder, vilket kommer att sänka inbrott samt öka trygghet i framförallt låg-inkomsthushåll.
+För att larmsystemet ska fungera säkert och korrekt, måste mål för systemet sättas upp.
 
 \subsection{Mål}
 Målet med projektet är att konstruera ett larm och låssystem med två periferienheter.
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
 Ett delmål är att ha en central styrenhet som ska utgöra den del av larmsystemet som har i uppgift att kommunicera med de perifera larmenheterna, den ska även kunna upptäcka ifall en periferienhet har kopplats bort från systemet.
-Målet med detta är att möjliggöra centraliserad kontroll och kalibrering av flera larmenheter i ett larmsystem.
+Målet med detta är att möjliggöra centraliserad översikt och kalibrering av flera larmenheter i ett larmsystem.
 Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna testa ifall systemets kommunikation är robust nog för att hantera överflöd av data.
 
 \noindent
@@ -82,20 +80,18 @@ Ytterligare ett delmål är att ha en enhet som ska agera defekt för att kunna 
 Ett delmål med lägre prioritet är att centralenheten ska kunna konfigurera en ny periferienhet vid anslutning. När den centrala styrenheten startar ska en förfråga skickas till de anslutna periferienheterna. 
 Därpå svarar varje periferienhet med dess typ och konfiguration för att sedan tilldelas ett unikt ID. 
 Dörrenhetens mål är att inledningsvis larma lokalt med en röd lysdiod. 
-Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan sättas av användaren. Till exempel 4 sekunder till lokala larmet att slås på och 8 sekunder till centrala larmet.
+Dörrlarmet larmar till centralenheten efter att det lokala larmet har varit igång under en specifik kalibreringsbar tid vilket kan justeras av användaren. Exempelvis kan tidsperioden innan larmet aktiveras vara 4 sekunder för det lokala och 8 sekunder för det globala.
 Avståndsmätare ska larma centralt ifall något passerar framför den inom ett visst avståndsintervall, ett delmål med lägre prioritet är att även implementera ett lokalt larm för avståndsmätaren.
-Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid. 
-Ett centralt mål ska vara att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
-
-%ÄNDRA: gör tydligt vad som är delmålen i projektet
+Vibrationssensorn ska detektera rörelse i form av vibrationer som antingen kan färdas i luften eller genom materialet som den är fäst vid.
+Ett centralt mål är att det ska vara möjligt att låsa eller låsa upp dörren samt inaktivera dörrlarmet genom att mata in en fyrsiffrig kod på en knappsats ansluten till centralenheten.
 
 \subsection{Arbetsmetod}
-I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Hur tekniska genomförandet gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
+I arbetsmetod beskrivs gruppens arbetsprocess. Denna är indelad i 3 stora delar som har bidragit till den färdiga produkten. Förarbetet som gav en klarare bild av hur arbetet skulle utföras. Hur tekniska genomförandet gick till sedan testning och verifiering av kod för att undvika buggar och svagheter i systemet.
 
 \subsubsection{Förarbete}
-Innan kod skrevs behövdes genomförandet av projektet planeras. 
-Detta inkluderar bestämning av versionskontroll system, kommunikationsplatform, testning av produkten samt ordning av larmsystemets olika delar. 
-Versionskontrollsystemet som valdes var Github, kommunikationsplatform valdes Discord. 
+Innan kod skrevs krävdes en plan för genomförandet av projektet.
+Detta inkluderar bestämning av versionskontroll system, kommunikationsplatform, testning av produkten samt ordning av larmsystemets olika delar.
+Versionshanteringssystemet som valdes var Github, kommunikationsplatform valdes Discord.
 För att testa systemet gjordes en testmall för hur ett test skulle genomföras. 
 Ordning av projektets olika delar gjordes genom en planering av olika milstolpar, först lades stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN protokollet för att kommunicera mellan dem. 
 Motivationen till detta var att CAN protokollet inte skulle behövas förrän pereferienheterna var klara och att jobba på de enheterna skulle ge en klarare bild över hur CAN protokollet skulle fungera som effektivast.
@@ -289,7 +285,7 @@ Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsin
 Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd.
 \\
 \\
-%Vibrationssensor, deaktivering av globalt larm
+%Vibrationssensor
 
 \subsection{Kommunikation via CAN och USART}
 
