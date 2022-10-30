@@ -18,7 +18,8 @@
 \hspace{10cm}
 Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407-mikrodator}
     
-\author{\\Alamin Alreda, Epost: , Sektion: \\Sebastian Danckwardt, Epost: swesebbe3336@gmail.com, Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: , Sektion: \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: edvinsvahn01@gmail.com, Sektion: Datateknologi\\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
+\author{\\Alamin Alreda, Epost: amin.reda@hotmail.com, Sektion: Datateknologi \\Sebastian Danckwardt, Epost: swesebbe3336@gmail.com, Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: zaidh@chalmers.se, Sektion: Datateknolog \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: edvinsvahn01@gmail.com, Sektion: Datateknologi\\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
+
 
 \date{\today}
     
@@ -41,11 +42,11 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 
 \item[GPIO] \emph{General Purpose Input/Output} är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
 
-\item[HC-SR04] En ultraljudsbaserad avståndsmätare.
+\item[HC-SR04] En ultraljudsbaserad avståndsmätare som används för att känna av om något står inom en viss  räckvidd. 
 
 \item[Knappsats] En extern periferienhet med 16 knappar som används för inmatning av data till mikrokontroller.
 
-\item[SW-18010] En fjäderbaserad vibrationssensor.
+\item[SW-18010] En fjäderbaserad vibrationssensor som används för att mäta vibrationer runtom sig.
 
 \item[USART] \emph{Universal Synchronous/Asynchronous Reciever/Transmitter} är hårdvara som tillåter seriell kommunikation mellan mikrokontroller och PC.
 
@@ -56,7 +57,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 \section{Introduktion}
 
 Under året 2021 anmäldes 72 884 inbrottsstölder i Sverige vilket pekar på att det finns ett tydligt behov av larmsystem i dagens samhälle \cite{BRa}.
-Trots den oro som finns i allmänheten för att ens egendom ska bli stulen så tillkännager endast 13 \% av unga mellan 23 och 35 år att de äger en larminstallation \cite{MoFor}.
+Trots den oro att ens egendom ska bli stulen som finns i allmänheten, så tillkännager endast 13 \% av unga mellan 23 och 35 år att de äger ett huslarm \cite{MoFor}.
 En av de största anledningarna till detta är kostnaden, 20 \% av de som saknar ett hemlarm anger att priset på installation är för högt \cite{MoFor}.
 Genom att skapa ett prisvärt larmsystem kan man erbjuda möjligheten till en tryggare tillvaro.
 
@@ -257,8 +258,7 @@ I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet ref
 Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
 
 \subsection{Centralenhet}
-Målet med projektet var att bygga ett centraliserad larmsystem. Centralenheten kan konfigurera och kalibrera samtilga kopplade och ny anslutna periferienheterna. Utöver det kan centralenheten kontrollera status på larmet, att slå på eller av. Centralenheten är självlärande på sätt när enheten startat skickar den en förfåga till varje periferienhet. Därefter om 
-periferienheten svara med dess typ blir den tilldelad ett ID-nummer av centralenheten, annars slås på larmet. Detta är ett förhindra attack från anonyma enheter. Centralenheten utföra en kontineurlig kontroll över beffintilga periferienheter så att ingen blir bortkopplad eller utan ström. Centralenheten kan, efter inmattning av lösenordet, uppdatera tröskelvärdet för varje dörr- och sensorenhet, ändra tröskelvärdet för avståndsmätaren. Den dessutom kan visa status och information på alla anslutna periferienheterna.
+Målet med projektet var att bygga ett centraliserat larmsystem. Centralenheten kan konfigurera och kalibrera samtliga kopplade och ny anslutna periferienheter. Utöver detta kan centralenheten kontrollera status på larmet, antigen att slå på eller av. Centralenheten är självlärande, exempelvis när en enhet startar, skickar den en "NEW ALIVE" meddelande med sin typ. Därefter blir den tilldelad ett ID-nummer av centralenheten. Centralenheten utföra en kontinuerlig kontroll över befintliga periferienheter så att ingen blir bortkopplad eller hamnar utan ström. Detta sker med hjälp av "LIFESIGN" meddelande som skickas från periferienheten. Centralenheten kan, efter att användaren har angett lösenordet, uppdatera tröskelvärdet för varje dörr- och sensorenhet samt ändra tröskelvärdet för avståndsmätaren. Den dessutom kan visa status och information på alla anslutna periferienheterna.
 
 \subsection{Periferienheter}
 Ett centralt mål med projektet var periferienheterna som skulle ingå i systemet. 
@@ -274,9 +274,9 @@ Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av cen
 Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av distans i cm.
 Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. 
 Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt med avståndsmätaren. 
-Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. 
-Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. 
-Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd. Målet med sensorenheten var även att kunna detektera vibrationer genom luft eller materialet vibrationssensorn var fäst i. Sensorn kan lätt plocka upp vibrationer i materialet den är fäst i och larma globalt, men den är mindre känslig för vibrationer som färdas genom luften och kan missa viktiga tecken på att den ska larma.
+Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten.\\
+\\
+Målet med sensorenheten var även att kunna detektera vibrationer genom luft eller materialet vibrationssensorn var fäst i. Sensorn kan lätt plocka upp vibrationer i materialet den är fäst i och larma globalt, men den är mindre känslig för vibrationer som färdas genom luften och kan missa viktiga tecken på att den ska larma.
 
 \subsection{Kommunikation via CAN och USART}
 
@@ -287,8 +287,8 @@ Då enheten startar sätts intervallen till standardvärden som är bundna till 
 I detta kapitlet konstateras de olika resultaten utifrån målen som sattes.
 Dessutom diskuteras vad som hade kunnat göras bättre och potentiella förbättringar och idéer för vidarearbete av projektet.\\
 
-\subsection{Centralenhet}
-Centralenheten var den enhet som var viktigast att den fungerade som den skulle varje gång.
+
+Centralenheten var den mest vitala delen av systemet och det var viktigt att den fungerade som den skulle.
 Eftersom den behövde ha koll på att alla enheter var anslutna hela tiden så var det viktigt för oss att livsteckensystemet fungerade och att centralenheten kunde avgöra när en enhet ställdes om eller när sladden till den enheten drogs ut.
 En sårbarhet i systemet är ifall själva centralenheten skulle dras ut för då finns det plötsligt inte något som kan starta ett centralt larm. 
 Därför skulle det i framtiden vara bra om man kunde jobba på integrationen med den ihopkopplade datorn så att om centralenheten tas ur bruk, planerat eller oplanerat, att datorn då märker det och kan larma till ett moln eller en typ av webb-baserad server där man kopplat sina telefoner och kan få notiser ifall hela larmet skulle stängas av.
@@ -303,6 +303,10 @@ Vi ser inte att det finns så mycket mer att göra när det kommer till utveckli
 \noindent
 Eftersom att avståndsmätaren i nuläget bara jämför de värden som den får utan kontext och enskilt för varje mätning betyder det att det centrala larmet kan utlösas av att exempelvis en fluga flyger framför mätaren.
 Det är ju så klart inte bra att ett hemlarm utlöses för att en fluga råkade flyga förbi mätaren, så om systemet skulle förbättras hade det varit smart att ändra på avståndsmätarens sätt att analysera sådant att den kanske måste få samma avstånd på flera gånger innan den börjar larma.\\
+\\
+\noindent
+Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. 
+Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd. 
 
 \subsection{Fysiska och ekonomiska begränsningar}
 \noindent
