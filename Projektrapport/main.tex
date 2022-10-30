@@ -18,7 +18,7 @@
 \hspace{10cm}
 Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407-mikrodator}
     
-\author{\\Alamin Alreda\\Sebastian Danckwardt\\Zaid Haj Ibrahim\\Isac Holm\\Edvin Svahn}
+\author{\\Alamin Alreda, Epost: , Sektion: \\Sebastian Danckwardt, Epost: , Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: , Sektion: \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: , Sektion: \\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
 
 \date{\today}
     
@@ -303,13 +303,17 @@ Med resultaten kan man konstatera att det går att skapa ett eget larm som kan a
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
 
 \subsection{centralenhet}
+Centralenheten var den enhet som var viktigast att den fungerade som den skulle varje gång.
+Eftersom den behövde ha koll på att alla enheter var anslutna hela tiden så var det viktigt för oss att livsteckensystemet fungerade och att centralenheten kunde avgöra när en enhet ställdes om eller när sladden till den enheten drogs ut.
+En sårbarhet i systemet är ifall själva centralenheten skulle dras ut för då finns det plötsligt inte något som kan starta ett centralt larm. 
+Därför skulle det i framtiden vara bra om man kunde jobba på integrationen med den ihopkopplade datorn så att om centralenheten tas ur bruk, planerat eller oplanerat, att datorn då märker det och kan larma till ett moln eller en typ av webb-baserad server där man kopplat sina telefoner och kan få notiser ifall hela larmet skulle stängas av.
 
 
 \subsection{periferienheter}
 \noindent
 Dörrenheten uppnådde de mål som vi satte på enheten. 
-Dörrarna fungerar bra och inga speciella problem har uppstått under de gånger som bi testat systemet som helhet. 
-Vi ser inte att det finns så mycket mer att göra när det kommer till utveckling av dörrenheten då dörrars säkerhet inte behöver kunna annat än att hålla koll på vilka dörrar som öppnats och när de bör stängas för att larmet inte ska gå.\\
+Dörrarna fungerade bra och inga speciella problem framträdde under de gånger som vi testade systemet som helhet. 
+Vi ser inte att det finns så mycket mer att göra när det kommer till utvecklingen av dörrenheten då dörrarnas säkerhet inte behöver kunna annat än att hålla koll på vilka dörrar som öppnats och när de har varit öppna för länge och larmet ska gå.\\
 \\
 \noindent
 Eftersom att avståndsmätaren i nuläget bara jämför de värden som den får utan kontext och enskilt för varje mätning betyder det att det centrala larmet kan utlösas av att exempelvis en fluga flyger framför mätaren.
