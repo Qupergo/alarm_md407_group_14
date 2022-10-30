@@ -284,7 +284,7 @@ Varje dörr har två tröskelvärden som bestämmer hur länge kan dörren vara 
 
 \subsection{Sensorenhet}
 
-Sensorenheten har två olika sensorer: en avståndsmätare och en vibrationssensor. Till avståndsmätaren delades två GPIO-pinnar. Första pinnen är trig-pinnen och ansvarar för att skicka ultravågspulser. Andra pinnen är eko-pinnen som antar värdet ett när ett eko kommer tillbaka och returnerar värdet noll om ingen läsning av eko sker. Skillnaden i tiden mellan när ultravågspulsen skickades och när ekot har kommit tillbaka ges i microsekunder. Mätningen av avståndet sker enligt figur 8. Avståndsmätaren kopplas upp på en kopplingsplatta tillsammans med en röd lampa för att indikera att ett lokalt larm har inträffat. Trig-pinnen sätts på för tio mikrosekunder innan den börjar vänta på eko-signaler. Hela mätningscykel sker i en intervall av 65 millisekunder. Sensorenheten kalibreras genom att en mätning utförs när det larmade området är tomt, för att få ett referensvärde. Referensvärdet används för att bestämma i vilka avstånds intervall ska enheten larma centralt respektive lokalt. Lokala larmet sker genom att tända den röda lampan medan centrala larmet skickar ett larm meddelande till centralenheten. Referensvärdet, intervallet för lokalt larm och intervallet för centralt larm kan ändras genom centralenheten.
+Sensorenheten har två olika sensorer: en avståndsmätare och en vibrationssensor. Till avståndsmätaren delades två GPIO-pinnar. Första pinnen är trigg-pinnen och ansvarar för att skicka ultraljudspulser. Andra pinnen är eko-pinnen som antar värdet ett när ett eko kommer tillbaka och returnerar värdet noll om ingen läsning av eko sker. Skillnaden i tiden mellan när ultraljudspulsen skickades och när ekot har kommit tillbaka ges i mikrosekunder. Mätningen av avståndet sker enligt figur 8. Avståndsmätaren kopplas upp på en kopplingsplatta tillsammans med en röd lampa för att indikera att ett lokalt larm har inträffat. Trigg-pinnen sätts på för tio mikrosekunder innan den börjar vänta på eko-signaler. Hela mätningscykel sker i en intervall av 65 millisekunder. Sensorenheten kalibreras genom att en mätning utförs när det larmade området är tomt, för att få ett referensvärde. Referensvärdet används för att bestämma i vilka avstånds intervall ska enheten larma centralt respektive lokalt. Lokala larmet sker genom att tända den röda lampan medan centrala larmet skickar ett larm meddelande till centralenheten. Referensvärdet, intervallet för lokalt larm och intervallet för centralt larm kan ändras genom centralenheten.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{Projektrapport/ekvation.png}
@@ -345,7 +345,12 @@ Med resultaten kan man konstatera att det går att skapa ett eget larm som kan a
 \noindent
 Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
 
+\subsection{centralenhet}
+
+
 \subsection{periferienhet}
+\noindent
+
 \noindent
 Eftersom att avståndsmätaren i nuläget bara jämför de värden som den får utan kontext och enskilt för varje mätning betyder det att det centrala larmet kan utlösas av att exempelvis en fluga flyger framför mätaren.
 Det är ju så klart inte bra att ett hemlarm utlöses för att en fluga råkade flyga förbi mätaren, så om systemet skulle förbättras hade det varit smart att ändra på avståndsmätarens sätt att analysera sådant att den kanske måste få samma avstånd på flera gånger innan den börjar larma.\\
