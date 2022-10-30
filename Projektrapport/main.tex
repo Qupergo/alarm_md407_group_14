@@ -175,18 +175,34 @@ Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket 
 \end{figure}
 
 \subsubsection{Centralenhet}
-Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
+Centralenheten är systemets hjärna. 
+Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. 
+Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. 
+Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.\\
 \\
+Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. 
+När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin enhetstyp till centralenheten. 
+Centralenheten tar emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.\\
 \\
-Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin enhetstyp till centralenheten. Centralenheten tar emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
-\\
-\\
-Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
+Utöver det sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. 
+När centralenheten startar uppmanar den användaren att ange ett lösenord. 
+När det har angetts visar centralenheten sedan en meny med nio alternativ. 
+Användaren kan då bland annat ändra lösenordet, uppdatera tröskelvärden och se status för alla enheter som är anslutna till centralenheten.
 
 \subsubsection{Dörrenhet}
-Varje dörr har två tröskelvärden som bestämmer hur länge kan dörren vara öppnad innan ett lokalt respektive centralt larm slås på. Totalt definierades åtta dörrar för dörrenheten, till varje dörr delades fyra GPIO-pinnar. Första pinnen är en strömbrytare som kopplas direkt till 3,3 volt ström. Strömbrytaren kommer att anta värdet 1 om dörren är stängd respektive värdet 0 om dörren är öppen. Andra pinnen kopplas till en grön lampa som lyser när dörren är stängd eller släcks när dörren öppnas. Tredje pinnen kopplas till en röd lampa för att indikera ett lokalt larm. Lampan ska lysa när dörren har varit öppen för en bestämd tid, tiden bestäms genom centralenheten, och ska släckas när dörren är stängd. Sista pinnen kopplas till ett lås för att antigen låsa eller låsa upp dörren, vilket också görs genom centralenheten. Alla lampor kopplas upp på en kopplingsplatta enligt figur 3.
+Varje dörr har två tröskelvärden som bestämmer hur länge kan dörren vara öppnad innan ett lokalt respektive centralt larm aktiveras. 
+Totalt definieras åtta dörrar för dörrenheten, till varje dörr delas fyra GPIO-pinnar. Första pinnen är en strömbrytare som kopplas direkt till 3,3 volt spänning. 
+Strömbrytaren kommer att anta värdet 1 om dörren är stängd respektive 0 om dörren är öppen. 
+Andra pinnen kopplas till en grön lampa som lyser när dörren är stängd eller släcks när dörren öppnas. 
+Tredje pinnen kopplas till en röd lampa för att indikera ett lokalt larm. 
+Lampan ska lysa när dörren har varit öppen under en bestämd tid. 
+Tiden bestäms genom centralenheten och ska släckas när dörren är stängd. 
+Sista pinnen kopplas till ett lås för att antigen låsa eller låsa upp dörren, vilket också kan göras genom centralenheten. 
+Alla lampor kopplas upp på en kopplingsplatta enligt figur 3.\\
 \\
-\\Om en dörr öppnas startas en timer som utlöser ett larm när ett tidströskelvärde har uppnåtts. Denna tid beror på de tröskelvärden som ställs in av centralenheten. Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
+Om en dörr öppnas startas en timer som utlöser ett larm när en tid har passerat. 
+Denna tid beror på de tröskelvärden som ställs in av centralenheten. 
+Som standard startar det lokala larmet fyra sekunder efter att en dörr har öppnats och det globala larmet startar åtta sekunder efter att det lokala larmet har utlösts. 
 
 \begin{figure}[h]
     \centering
@@ -199,7 +215,18 @@ Varje dörr har två tröskelvärden som bestämmer hur länge kan dörren vara 
 
 
 \subsubsection{Sensorenhet}
-Sensorenheten har två olika sensorer: en avståndsmätare och en vibrationssensor. Till avståndsmätaren delades två GPIO-pinnar. Första pinnen är trigg-pinnen och ansvarar för att skicka ultraljudspulser. Andra pinnen är eko-pinnen som antar värdet ett när ett eko kommer tillbaka och returnerar värdet noll om ingen läsning av eko sker. Skillnaden i tiden mellan när ultraljudspulsen skickades och när ekot har kommit tillbaka ges i mikrosekunder. Mätningen av avståndet sker enligt figur 4. Avståndsmätaren kopplas upp på en kopplingsplatta tillsammans med en röd lampa för att indikera att ett lokalt larm har inträffat. Trigg-pinnen sätts på för tio mikrosekunder innan den börjar vänta på eko-signaler. Hela mätningscykel sker i en intervall av 65 millisekunder. Sensorenheten kalibreras genom att en mätning utförs när det larmade området är tomt, för att få ett referensvärde. Referensvärdet används för att bestämma i vilka avstånds intervall ska enheten larma centralt respektive lokalt. Lokala larmet sker genom att tända den röda lampan medan centrala larmet skickar ett larm meddelande till centralenheten. Referensvärdet, intervallet för lokalt larm och intervallet för centralt larm kan ändras genom centralenheten.
+Sensorenheten har två olika sensorer: en avståndsmätare och en vibrationssensor. 
+Till avståndsmätaren delas två GPIO-pinnar. 
+Första pinnen är trigg-pinnen och ansvarar för att skicka ultraljudspulser. 
+Andra pinnen är eko-pinnen som antar en etta när ett eko kommer tillbaka och returnerar värdet noll om ingen läsning av eko sker. 
+Skillnaden i tiden mellan när ultraljudspulsen skickades och när ekot har kommit tillbaka ges i mikrosekunder. 
+Mätningen av avståndet sker enligt figur 4. 
+Avståndsmätaren kopplas upp på en kopplingsplatta tillsammans med en röd lampa för att indikera att ett lokalt larm har inträffat. 
+Trigg-pinnen sätts på i tio mikrosekunder innan den börjar vänta på eko-signaler. 
+Hela mätningscykeln sker i ett intervall på 65 millisekunder. 
+Sensorenheten kalibreras genom att en mätning utförs när det larmade området är tomt, för att få ett referensvärde. Referensvärdet används för att bestämma i vilka avståndsintervall som enheten ska larma centralt respektive lokalt. 
+Det lokala larmet indikeras genom att tända den röda lampan och det centrala larmet indikeras hos centralenheten som får ett alarmmeddelande från sensorenheten. 
+Referensvärdet, intervallet för lokalt larm och intervallet för centralt larm kan ändras genom centralenheten.
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{Projektrapport/ekvation.png}
@@ -207,7 +234,10 @@ Sensorenheten har två olika sensorer: en avståndsmätare och en vibrationssens
     \label{fig:drawing}
 \end{figure}
 \\
-Vibrationssensorn har fyra pinnar: en ström-pinne, en jord-pinne, en digital output-pinne och en analog output-pinne. Under detta projekt har det bestämts att bara använda den digitala output-pinnen eftersom det finns bara behov av att läsa om en vibration har inträffats eller inte. Känsligheten för vibrationssensorn justeras med en komparator på själva sensorn. Sensorenheten skickar direkt ett alarm meddelande till centralenheten om en vibration har inträffats.
+Vibrationssensorn har fyra pinnar: en ström-pinne, en jord-pinne, en digital utdata-pinne och en analog utdata-pinne. 
+Under detta projekt har det bestämts att bara använda den digitala utdata-pinnen eftersom det bara finns behov av att läsa om en vibration har inträffats eller inte.
+Känsligheten för vibrationssensorn justeras med en komparator på själva sensorn. 
+Sensorenheten skickar direkt ett larmmeddelande till centralenheten om en vibration har inträffat.
 
 \begin{figure}[!tbp]
     \centering
@@ -218,7 +248,24 @@ Vibrationssensorn har fyra pinnar: en ström-pinne, en jord-pinne, en digital ou
 
 
 \subsubsection{Systemprotokoll}
-CAN användes för att överföra meddelanden mellan enheterna i larmsystemet. Ett protokoll byggdes på toppen av CAN för att göra det lättare att använda, säkrare och mer pålitligt. CAN-meddelande har två fält som används av det utökade protokollet: id-fältet och innehållsfältet. Id-fältet kan innehålla 11 bitar data som är uppdelade i fyra delar. Den mest signifikanta biten, bit 10, är inställd som en prioritetsbit. När den är satt till noll prioriterar protokollet ankomsten av meddelandet. Bits 9-6 är reserverade för meddelandetypen (se figur 6). Bits 5-3 är för sändar-id och de sista tre bitarna, 2-0, är för mottagar-id. Ett filter gjordes sedan baserat på detta id-fält och aktiverades i periferienheterna efter att de tilldelats sina id:n. Detta filter gör så att de endast accepterar meddelanden från centralenheten samt måste meddelandenas mottagare id vara deras id. Däremot tar centralenheten fortfarande emot meddelanden från alla enheter, delvis för att förhindra att någon imiterar centralenheten. Detta då centralenheten granskar om ett meddelande skickas från någon med samma id och utlöser ett larm. "content"-fältet fylls i beroende på vilken typ av meddelande som skickats, vilket framgår av figur 6. Efter att ett meddelande har skickats sparas en kopia i en återutsändningsbuffert och en tidsstämpel sparas. Efter att en viss tid har gått utan att en ack har mottagits skickas meddelandet igen. Det antas då att meddelandet inte nådde sin destination. Livstecken får dock inte någon bekräftelse eftersom de inte är livsviktiga och sänds upprepade gånger med korta intervaller. Livstecknets timeout uppnås också före ack timeout.
+CAN användes för att överföra meddelanden mellan enheterna i larmsystemet. 
+Ett protokoll byggdes på toppen av CAN för att göra det mer pålitligt, säkrare och lättare att använda. 
+CAN-meddelandet har två fält som används av det utökade protokollet: id-fältet och innehållsfältet. 
+Id-fältet kan innehålla 11 bitar data som är uppdelade i fyra delar. 
+Den mest signifikanta biten, bit 10, är inställd som en prioritetsbit. 
+När den är satt till noll prioriterar protokollet ankomsten av det meddelandet. 
+Bitar 9-6 är reserverade för meddelandetypen (se figur 6). 
+Bitar 5-3 är för sändar-id och de tre minst signifikanta bitarna, 2-0, är för mottagar-id. 
+Ett filter gjordes sedan baserat på detta id-fält och aktiverades i periferienheterna efter att de tilldelats sina id:n. 
+Detta filter gör så att de endast accepterar meddelanden från centralenheten samt så måste meddelandenas mottagar-id vara deras id. 
+Däremot tar centralenheten fortfarande emot meddelanden från alla enheter, detta för att förhindra att någon imiterar centralenheten. 
+Det beror på att centralenheten granskar om ett meddelande skickas från någon med samma id och ifall det skulle uppstå en sådan situation utlöses ett larm. 
+"Content"-fältet fylls i beroende på vilken typ av meddelande som skickats, vilket framgår av figur 6. 
+Efter att ett meddelande har skickats sparas en kopia i en återutsändningsbuffert och en tidsstämpel sparas. 
+Efter att en viss tid har gått utan att ett ack har mottagits skickas meddelandet igen. 
+Det antas då att meddelandet inte nådde sin destination. 
+Livstecken får dock inte någon bekräftelse eftersom de inte är livsviktiga och sänds upprepade gånger med korta intervaller. 
+Livstecknets timeout uppnås också före ack timeout.
 
 \begin{tabular}{|c|l|c|}
     \hline
@@ -245,43 +292,64 @@ CAN användes för att överföra meddelanden mellan enheterna i larmsystemet. E
 \end{center}
 
 \subsubsection{Installering av larmsystem}
-Installationen av systemet bildar en hierarki där centralenheten och dörr- och sensorenhet är basenheter. Basenheterna består av olika delsystem. Centralenheten är hjärnan för hela sytemet. Dess huvudsaklig uppgift är att leda en kollektivt samarbete mellan alla enheterna. Detta innebär att utan centralenheten skulle larmsystemet inte fullgöra sitt syfte. 
-
-\noindent Centralenheten kommunicerar med periferienheterna via CAN-protokoll som skickas över en RJ11 Telefonkabel som i sin tur är kopplade till CAN-porten i periferienhetens MD-kort. Därmed delsystem för CAN ska inkluderas i alla basenheterna. USB-koppling mellan OC och basenheterna är essentiellt för attt hålla USART-kommunikation och försörja enheterna med ström. Detta dessutom möjliggöra att ladda enhetensmjuksystem till sammanhörande MD-kort. Delsystemet för timer genererar en avbrott och används för tidställning i övrgia funktioner, och för att se till att livstecken på kopplade periferienhetern inte överskrider tidgränsen. Centralenheten använder sig av en delenhet som abstraherar funkionalitet av knappsatsen. Knappstasten är kopplade till centralenheten via GPIO portar.
+Installationen av systemet bildar en hierarki där centralenheten och dörr- och sensorenhet är basenheter. 
+Basenheterna består av olika delsystem. 
+Centralenheten är hjärnan för hela systemet.
+Dess huvudsakliga uppgift är att leda ett kollektivt samarbete mellan alla enheterna. 
+Detta innebär att larmsystemet inte skulle fullgöra sitt syfte utan centralenheten.\\
+\\
+Centralenheten kommunicerar med periferienheterna via CAN-protokollet som skickar över en RJ11 telefonkabel som i sin tur är kopplade till CAN-portarna på periferienheten. 
+Därmed måste CAN-protokollet inkluderas för varje kommunicerande del i systemet. 
+USB-koppling mellan PC och basenheterna är essentiellt för att upprätthålla USART-kommunikation och försörja enheterna med ström. 
+Detta möjliggör dessutom att man kan ladda upp omarbetad mjukvara direkt till delenheterna. 
+Delsystemet för timer genererar ett avbrott och används för tidtagning i övriga funktioner och för att se till att livstecken på kopplade periferienheter inte överskrider tidgränsen. 
+Centralenheten använder sig av en knappsats. 
+Knappsatsen är kopplad till centralenheten via GPIO portar och används för att manövrera menyn.
 
 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{Projektrapport/hierarki.png}
-    \caption {Överblick av bildning av hierarki i larmsystemet. Varje basenhet innehåller en startup fil med enhetens huvudlogik. Övriga filer innehåller funktioner som bidrar till basenheterna}
+    \caption {Överblick av hierarki i larmsystemet. Varje basenhet innehåller en startup fil med enhetens huvudlogik. Övriga filer innehåller funktioner som bidrar till basenheterna}
     \label{fig:drawing}
 \end{figure}
 
 
 \section{Resultat}
-I detta avsnitt redovisas det för vad systemet kan göra och hur resultatet reflekterar de mål som sattes i projektets början. 
-Det diskuteras även nackdelar med systemets konstruktion och vad som kunde ha gjorts på ett bättre sätt.
+I detta avsnitt redovisas resultatet för delsystemen som baseras på de mål som sattes i projektets början.
 
+Målet med projektet var att bygga ett centraliserat larmsystem.
 \subsection{Centralenhet}
-Målet med projektet var att bygga ett centraliserat larmsystem. Centralenheten kan konfigurera och kalibrera samtliga kopplade och ny anslutna periferienheter. Utöver detta kan centralenheten kontrollera status på larmet, antigen att slå på eller av. Centralenheten är självlärande, exempelvis när en enhet startar, skickar den en "NEW ALIVE" meddelande med sin typ. Därefter blir den tilldelad ett ID-nummer av centralenheten. Centralenheten utföra en kontinuerlig kontroll över befintliga periferienheter så att ingen blir bortkopplad eller hamnar utan ström. Detta sker med hjälp av "LIFESIGN" meddelande som skickas från periferienheten. Centralenheten kan, efter att användaren har angett lösenordet, uppdatera tröskelvärdet för varje dörr- och sensorenhet samt ändra tröskelvärdet för avståndsmätaren. Den dessutom kan visa status och information på alla anslutna periferienheterna.
+Centralenheten kan konfigurera och kalibrera samtliga kopplade och på nytt anslutna periferienheter.
+Utöver detta kan centralenheten kontrollera status samt antigen slå på eller av larmet. 
+Centralenheten är självlärande, exempelvis när en enhet startar så skickar den ett "NEW ALIVE" meddelande med sin typ. 
+Därefter blir den tilldelad ett ID-nummer av centralenheten. 
+Centralenheten utför en kontinuerlig kontroll över befintliga periferienheter så att ingen blir bortkopplad eller hamnar utan ström. 
+Detta sker med hjälp av "LIFESIGN" meddelanden som skickas från periferienheten. 
+Centralenheten kan, efter att användaren har angett lösenordet, uppdatera tröskelvärdet för varje dörr- och sensorenhet samt ändra tröskelvärdet för avståndsmätaren. 
+Den kan dessutom visa status och information på alla anslutna periferienheter.
 
 \subsection{Periferienheter}
-Ett centralt mål med projektet var periferienheterna som skulle ingå i systemet. 
-Dörrenheten skulle upptäcka ifall en dörr står öppen och sensorenheten skulle upptäcka ifall något passerar framför den inom ett visst avståndsintervall samt rörelse i form av vibrationer.
+Ett centralt mål med projektet är periferienheterna som ingår i systemet. 
+Dörrenheten upptäcker ifall en dörr står öppen och sensorenheten upptäcker ifall något passerar framför den inom ett visst avståndsintervall samt rörelse i form av vibrationer.
 
 \subsubsection{Dörrenhet}
 Dörrenhetens implementation har uppnåt de delmål som sattes upp i början av projektet. 
-Enheten kan hantera ett flertal dörrar, för varje enskild dörr kan tidsintervallen för aktivering av globalt respektive lokalt larm justeras individuellt med ett CAN-meddelande \emph{SET DOOR ALARM TIME THRESHOLD}. 
-Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids, efter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande \emph{START ALARM} till centralenheten.
-Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten, den kan även avlarmas med ett \emph{STOP ALARM} meddelande. Om en dörr står låst indikeras detta med en tänd grön lysdiod.
+Enheten kan hantera åtta dörrar och för varje enskild dörr kan tidsintervallen för aktivering av globalt respektive lokalt larm justeras individuellt med ett CAN-meddelande \emph{SET DOOR ALARM TIME THRESHOLD}. 
+Den kan larma lokalt med en röd lysdiod i fall dörren är öppen och dess standard tidsintervall överskrids.
+Eter tidsintervallet för globalt larm överskrids skickas ett CAN-meddelande \emph{START ALARM} till centralenheten.
+Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av centralenheten.
+Den kan även avlarmas med ett \emph{STOP ALARM} meddelande. 
+Om en dörr står låst indikeras detta med en tänd grön lysdiod.
 
 \subsubsection{Sensorenhet}
-Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av distans i cm.
-Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. 
-Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt med avståndsmätaren. 
-Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten.\\
+Avståndsmätaren ger förväntade resultat.
+Genom testning och kalibrering med linjal verifieras att avståndsmätaren ger korrekt och konsekvent mätning av distans i cm.
+Även om sensorn täcks så att ekot inte registrerar larmade den vilket ökar säkerheten i systemet. 
+Ett delmål med sensorenheten är att den likt dörrenheten larmar både lokalt och globalt med avståndsmätaren vilket den kan göra. 
+Avståndsintervallen för dessa går att justera via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten.\\
 \\
-Målet med sensorenheten var även att kunna detektera vibrationer genom luft eller materialet vibrationssensorn var fäst i. Sensorn kan lätt plocka upp vibrationer i materialet den är fäst i och larma globalt, men den är mindre känslig för vibrationer som färdas genom luften och kan missa viktiga tecken på att den ska larma.
+Ett annat mål med sensorenheten är att den detekterar vibrationer genom luft eller materialet vibrationssensorn fästs i. Sensorn plockar enkelt upp vibrationer i materialet den är fäst i och larmar globalt, men den är mindre känslig för vibrationer som färdas genom luften och missar ibland viktiga tecken på att den ska larma.
 
 \subsection{Kommunikation via CAN och USART}
 
@@ -291,11 +359,11 @@ Målet med sensorenheten var även att kunna detektera vibrationer genom luft el
 \section{Slutsats och diskussion}
 I detta kapitlet konstateras de olika resultaten utifrån målen som sattes.
 Dessutom diskuteras vad som hade kunnat göras bättre och potentiella förbättringar och idéer för vidarearbete av projektet.\\
-
-
+\\
+\subsection{Centralenhet}
 Centralenheten var den mest vitala delen av systemet och det var viktigt att den fungerade som den skulle.
 Eftersom den behövde ha koll på att alla enheter var anslutna hela tiden så var det viktigt för oss att livsteckensystemet fungerade och att centralenheten kunde avgöra när en enhet ställdes om eller när sladden till den enheten drogs ut.
-En sårbarhet i systemet är ifall själva centralenheten skulle dras ut för då finns det plötsligt inte något som kan starta ett centralt larm. 
+En sårbarhet i systemet skulle vara ifall själva centralenheten skulle dras ut för då finns det plötsligt inte något som kan starta ett centralt larm. 
 Därför skulle det i framtiden vara bra om man kunde jobba på integrationen med den ihopkopplade datorn så att om centralenheten tas ur bruk, planerat eller oplanerat, att datorn då märker det och kan larma till ett moln eller en typ av webb-baserad server där man kopplat sina telefoner och kan få notiser ifall hela larmet skulle stängas av.
 
 
@@ -305,13 +373,12 @@ Dörrenheten uppnådde de mål som vi satte på enheten.
 Dörrarna fungerade bra och inga speciella problem framträdde under de gånger som vi testade systemet som helhet. 
 Vi ser inte att det finns så mycket mer att göra när det kommer till utvecklingen av dörrenheten då dörrarnas säkerhet inte behöver kunna annat än att hålla koll på vilka dörrar som öppnats och när de har varit öppna för länge och larmet ska gå.\\
 \\
-\noindent
 Eftersom att avståndsmätaren i nuläget bara jämför de värden som den får utan kontext och enskilt för varje mätning betyder det att det centrala larmet kan utlösas av att exempelvis en fluga flyger framför mätaren.
-Det är ju så klart inte bra att ett hemlarm utlöses för att en fluga råkade flyga förbi mätaren, så om systemet skulle förbättras hade det varit smart att ändra på avståndsmätarens sätt att analysera sådant att den kanske måste få samma avstånd på flera gånger innan den börjar larma.\\
+Det är ju så klart inte bra att ett hemlarm utlöses för att en fluga råkade flyga förbi mätaren.
+Om systemet skulle förbättras hade det varit smart att ändra på avståndsmätarens sätt att analysera, sådant att den kanske måste få samma avstånd flera gånger i rad innan den börjar larma.\\
 \\
-\noindent
-Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. 
-Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd. 
+Ytterligare ett problem med avståndsmätarens program är att intervallen inte är individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. 
+Då enheten startar sätts intervallen till standardvärden som är bundna till den första avståndsmätningen. 
 
 \subsection{Fysiska och ekonomiska begränsningar}
 \noindent
@@ -330,9 +397,9 @@ Man kan till exempel använda sig av en motor som man kopplar en avståndsmätar
 \includepdf[page=-, scale=0.8]{ack.pdf}
 \includepdf[page=-, scale=0.8]{Replay_attack.pdf}
 \includepdf[page=-, scale=0.8]{rt_buffer.pdf}
-\includepdf[page=-, scale=0.8]{tesfall1.pdf}
-\includepdf[page=-, scale=0.8]{tesfall2.pdf}
-\includepdf[page=-, scale=0.8]{tesfall3.pdf}
+\includepdf[page=-, scale=0.8]{testfall1.pdf}
+\includepdf[page=-, scale=0.8]{testfall2.pdf}
+\includepdf[page=-, scale=0.8]{testfall3.pdf}
 \end{appendix}
 
 
