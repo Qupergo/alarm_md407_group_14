@@ -177,9 +177,9 @@ Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket 
 \subsubsection{Centralenhet}
 Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
 
-Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin typ till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
+\noindent Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin typ till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
 
-Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
+\noindent Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
 
 \subsubsection{Dörrenhet}
 En dörrenhet ansluts till flera dörrar, och dessa dörrar ansluts till ett lås och två lysdioder (en grön och en röd). Lysdioderna tänds beroende på den aktuella larmstatusen för varje dörr. Den gröna lampan tänds om det globala larmet är aktiverat, medans den röda lampan tänds om det lokala larmet är aktiverat. En ytterligare lysdiod är ansluten till dörren, som tänds eller släcks om dörren är låst eller olåst. Användaren kan välja att låsa en dörr genom att skicka ett meddelande från centralenheten. 
@@ -197,15 +197,8 @@ Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner
 
 \begin{figure}[!tbp]
     \centering
-     \begin{minipage}[b]{0.3\textwidth}
-    \includegraphics[scale=0.05]{Projektrapport/central.png}
-    \caption {Hårdvaran som har funktionen som centralenhet}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.5\textwidth}
     \includegraphics[scale=0.04]{Projektrapport/sensor.png}
     \caption {Sensorerna som är implementerade på sensorenheten. Hårdvaran till vänster är vibrationssensor och till höger är avståndsmätare}
-    \end{minipage}
     \label{fig:drawing}
 \end{figure}
 
@@ -217,27 +210,6 @@ Ettställning av bit 10 innebär att meddelandet får högsta prioritet när det
 Nollställning av samma bit innebär då motsatsen, vilket är att meddelandet får lägsta prioritet och kan därmed vänta med utförande. 
 Bit 9 till och med bit 6 är reserverade för meddlandetypen som innehåller bland annat ifall meddelandet är en förfrågan att larma på eller av, eller information som skickas mellan enheterna regelbundet. 
 Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla avsändarens ID, och bit 2 till och med bit 0 innehålla mottagarens ID.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
-    \caption {Visuell framställning av Kommunikationsprotokoll}
-    \label{fig:drawing}
-\end{figure}
-
-\subsubsection{Installering av system}
-Installationen av systemet bildar en hierarki där centralenheten och dörr- och sensorenhet är basenheter. Basenheterna består av olika delsystem. Centralenheten är hjärnan för hela sytemet. Dess huvudsaklig uppgift är att leda en kollektivt samarbete mellan alla enheterna. Detta innebär att utan centralenheten skulle larmsystemet inte fullgöra sitt syfte. 
-
-\noindent Centralenheten kommunicerar med periferienheterna via CAN-protokoll som skickas över en RJ11 Telefonkabel som i sin tur är kopplade till CAN-porten i periferienhetens MD-kort. Därmed delsystem för CAN ska inkluderas i alla basenheterna. USB-koppling mellan OC och basenheterna är essentiellt för attt hålla USART-kommunikation och försörja enheterna med ström. Detta dessutom möjliggöra att ladda enhetensmjuksystem till sammanhörande MD-kort. Delsystemet för timer genererar en avbrott och används för tidställning i övrgia funktioner, och för att se till att livstecken på kopplade periferienhetern inte överskrider tidgränsen. Centralenheten använder sig av en delenhet som abstraherar funkionalitet av knappsatsen. (TO BE CONTINUED)
-
-
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.5]{Projektrapport/hierarki.png}
-    \caption {Visuell framställning av bildning av hierarki av larmsystemet}
-    \label{fig:drawing}
-\end{figure}
 
 
 \begin{tabular}{|c|l|c|}
@@ -263,6 +235,27 @@ Installationen av systemet bildar en hierarki där centralenheten och dörr- och
 \begin{center}
 \caption{Figur 5: Bitmönster för de olika meddelandetyper som används för CAN-kommunikation. Meddelandetyper med lägre nummer har högre prioritet. "..."\ betyder att innehållet är tomt.}
 \end{center}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{Projektrapport/protokoll.png}
+    \caption {Visuell framställning av Kommunikationsprotokoll}
+    \label{fig:drawing}
+\end{figure}
+
+\subsubsection{Installering av larmsystem}
+Installationen av systemet bildar en hierarki där centralenheten och dörr- och sensorenhet är basenheter. Basenheterna består av olika delsystem. Centralenheten är hjärnan för hela sytemet. Dess huvudsaklig uppgift är att leda en kollektivt samarbete mellan alla enheterna. Detta innebär att utan centralenheten skulle larmsystemet inte fullgöra sitt syfte. 
+
+\noindent Centralenheten kommunicerar med periferienheterna via CAN-protokoll som skickas över en RJ11 Telefonkabel som i sin tur är kopplade till CAN-porten i periferienhetens MD-kort. Därmed delsystem för CAN ska inkluderas i alla basenheterna. USB-koppling mellan OC och basenheterna är essentiellt för attt hålla USART-kommunikation och försörja enheterna med ström. Detta dessutom möjliggöra att ladda enhetensmjuksystem till sammanhörande MD-kort. Delsystemet för timer genererar en avbrott och används för tidställning i övrgia funktioner, och för att se till att livstecken på kopplade periferienhetern inte överskrider tidgränsen. Centralenheten använder sig av en delenhet som abstraherar funkionalitet av knappsatsen. Knappstasten är kopplade till centralenheten via GPIO portar.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{Projektrapport/hierarki.png}
+    \caption {Överblick av bildning av hierarki i larmsystemet. Varje basenhet innehåller en startup fil med enhetens huvudlogik. Övriga filer innehåller funktioner som bidrar till basenheterna}
+    \label{fig:drawing}
+\end{figure}
+
 
 
 \section{Resultat}
