@@ -283,8 +283,8 @@ Enheten kan skicka de periodvisa \emph{LIFESIGN} meddelanden som tas emot av cen
 Avståndsmätare gav förväntade resultat, genom testning och kalibrering med linjal kunde det verifieras att avståndsmätaren gav korrekt och konsekvent mätning av distans i cm.
 Även om sensorn täcktes så att ekot inte registrerades kunde den larma vilket ökar säkerheten i systemet. 
 Ett delmål med sensorenheten var att den likt dörrenheten skulle kunna larma både lokalt och globalt med avståndsmätaren. 
-Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten. 
-Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd. 
+Avståndsintervallen för dessa kan konfigureras via ett CAN-meddelande \emph{SENSOR DISTANCE THRESHOLD} från centralenheten.\\
+\\
 Målet med sensorenheten var även att kunna detektera vibrationer genom luft eller materialet vibrationssensorn var fäst i. Sensorn kan lätt plocka upp vibrationer i materialet den är fäst i och larma globalt, men den är mindre känslig för vibrationer som färdas genom luften och kan missa viktiga tecken på att den ska larma.
 
 \subsection{Kommunikation via CAN och USART}
@@ -312,6 +312,10 @@ Vi ser inte att det finns så mycket mer att göra när det kommer till utveckli
 \noindent
 Eftersom att avståndsmätaren i nuläget bara jämför de värden som den får utan kontext och enskilt för varje mätning betyder det att det centrala larmet kan utlösas av att exempelvis en fluga flyger framför mätaren.
 Det är ju så klart inte bra att ett hemlarm utlöses för att en fluga råkade flyga förbi mätaren, så om systemet skulle förbättras hade det varit smart att ändra på avståndsmätarens sätt att analysera sådant att den kanske måste få samma avstånd på flera gånger innan den börjar larma.\\
+\\
+\noindent
+Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsintervallet som korrigeras till att bli det önskade intervallet medans det globala intervallet bestäms som en faktor av det lokala. 
+Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd. 
 
 \subsection{Fysiska och ekonomiska begränsningar}
 \noindent
