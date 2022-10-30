@@ -18,7 +18,7 @@
 \hspace{10cm}
 Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på MD407-mikrodator}
     
-\author{\\Alamin Alreda, Epost: , Sektion: \\Sebastian Danckwardt, Epost: , Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: zaidh@chalmers.se, Sektion: Datateknolog \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: edvinsvahn01@gmail.com, Sektion: Datateknologi\\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
+\author{\\Alamin Alreda, Epost: amin.reda@hotmail.com, Sektion: Datateknologi \\Sebastian Danckwardt, Epost: , Sektion: Datateknologi\\Zaid Haj Ibrahim, Epost: zaidh@chalmers.se, Sektion: Datateknolog \\Isac Holm, Epost: isachol@chalmers.se, Sektion: Datateknologi\\Edvin Svahn, Epost: edvinsvahn01@gmail.com, Sektion: Datateknologi\\Handledare: Samuel Collier Ryder, Epost: samuel.collier.ryder@gmail.com}
 
 \date{\today}
     
@@ -41,7 +41,7 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 
 \item[GPIO] \emph{General Purpose Input/Output} är en anslutningsport på MD407 där olika logiska enheter kan anslutas för att ta emot eller skicka data.
 
-\item[HC-SR04] En ultraljudsbaserad avståndsmätare.
+\item[HC-SR04] En ultraljudsbaserad avståndsmätare som används för att känna av om något står i vägen 
 
 \item[Knappsats] En extern periferienhet med 16 knappar som används för inmatning av data till mikrokontroller.
 
@@ -296,7 +296,7 @@ I detta kapitlet konstateras de olika resultaten utifrån målen som sattes.
 Dessutom diskuteras vad som hade kunnat göras bättre och potentiella förbättringar och idéer för vidarearbete av projektet.\\
 
 \subsection{centralenhet}
-Centralenheten var den enhet som var viktigast att den fungerade som den skulle varje gång.
+Centralenheten var den mest vitala delen av systemet och det var viktigt att den fungerade som den skulle.
 Eftersom den behövde ha koll på att alla enheter var anslutna hela tiden så var det viktigt för oss att livsteckensystemet fungerade och att centralenheten kunde avgöra när en enhet ställdes om eller när sladden till den enheten drogs ut.
 En sårbarhet i systemet är ifall själva centralenheten skulle dras ut för då finns det plötsligt inte något som kan starta ett centralt larm. 
 Därför skulle det i framtiden vara bra om man kunde jobba på integrationen med den ihopkopplade datorn så att om centralenheten tas ur bruk, planerat eller oplanerat, att datorn då märker det och kan larma till ett moln eller en typ av webb-baserad server där man kopplat sina telefoner och kan få notiser ifall hela larmet skulle stängas av.
