@@ -144,8 +144,7 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
 \subsection{Systemöversikt}
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.6]{Projektrapport/diagram.png}
-    \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrarna/sensorerna till kortet. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
+
     \label{fig:drawing}
 \end{figure}
 \\
@@ -169,17 +168,8 @@ På samma sätt kommer vibrationssensorn skicka en signal om den har känt av n�
 Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket syfte de uppfyller i systemet.
 
 \subsubsection{Centralenhet}
-Centralenheten är häjrnan av systemet. Enhetens huvudsakliga uppgiften är att hålla en ständigt kommunikation mellan centralenheten och inkopplade enheterna. Kommunikationen kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. Ack meddelanden är ett sätt att se till att kopplade enheterna verkligen mottagar meddelande från centralenheten och vice versa. Detta innebär att vid kommunikation av två enheterna, enhet A och B, förväntas då ack-meddelande från enhet B, vilket signilerar att meddelanden har nått destinationen. Dessutom inte alla typer av meddelande skickar ack, exempelvis meddelandtyp ``LIFESIGN'' och ``ack'' kräver ingen ack-respons när de skickas till andra enheterna, detta för att undvicka skapa oändlig loop (Figur 5). En ständig kommunikation innebär att centralenheten förvänta sig att inkopplade enheterna skickar meddelande med typ "Life Sign" kontineurligt i en förbestämd tid intervall av 50ms. 
-Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska det korrekta lösenordet skrivas in. 
-Därefter ska användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. 
-Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.05]{Projektrapport/central.png}
-    \caption {Hårdvaran som har funktionen som centralenhet}
-    \label{fig:drawing}
-\end{figure}
+Centralenheten är häjrnan av systemet. Enhetens huvudsakliga uppgiften är att hålla en ständigt kommunikation mellan centralenheten och inkopplade enheterna. Kommunikationen kommer att omfatta ACK-, larm-, och konfigurationsmeddelanden. Ack meddelanden är ett sätt att se till att kopplade enheterna verkligen mottagar meddelande från centralenheten och vice versa. Detta innebär att vid kommunikation av två enheterna, enhet A skickar till B, förväntas då ack-meddelande från enhet B, vilket signilerar i sin tur att meddelanden har nått destinationen. Däremot inte alla typer av meddelande skickar ack, exempelvis meddelandtyp ``LIFESIGN'' och ``ack'' kräver ingen ack-respons när de skickas till andra enheterna, detta för att undvicka skapa oändlig loop (Figur 5). En ständig kommunikation innebär att centralenheten förvänta sig att samtiliga inkopplade enheterna skickar kontineurligt ifrån sig meddelande med typ "Life Sign" i en förbestämd tid intervall av 500ms. Skulle en enhet inte skicka en "Life Sign" meddelande inom 500 ms då får den en ytterliggare 500 ms att skicka, annars slås på alarm av centralenheten. 
+Dessutom ska centralenheten hantera all kommunikation mellan användaren och systemet genom USART. För att användaren ska få tillgång till systemet ska det korrekta lösenordet skrivas in. Användaren får en lista med 9 val att välja på. Till exempel ska användaren kunna, för varje dörr, slå på eller av det centrala larmet, ändra tröskelvärdet, låsa eller låsa upp dörren. Utöver det ska användaren också kunna ändra tröskelvärdet för avståndsmätaren och ser status på alla enheterna som är kopplade till centralenheten.
 
 \subsubsection{Dörrenhet}
 
@@ -198,12 +188,21 @@ Avståndet kommer att mättas kontinuerligt i intervaller av 60 millisekunder, o
 \\
 Sedan kommer även vibrationssensor att känna av vibrationer, ifall den känner av någon vibration kommer den att meddela centralenheten för att aktivera det globala larmet.
 
-\begin{figure}[h]
+\begin{figure}[!tbp]
     \centering
-    \includegraphics[scale=0.05]{Projektrapport/sensor.png}
+     \begin{minipage}[b]{0.3\textwidth}
+    \includegraphics[scale=0.05]{Projektrapport/central.png}
+    \caption {Hårdvaran som har funktionen som centralenhet}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.5\textwidth}
+    \includegraphics[scale=0.04]{Projektrapport/sensor.png}
     \caption {Sensorerna som är implementerade på sensorenheten. Hårdvaran till vänster är vibrationssensor och till höger är avståndsmätare}
+    \end{minipage}
     \label{fig:drawing}
 \end{figure}
+
+
 \subsubsection{Systemprotkoll}
 Kommunikationsprotkollet är ett 11 bitar långt protokoll uppdelat i fyra segment (figur 2).
 Den mest signifikanta biten är bit 10 och minst signifikanta biten är bit 0. 
@@ -218,6 +217,9 @@ Varje gång ett meddelande skickas, kommer bit 5 till och med bit 3 innehålla a
     \caption {Visuell framställning av Kommunikationsprotokoll}
     \label{fig:drawing}
 \end{figure}
+
+\subsubsection{CAN och USART}
+
 
 \begin{tabular}{|c|l|c|}
     \hline
