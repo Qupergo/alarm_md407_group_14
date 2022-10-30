@@ -33,7 +33,8 @@ Implementation av rörelsesensor, avståndsmätare och simulerad dörrenhet på 
 \section*{Ordlista}
 \begin{description}
 
-\item[ACK-meddelande] \emph{acknowledgement message} är ett meddelande eller signal som skickas mellan två enheter som betecknar bekräfftelse eller mottagande av meddelande. 
+\item[ACK-meddelande] \emph{acknowledgement message} är ett meddelande som skickas i respons till att ett meddelande har tagits emot väl.
+
 \item[Buss] En \emph{buss} är en kommunikationsport som tillåter överföring av data i form av elektriska signaler.
 
 \item[CAN] \emph{Controller Area Network} är en databuss som tillåter kommunikation mellan mikrokontrollers. MD407 är försedd med två CAN bussar.
@@ -293,19 +294,18 @@ Dock är intervallen inte individuellt reglerbara utan det är det lokala tidsin
 Då enheten startar sätts intervallen till standardvärden som är bundna till den första mätningen av avstånd.
 \\
 \\
-%Vibrationssensor
 
 \subsection{Kommunikation via CAN och USART}
 
-\subsection{Mätning av avstånd}
-Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
-Testet genomfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. 
-Resultatet visade att avståndsmätaren kunde räkna precisa värden i centimeter. 
-Ett ytterligare test genomfördes för att kontrollera att sensorenheten kunde skicka ett larm när avståndet hade passerat tröskelvärdet. 
-Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
+%\subsection{Mätning av avstånd}
+%Under utvecklingen av mjukvaran för avståndsmätaren har ett test skrivits för att observera vilket avståndet det är som räknas. 
+%Testet genomfördes med hjälp av en linjal för att kontrollera att avståndsmätaren räknar rätt avstånd. 
+%Resultatet visade att avståndsmätaren kunde räkna precisa värden i centimeter. 
+%Ett ytterligare test genomfördes för att kontrollera att sensorenheten kunde skicka ett larm när avståndet hade passerat tröskelvärdet. 
+%Testet genomfördes med hjälp av en linjal och resultatet visade att sensorenheten kommer att skicka ett larm när avståndet avviker från tröskelvärdet.
 
-\subsection{Mätning av vibrationer}
-Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
+%\subsection{Mätning av vibrationer}
+%Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration har inträffats, under testningen av sensorenheten har vi lyckats få ett larm när vibrationsensorn har skakats.
 
 %\subsection{Dörrlarm}
 %Dörrenhetens uppgift är att den, om en dörr är öppen, larmar lokalt när tiden har passerat ett tröskelvärde och larmar centralt när tiden har passerat två tröskelvärden. 
