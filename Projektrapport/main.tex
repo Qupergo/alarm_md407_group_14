@@ -141,16 +141,18 @@ Då åtskilliga MD407-kort behöver kommunicera med varandra är de försedda me
 
 \newpage
 \subsection{Systemöversikt}
-\begin{figure}[h]
-    \centering
 
-    \label{fig:drawing}
-\end{figure}
 \\
 \\
 \noindent
 Systemet i sin helhet består av tre delar, en centralenhet, en dörrenhet och en sensorenhet. Utöver dessa enheterna innehåller systemet övriga komponenter som bidrar till funktionalitet av systemet. Ett exempel på det kan vara knappsatsen.Ett av korten används som centralenhet som de övriga korten samt komponenterna kopplas till (figur 1). Kommunikation mellan samtliga MD407-kort sker via en CAN-buss, medan kommunikation mellan centralenheten och PC sker över USART.
 \\
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.6]{Projektrapport/diagram.png}
+     \caption {Blockschema av larmsystemet. Pilarna indikerar på GPIO-port koppling mellan dörrarna/sensorerna till kortet. Dubbel-pilar mellan dörenheten och dörrarna indikerar på att det finns en kopplingsplatta.}
+    \label{fig:drawing}
+\end{figure}
 \newpage
 \\
 \noindent
@@ -286,6 +288,14 @@ Den huvudsakliga uppgiften av vibrationsensorn är att larma när en vibration h
 
 \section{Slutsats och diskussion}
 Med resultaten kan man konstatera att det går att skapa ett eget larm om man har möjlighet att införskaffa komponenterna.\\
+
+\noindent
+Den ena ska kunna upptäcka i fall en dörr står öppen, och den andra ska detektera om någonting rör sig inom en viss zon samt vibrationer i exempelvis ett fönster. 
+
+
+\noindent
+Eftersom att avståndsmätaren i nuläget bara jämför de värden som den får utan kontext och enskilt för varje mätning betyder det att det centrala larmet kan utlösas av att exempelvis en fluga flyger framför mätaren.
+Det är ju så klart inte bra att ett hemlarm utlöses för att en fluga råkade flyga förbi mätaren, så om systemet skulle förbättras hade det varit smart att ändra på avståndsmätarens sätt att analysera sådant att den kanske måste få samma avstånd på flera gånger innan den börjar larma.\\
 
 \noindent
 Tyvärr så kan mycket problem uppstå ifall man väljer att skapa systemet själv.
