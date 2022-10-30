@@ -92,21 +92,14 @@ I arbetsmetod beskrivs hur gruppen har jobbat. Det finns 3 stora delar som har b
 
 
 \subsubsection{Förarbete}
-Innan kod skrevs behövdes genomförandet av projektet planeras. 
-Detta inkluderar bestämning av versionskontroll system, kommunikationsplatform, testning av produkten samt ordning av larmsystemets olika delar. 
-Versionskontrollsystemet som valdes var Github, kommunikationsplatform valdes Discord. 
-För att testa systemet gjordes en testmall för hur ett test skulle genomföras. 
-Ordning av projektets olika delar gjordes genom en planering av olika milstolpar, först lades stort fokus på pereferienheterna, endast när dessa närmade sin slutpunkt skulle fokuset skifta till CAN protokollet för att kommunicera mellan dem. 
-Motivationen till detta var att CAN protokollet inte skulle behövas förrän pereferienheterna var klara och att jobba på de enheterna skulle ge en klarare bild över hur CAN protokollet skulle fungera som effektivast.
+Innan koden skrevs behövde genomförandet av projektet planeras. Detta inkluderade fastställande av versionskontrollsystem och kommunikationsplattform, testning av produkten och milstolpar för de olika delarna av larmsystemet. Det versionskontrollsystem som valdes var Github och kommunikationsplattformen blev Discord. För att testa systemet gjordes en testmall för hur ett test skulle genomföras.
+
+Först lades stort fokus på periferienheterna. Endast när dessa närmade en slutpunkt skulle fokus flyttas till CAN-protokollet för att kommunicera mellan dem och centralenheten. Anledningen var att CAN-protokollet och centralenheten skulle behövas först när periferienheterna var färdiga. Dessutom skulle arbetet med dessa enheter ge en tydligare bild av hur CAN-protokollet skulle fungera mest effektivt.
 
 \subsubsection{Tekniskt genomförande}
-När kod började skrivas delades projektet upp i tre delar som arbetades på parallellt med varandra.
-När en del var klar försökte de hjälpa de andra att komma ikapp tills alla var klara med sin del.
-Sedan gick gruppen igenom vad som var kvar och delegerade arbetet. 
-I början var gruppen inte helt bekväm med kommunikationsmediet vilket förvärrades av att alla i gruppen inte var på plats vilket ledde till att det producerades två versioner av avståndsmätaren.
-Detta löstes genom att en ny version skapades från de bästa delarna av dem.
-Efter dessa delar var klara gjordes CAN protokollet medans buggar fixades i pereferienheterna. Centralenheten gjordes i samband med CAN protokollet då centralenhetens jobb inte kunde utföras utan en fungerande kommunikationsmodell.
-Efter detta gjordes störenheten för att simulera en defekt enhet.
+När förberedelserna var klara delades projektgruppen upp i tre delar och arbetade med olika delar parallellt. När en del var klar försökte gruppmedlemmarna hjälpa de andra att komma ikapp tills alla var klara med sin del. Därefter gick gruppen igenom det som var kvar och delegerade arbetet. I början var gruppen inte helt bekväm med kommunikationsmedlet, vilket förvärrades av att endast några i gruppen var närvarande på plats, vilket ledde till att två versioner av avståndsmätaren producerades. Detta löstes genom att skapa en ny version av deras bästa delar.
+
+Efter att dessa delar var färdiga gjordes CAN-protokollet samtidigt som buggar rättades i periferienheterna. Centralenheten tillverkades i samband med CAN-protokollet, eftersom centralenhetens endast krävdes med en fungerande kommunikationsmodell. Efter detta gjordes störenheten för att simulera en defekt enhet.
 
 \subsubsection{Testning och verifiering}
 För att säkerställa kvalitén hos producerad kod testades färdig kod kontinuerligt med under arbetsprocessen med testmallar.
@@ -177,7 +170,7 @@ Här beskrivs vad de olika delsystemen har för tekniska funktioner samt vilket 
 \subsubsection{Centralenhet}
 Centralenheten är systemets hjärna. Dess huvuduppgift är att upprätthålla en konstant kommunikation mellan sig själv och de anslutna enheterna. Centralenheten tar emot livstecken från anslutna enheter varje 500 millisekunder för att se till att enheterna fortfarande är anslutna. Ett larm utlöses om 1000 millisekunder passerar utan att centralenheten tar emot ett livstecken från en ansluten enhet.
 
-Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin typ till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
+Centralenheten tar också hand om tilldelningen av ID till anslutna enheter. När en annan enhet startar skickar den ett "NEW ALIVE"-meddelande med sin enhetstyp till den centrala enheten. Den centrala enheten tar sedan emot detta meddelande och svarar med ett ID för enheten, som den börjar använda för all framtida kommunikation.
 
 Dessutom sköter centralenheten all kommunikation mellan användaren och systemet via USART och en knappsats. När centralenheten startar uppmanar den användaren att ange ett lösenord. När det har angetts visar centralenheten sedan en meny med nio alternativ. Användaren kan då ändra lösenordet, uppdatera tröskelvärdet för varje dörr och sensorenhet, ändra tröskelvärdet för avståndsmätaren och se status för alla enheter som är anslutna till centralenheten.
 
